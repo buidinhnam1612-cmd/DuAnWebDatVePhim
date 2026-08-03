@@ -37,3 +37,16 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# ===================================
+# DuAnDatVePhim
+# ===================================
+
+# Mỗi thành viên tự cấu hình SQL Server
+src/main/resources/database.properties
+
+# File log
+*.log
+
+# Không lưu file upload khi phát triển (nếu cần)
+# src/main/webapp/assets/uploads/

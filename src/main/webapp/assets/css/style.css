@@ -1,0 +1,1105 @@
+/* ==========================================
+   FPT CINEMA
+   STYLE.CSS
+   Bootstrap 5
+========================================== */
+
+:root{
+
+    --primary:#ffc107;
+    --danger:#dc3545;
+
+    --bg:#0f172a;
+    --surface:#1e293b;
+    --surface-hover:#273449;
+
+    --text:#ffffff;
+    --text-muted:#cbd5e1;
+
+    --border:#334155;
+
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+
+    --radius:18px;
+
+}
+
+/* ==========================
+   RESET
+========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+
+}
+
+/* ==========================
+   COMMON
+========================== */
+
+section{
+    padding:80px 0;
+}
+
+a{
+    text-decoration:none;
+}
+
+img{
+    width:100%;
+    display:block;
+}
+
+.section-title{
+
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:40px;
+
+}
+
+/* ==========================
+   NAVBAR
+========================== */
+
+.navbar{
+
+    background:#111827 !important;
+    border-bottom:1px solid #1f2937;
+
+}
+
+.navbar-brand{
+
+    font-size:30px;
+    font-weight:700;
+    color:#ffc107 !important;
+
+}
+
+.nav-link{
+
+    color:#d1d5db !important;
+    font-weight:500;
+    margin-left:12px;
+    transition:.3s;
+
+}
+
+.nav-link:hover{
+
+    color:#ffc107 !important;
+
+}
+
+.navbar .form-control{
+
+    background:#1f2937;
+    border:1px solid #374151;
+    color:#fff;
+
+}
+
+.navbar .form-control::placeholder{
+
+    color:#9ca3af;
+
+}
+
+.navbar .btn-outline-warning{
+
+    border-width:2px;
+
+}
+
+/* ==========================
+   HERO
+========================== */
+
+.hero-image{
+
+    height:650px;
+    object-fit:cover;
+    filter:brightness(.45);
+
+}
+
+.hero-content{
+
+    bottom:120px;
+
+}
+
+.hero-content h1{
+
+    font-size:60px;
+    font-weight:700;
+
+}
+
+.hero-content p{
+
+    font-size:20px;
+
+}
+
+/* ==========================
+   SEARCH
+========================== */
+
+.movie-search-box{
+
+    background:var(--surface);
+
+    position:relative;
+
+    top:-60px;
+
+    margin-bottom:-60px;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    z-index:1000;
+
+}
+
+.movie-search-box label{
+
+    color:#fff;
+    font-weight:600;
+    margin-bottom:10px;
+
+}
+
+.movie-search-box .form-select,
+.movie-search-box .form-control{
+
+    height:55px;
+
+    background:#111827;
+
+    color:#fff;
+
+    border:1px solid #475569;
+
+}
+
+.movie-search-box .form-select:focus,
+.movie-search-box .form-control:focus{
+
+    background:#111827;
+    color:#fff;
+
+    border-color:#ffc107;
+
+    box-shadow:none;
+
+}
+
+.movie-search-box .btn{
+
+    height:55px;
+    font-weight:700;
+    border-radius:10px;
+
+}
+/* ==========================
+   MOVIE CARD
+========================== */
+
+.movie-card{
+
+    background:var(--surface);
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+
+    transition:.35s;
+
+    box-shadow:var(--shadow);
+
+}
+
+.movie-card:hover{
+
+    transform:translateY(-10px);
+
+}
+
+.movie-card img{
+
+    height:420px;
+
+    object-fit:cover;
+
+}
+
+.movie-card .card-body{
+
+    background:var(--surface);
+
+    padding:20px;
+
+}
+
+.movie-card h5{
+
+    color:#ffffff;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+}
+
+.movie-card p{
+
+    color:var(--text-muted);
+
+    margin-bottom:18px;
+
+}
+
+.movie-card .btn{
+
+    border-radius:10px;
+
+    font-weight:600;
+
+}
+
+/* ==========================
+   COMING SOON
+========================== */
+
+.coming-card{
+
+    background:var(--surface);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+}
+
+.coming-card img{
+
+    height:420px;
+
+    object-fit:cover;
+
+}
+
+.coming-card .card-body{
+
+    background:var(--surface);
+
+}
+
+.coming-card h5{
+
+    color:#fff;
+
+}
+
+.coming-card p{
+
+    color:var(--text-muted);
+
+}
+
+/* ==========================
+   MEMBER
+========================== */
+
+.member-box{
+
+    background:linear-gradient(135deg,#1e293b,#111827);
+
+    border-radius:25px;
+
+    padding:70px 50px;
+
+    text-align:center;
+
+    box-shadow:var(--shadow);
+
+}
+
+.member-box span{
+
+    color:#ffc107;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.member-box h2{
+
+    color:#fff;
+
+    font-size:54px;
+
+    font-weight:700;
+
+}
+
+.member-box p{
+
+    color:#cbd5e1;
+
+    margin-bottom:35px;
+
+}
+
+.member-box .form-control{
+
+    height:55px;
+
+    background:#0f172a;
+
+    border:1px solid #334155;
+
+    color:#fff;
+
+}
+
+.member-box .form-control::placeholder{
+
+    color:#94a3b8;
+
+}
+
+.member-box .btn{
+
+    height:55px;
+
+    font-weight:700;
+
+}
+
+/* ==========================
+   FOOTER
+========================== */
+
+footer{
+
+    background:#020617;
+
+    margin-top:80px;
+
+    border-top:1px solid #1e293b;
+
+}
+
+footer h4,
+footer h5{
+
+    color:#ffc107;
+
+    font-weight:700;
+
+}
+
+footer p{
+
+    color:#cbd5e1;
+
+}
+
+footer a{
+
+    color:#fff;
+
+    transition:.3s;
+
+}
+
+footer a:hover{
+
+    color:#ffc107;
+
+}
+
+footer hr{
+
+    border-color:#334155;
+
+}
+
+/* ==========================
+   BUTTON
+========================== */
+
+.btn-warning{
+
+    font-weight:700;
+
+}
+
+.btn-danger{
+
+    font-weight:700;
+
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#111827;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#ffc107;
+
+    border-radius:20px;
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:992px){
+
+    .hero-image{
+
+        height:500px;
+
+    }
+
+    .hero-content h1{
+
+        font-size:42px;
+
+    }
+
+    .member-box{
+
+        padding:50px 30px;
+
+    }
+
+    .member-box h2{
+
+        font-size:40px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-image{
+
+        height:380px;
+
+    }
+
+    .hero-content{
+
+        bottom:50px;
+
+    }
+
+    .hero-content h1{
+
+        font-size:32px;
+
+    }
+
+    .section-title{
+
+        font-size:30px;
+
+    }
+
+    .movie-search-box{
+
+        margin-top:20px;
+
+    }
+
+}
+
+/* ==========================================
+   MOVIE DETAIL PREMIUM UI
+========================================== */
+
+
+/* ==========================
+   MOVIE HERO DETAIL
+========================== */
+
+.movie-detail-hero{
+
+    position:relative;
+    min-height:650px;
+
+    display:flex;
+    align-items:end;
+
+    padding-bottom:80px;
+
+    background-size:cover;
+    background-position:center;
+
+}
+
+
+.movie-detail-hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+            linear-gradient(
+                    to top,
+                    #020617 5%,
+                    rgba(2,6,23,.75),
+                    transparent
+            );
+
+}
+
+
+.movie-detail-content{
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+
+.movie-poster{
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:
+            0 20px 50px rgba(0,0,0,.6);
+
+    border:1px solid var(--border);
+
+}
+
+
+.movie-poster img{
+
+    height:480px;
+
+    object-fit:cover;
+
+}
+
+
+.movie-title{
+
+    font-size:55px;
+
+    font-weight:800;
+
+    color:white;
+
+}
+
+
+.movie-description{
+
+    color:var(--text-muted);
+
+    font-size:18px;
+
+    line-height:1.8;
+
+    max-width:700px;
+
+}
+
+
+
+/* ==========================
+   MOVIE BADGE
+========================== */
+
+
+.movie-badge{
+
+    background:#ffc107;
+
+    color:#111827;
+
+    padding:6px 12px;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+
+.movie-rating{
+
+    color:#ffc107;
+
+    font-size:22px;
+
+}
+
+
+
+/* ==========================
+   BOOKING STEP CARD
+========================== */
+
+
+.booking-step-card{
+
+    background:
+            rgba(30,41,59,.75);
+
+    backdrop-filter:blur(12px);
+
+    border:
+
+            1px solid rgba(255,255,255,.1);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.booking-step-title{
+
+    color:white;
+
+    font-size:25px;
+
+    font-weight:700;
+
+    margin-bottom:25px;
+
+}
+
+
+.booking-step-number{
+
+    color:#ffc107;
+
+}
+
+
+
+/* ==========================
+   CINEMA SELECT
+========================== */
+
+
+.cinema-option{
+
+    background:#111827;
+
+    border:1px solid #334155;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+.cinema-option:hover{
+
+    border-color:#ffc107;
+
+    transform:translateY(-5px);
+
+}
+
+
+.cinema-option.active{
+
+    border-color:#ffc107;
+
+    box-shadow:
+
+            0 0 20px rgba(255,193,7,.2);
+
+}
+
+
+
+/* ==========================
+   DATE BUTTON
+========================== */
+
+
+.date-box{
+
+    width:85px;
+
+    height:95px;
+
+    border-radius:15px;
+
+    background:#111827;
+
+    border:1px solid #334155;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    transition:.3s;
+
+}
+
+
+
+.date-box:hover{
+
+    border-color:#ffc107;
+
+}
+
+
+
+.date-box.active{
+
+    background:#ffc107;
+
+    color:#111827;
+
+}
+
+
+
+
+.date-box span:first-child{
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+
+
+.date-box strong{
+
+    font-size:30px;
+
+}
+
+
+
+
+/* ==========================
+   SHOWTIME
+========================== */
+
+
+.showtime-btn{
+
+
+    background:#111827;
+
+    color:white;
+
+    border:1px solid #334155;
+
+    padding:12px 25px;
+
+    border-radius:10px;
+
+    transition:.3s;
+
+}
+
+
+
+.showtime-btn:hover,
+.showtime-btn.active{
+
+
+    background:#ffc107;
+
+    color:#111827;
+
+    border-color:#ffc107;
+
+}
+
+
+
+/* ==========================
+   BOOKING SUMMARY
+========================== */
+
+
+.booking-summary{
+
+
+    background:
+
+            rgba(15,23,42,.85);
+
+
+    backdrop-filter:blur(15px);
+
+
+    border:1px solid #334155;
+
+
+    border-radius:20px;
+
+
+    padding:30px;
+
+
+    position:sticky;
+
+
+    top:100px;
+
+
+}
+
+
+
+.summary-row{
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:15px;
+
+
+    color:#cbd5e1;
+
+}
+
+
+
+.summary-row span:last-child{
+
+    color:white;
+
+    font-weight:600;
+
+}
+
+
+
+/* ==========================
+   REVIEW CARD
+========================== */
+
+
+.review-card{
+
+
+    background:#111827;
+
+    border:1px solid #334155;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    height:100%;
+
+}
+
+
+
+.review-user{
+
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    background:#334155;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:700;
+
+    color:white;
+
+}
+
+
+
+.review-star{
+
+    color:#ffc107;
+
+}
+
+
+
+/* ==========================
+   GLASS EFFECT
+========================== */
+
+
+.glass-box{
+
+
+    background:
+
+            rgba(255,255,255,.05);
+
+
+    backdrop-filter:blur(15px);
+
+
+    border:
+
+            1px solid rgba(255,255,255,.1);
+
+
+}
+
+
+
+/* ==========================
+   MOVIE DETAIL RESPONSIVE
+========================== */
+
+
+@media(max-width:768px){
+
+
+    .movie-title{
+
+        font-size:35px;
+
+    }
+
+
+
+    .movie-poster img{
+
+        height:350px;
+
+    }
+
+
+
+    .movie-detail-hero{
+
+        min-height:550px;
+
+    }
+
+
+}
+/* ==========================
+   MOVIE PAGE DARK BACKGROUND
+========================== */
+
+.movie-page{
+
+    background:#020617 !important;
+
+    min-height:100vh;
+
+    padding:80px 0;
+
+    color:#ffffff;
+
+}
+
+
+.movie-page .container{
+
+    background:transparent;
+
+}
+
+
+.movie-page-title{
+
+    color:#ffffff;
+
+    font-size:42px;
+
+    font-weight:700;
+
+}
+
+
+.movie-page-description{
+
+    color:#94a3b8;
+
+}
