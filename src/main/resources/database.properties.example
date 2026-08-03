@@ -1,0 +1,11 @@
+db.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+db.host=localhost
+db.port=1433
+db.name=DuAnDatVePhim
+
+db.user=sa
+db.password=your_password
+
+db.encrypt=true
+db.trustServerCertificate=true
