@@ -17,12 +17,12 @@
     <!-- Bootstrap -->
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+          href="./assets/bootstrap/css/bootstrap.min.css">
 
     <!-- Bootstrap Icons -->
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+          href="./assets/bootstrap/css/bootstrap-icons.min.css">
 
     <!-- Google Font -->
 

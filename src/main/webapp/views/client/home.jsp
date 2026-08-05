@@ -56,7 +56,7 @@
                     Trải nghiệm điện ảnh đỉnh cao tại FPT CINEMA.
                 </p>
 
-                <a href="#"
+                <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC01"
                    class="btn btn-warning btn-lg me-2">
 
                     Đặt vé ngay
@@ -289,7 +289,7 @@
 
                     </div>
 
-                    <a href="#"
+                    <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC01"
                        class="btn btn-danger w-100">
 
                         Đặt vé
@@ -339,7 +339,7 @@
 
                     </div>
 
-                    <a href="#"
+                    <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC02"
                        class="btn btn-danger w-100">
 
                         Đặt vé
@@ -389,7 +389,7 @@
 
                     </div>
 
-                    <a href="#"
+                    <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC03"
                        class="btn btn-danger w-100">
 
                         Đặt vé
@@ -439,7 +439,7 @@
 
                     </div>
 
-                    <a href="#"
+                    <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC04"
                        class="btn btn-danger w-100">
 
                         Đặt vé
