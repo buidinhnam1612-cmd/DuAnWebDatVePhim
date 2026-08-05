@@ -42,7 +42,7 @@ public class LoginController extends HttpServlet {
             session.setAttribute("userName", "Admin");
             session.setAttribute("email", email);
 
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
 
         } else {
 
