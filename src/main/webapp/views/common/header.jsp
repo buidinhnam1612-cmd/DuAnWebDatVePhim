@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page pageEncoding="UTF-8" %>
-
+<meta charset="UTF-8">
 <!DOCTYPE html>
 
 <html lang="vi">
@@ -14,15 +14,6 @@
 
     <title>FPT CINEMA</title>
 
-    <!-- Bootstrap -->
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
-
-    <!-- Bootstrap Icons -->
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Google Font -->
 
@@ -49,6 +40,7 @@
     <link
     href="${pageContext.request.contextPath}/assets/css/style.css"
     rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/employee.css">
 
 </head>
 

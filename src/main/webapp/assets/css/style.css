@@ -72,59 +72,7 @@ img{
 
 }
 
-/* ==========================
-   NAVBAR
-========================== */
 
-.navbar{
-
-    background:#111827 !important;
-    border-bottom:1px solid #1f2937;
-
-}
-
-.navbar-brand{
-
-    font-size:30px;
-    font-weight:700;
-    color:#ffc107 !important;
-
-}
-
-.nav-link{
-
-    color:#d1d5db !important;
-    font-weight:500;
-    margin-left:12px;
-    transition:.3s;
-
-}
-
-.nav-link:hover{
-
-    color:#ffc107 !important;
-
-}
-
-.navbar .form-control{
-
-    background:#1f2937;
-    border:1px solid #374151;
-    color:#fff;
-
-}
-
-.navbar .form-control::placeholder{
-
-    color:#9ca3af;
-
-}
-
-.navbar .btn-outline-warning{
-
-    border-width:2px;
-
-}
 
 /* ==========================
    HERO
@@ -1103,3 +1051,311 @@ footer hr{
     color:#94a3b8;
 
 }
+/* =========================================
+   NAVBAR - FPT CINEMA
+========================================= */
+
+.custom-navbar{
+    background: linear-gradient(90deg,#ff4f8b,#ff6fa8);
+    padding:12px 0;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.custom-navbar .navbar-brand{
+    color:#ffffff;
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.custom-navbar .navbar-brand:hover{
+    color:#ffffff;
+}
+
+.custom-navbar .navbar-brand i{
+    color:#FFD54F;
+    font-size:30px;
+}
+
+.custom-navbar .nav-link{
+    color:#ffffff;
+    font-size:17px;
+    font-weight:500;
+    margin:0 8px;
+    transition:.3s;
+}
+
+.custom-navbar .nav-link:hover{
+    color:#FFE082;
+}
+
+.custom-navbar .nav-link.active{
+    color:#FFE082;
+}
+
+.search-box{
+    width:260px;
+    border-radius:30px;
+    border:none;
+    padding:10px 18px;
+}
+
+.search-box:focus{
+    outline:none;
+    box-shadow:0 0 8px rgba(255,255,255,.6);
+}
+
+.btn-login{
+    display: inline-block;
+    color:#ffffff !important;
+    border:2px solid #ffffff !important;
+    border-radius:30px;
+    padding:8px 22px;
+    transition:.3s;
+}
+
+.btn-login:hover{
+    background:#ffffff;
+    color:#ff4f8b;
+}
+
+.btn-register{
+    display: inline-block;
+    background:#FFD54F !important;
+    color:#333333 !important;
+    border:2px solid #FFD54F !important;
+    padding:8px 22px;
+    font-weight:600;
+}
+
+.btn-register:hover{
+    background:#FFCA28;
+    color:#000000;
+}
+.navbar-brand{
+
+    font-size:30px;
+    font-weight:700;
+    color:#ffc107 !important;
+
+}
+/*==============================
+        EMPLOYEE
+==============================*/
+
+body {
+    background: #f4f6fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+
+/* Layout */
+
+.employee-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+.employee-main {
+
+    flex: 1;
+    padding: 30px;
+
+}
+
+
+
+/* Header */
+
+.employee-top {
+
+    background: white;
+    padding: 25px;
+
+    border-radius: 18px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+}
+
+
+.employee-top h3 {
+
+    font-weight:700;
+    color:#111827;
+
+}
+
+
+.employee-top span {
+
+    color:#6b7280;
+
+}
+
+
+
+/* Dashboard Card */
+
+.dashboard-card {
+
+
+    padding:25px;
+
+    border-radius:20px;
+
+    color:white;
+
+    height:150px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+
+    transition:.3s;
+
+
+}
+
+
+
+.dashboard-card:hover {
+
+    transform:translateY(-8px);
+
+}
+
+
+
+.dashboard-card h5 {
+
+    font-size:16px;
+
+    opacity:.9;
+
+}
+
+
+
+.dashboard-card h2 {
+
+    font-size:40px;
+
+    font-weight:800;
+
+    margin-top:20px;
+
+}
+
+
+
+
+.blue {
+
+    background:
+            linear-gradient(135deg,#2563eb,#60a5fa);
+
+}
+
+
+.green {
+
+    background:
+            linear-gradient(135deg,#16a34a,#4ade80);
+
+}
+
+
+
+.orange {
+
+    background:
+            linear-gradient(135deg,#ea580c,#fb923c);
+
+}
+
+
+
+.red {
+
+    background:
+            linear-gradient(135deg,#dc2626,#f87171);
+
+}
+
+
+
+
+/* Table */
+
+
+.card {
+
+    border:none;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+
+
+.card-header {
+
+    background:#111827;
+
+    color:white;
+
+    padding:18px;
+
+    font-size:18px;
+
+}
+
+
+
+.table {
+
+    margin-bottom:0;
+
+}
+
+
+
+.table thead {
+
+    background:#f1f5f9;
+
+}
+
+
+
+.table th {
+
+    padding:15px;
+
+}
+
+
+
+.table td {
+
+    padding:15px;
+
+}
+
+
+
+.badge {
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+}
+
+
