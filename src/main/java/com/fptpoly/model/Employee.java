@@ -2,9 +2,11 @@ package com.fptpoly.model;
 
 import java.sql.Date;
 
-public class User {
+public class Employee {
 
-    private String maKhachHang;
+    private String maNhanVien;
+    private String maVaiTro;
+    private String tenVaiTro;
     private String tenDangNhap;
     private String matKhau;
     private String hoTen;
@@ -12,19 +14,28 @@ public class User {
     private String soDienThoai;
     private Date ngaySinh;
     private String gioiTinh;
-    private int diemTichLuy;
+    private String chucVu;
+    private Date ngayVaoLam;
     private String trangThai;
-    private String maVaiTro;
 
-    public User() {
+    public Employee() {
     }
 
-    public User(String maKhachHang, String tenDangNhap, String matKhau,
-                String hoTen, String email, String soDienThoai,
-                Date ngaySinh, String gioiTinh,
-                int diemTichLuy, String trangThai, String maVaiTro) {
+    public Employee(String maNhanVien,
+                    String maVaiTro,
+                    String tenDangNhap,
+                    String matKhau,
+                    String hoTen,
+                    String email,
+                    String soDienThoai,
+                    Date ngaySinh,
+                    String gioiTinh,
+                    String chucVu,
+                    Date ngayVaoLam,
+                    String trangThai) {
 
-        this.maKhachHang = maKhachHang;
+        this.maNhanVien = maNhanVien;
+        this.maVaiTro = maVaiTro;
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.hoTen = hoTen;
@@ -32,17 +43,25 @@ public class User {
         this.soDienThoai = soDienThoai;
         this.ngaySinh = ngaySinh;
         this.gioiTinh = gioiTinh;
-        this.diemTichLuy = diemTichLuy;
+        this.chucVu = chucVu;
+        this.ngayVaoLam = ngayVaoLam;
         this.trangThai = trangThai;
+    }
+
+    public String getMaNhanVien() {
+        return maNhanVien;
+    }
+
+    public void setMaNhanVien(String maNhanVien) {
+        this.maNhanVien = maNhanVien;
+    }
+
+    public String getMaVaiTro() {
+        return maVaiTro;
+    }
+
+    public void setMaVaiTro(String maVaiTro) {
         this.maVaiTro = maVaiTro;
-    }
-
-    public String getMaKhachHang() {
-        return maKhachHang;
-    }
-
-    public void setMaKhachHang(String maKhachHang) {
-        this.maKhachHang = maKhachHang;
     }
 
     public String getTenDangNhap() {
@@ -101,12 +120,20 @@ public class User {
         this.gioiTinh = gioiTinh;
     }
 
-    public int getDiemTichLuy() {
-        return diemTichLuy;
+    public String getChucVu() {
+        return chucVu;
     }
 
-    public void setDiemTichLuy(int diemTichLuy) {
-        this.diemTichLuy = diemTichLuy;
+    public void setChucVu(String chucVu) {
+        this.chucVu = chucVu;
+    }
+
+    public Date getNgayVaoLam() {
+        return ngayVaoLam;
+    }
+
+    public void setNgayVaoLam(Date ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
     }
 
     public String getTrangThai() {
@@ -116,13 +143,11 @@ public class User {
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
-
-    public String getMaVaiTro() {
-        return maVaiTro;
+    public String getTenVaiTro() {
+        return tenVaiTro;
     }
 
-    public void setMaVaiTro(String maVaiTro) {
-        this.maVaiTro = maVaiTro;
+    public void setTenVaiTro(String tenVaiTro) {
+        this.tenVaiTro = tenVaiTro;
     }
-
 }
