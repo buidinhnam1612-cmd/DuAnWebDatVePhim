@@ -22,7 +22,7 @@ public class EmployeeController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
@@ -53,12 +53,50 @@ public class EmployeeController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
+
+        if ("create".equals(action)) {
+
+            String maNhanVien = request.getParameter("maNhanVien");
+            String maVaiTro = request.getParameter("maVaiTro");
+            String tenDangNhap = request.getParameter("tenDangNhap");
+            String matKhau = request.getParameter("matKhau");
+            String hoTen = request.getParameter("hoTen");
+            String email = request.getParameter("email");
+            String soDienThoai = request.getParameter("soDienThoai");
+            String gioiTinh = request.getParameter("gioiTinh");
+
+            // Kiểm tra mã nhân viên đã tồn tại
+            if (employeeService.existsEmployee(maNhanVien)) {
+                request.getSession().setAttribute("error", "Mã nhân viên đã tồn tại!");
+                response.sendRedirect(request.getContextPath() + "/admin/employee");
+                return;
+            }
+
+            Employee e = new Employee();
+            e.setMaNhanVien(maNhanVien);
+            e.setMaVaiTro(maVaiTro);
+            e.setTenDangNhap(tenDangNhap);
+            e.setMatKhau(matKhau);
+            e.setHoTen(hoTen);
+            e.setEmail(email);
+            e.setSoDienThoai(soDienThoai);
+            e.setGioiTinh(gioiTinh);
+            e.setTrangThai("Hoạt động");
+
+            boolean result = employeeService.createEmployee(e);
+
+            if (result) {
+                request.getSession().setAttribute("success", "Thêm tài khoản thành công!");
+            } else {
+                request.getSession().setAttribute("error", "Thêm tài khoản thất bại!");
+            }
+        }
 
         if ("updateRole".equals(action)) {
 

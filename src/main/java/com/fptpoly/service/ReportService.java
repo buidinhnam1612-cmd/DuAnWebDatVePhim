@@ -57,5 +57,8 @@ public class ReportService {
         return repository.getSeatOccupancy();
 
     }
+    public double getTodayRevenue() {
+        return repository.getTodayRevenue();
+    }
 
 }

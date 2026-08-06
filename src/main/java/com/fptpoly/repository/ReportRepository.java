@@ -405,4 +405,27 @@ public class ReportRepository {
 
         return list;
     }
+    public double getTodayRevenue() {
+
+        String sql = """
+        SELECT ISNULL(SUM(TongTien),0)
+        FROM DAT_VE
+        WHERE TrangThai = N'Đã thanh toán'
+        AND CAST(ThoiGianDat AS DATE) = CAST(GETDATE() AS DATE)
+        """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }

@@ -76,4 +76,20 @@ public class EmployeeService {
         return employeeRepository.updateStatus(maNhanVien, trangThai);
     }
 
+    /**
+     * Thêm tài khoản mới
+     */
+    public boolean createEmployee(Employee e) {
+        if (e == null || e.getMaNhanVien() == null || e.getMaNhanVien().trim().isEmpty()) {
+            return false;
+        }
+        return employeeRepository.insert(e);
+    }
+    /*
+    Check trùng mã
+     */
+    public boolean existsEmployee(String maNhanVien) {
+        return employeeRepository.existsById(maNhanVien);
+    }
+
 }
