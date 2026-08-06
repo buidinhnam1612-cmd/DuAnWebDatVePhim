@@ -338,29 +338,29 @@
 
                     <div class="menu-header">Kinh doanh & Thành viên</div>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
                             <i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý danh sách đặt vé
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
                             <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/user">
                             <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
                         </a>
                     </li>
 
                     <div class="menu-header">Hệ thống & Báo cáo</div>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/employee">
                             <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/report">
                             <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
                         </a>
                     </li>
@@ -533,7 +533,7 @@
 
                 <!-- 6. Quản lý đặt vé -->
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="#" class="action-card">
+                    <a href="${pageContext.request.contextPath}/admin/booking" class="action-card">
                         <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
                         <div class="action-icon icon-green"><i class="bi bi-ticket-detailed"></i></div>
                         <h6>Quản lý danh sách đặt vé</h6>
@@ -548,7 +548,7 @@
 
                 <!-- 7. Xác nhận vé -->
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="#" class="action-card">
+                    <a href="${pageContext.request.contextPath}/admin/booking" class="action-card">
                         <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
                         <div class="action-icon icon-cyan"><i class="bi bi-check2-circle"></i></div>
                         <h6>Xác nhận trạng thái vé</h6>
@@ -563,7 +563,7 @@
 
                 <!-- 8. Quản lý người dùng -->
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="#" class="action-card">
+                    <a href="${pageContext.request.contextPath}/admin/user" class="action-card">
                         <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
                         <div class="action-icon icon-orange"><i class="bi bi-people"></i></div>
                         <h6>Quản lý người dùng</h6>
@@ -578,7 +578,7 @@
 
                 <!-- 9. Nhân viên & Phân quyền -->
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="#" class="action-card">
+                    <a href="${pageContext.request.contextPath}/admin/employee" class="action-card">
                         <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
                         <div class="action-icon icon-indigo"><i class="bi bi-shield-lock"></i></div>
                         <h6>Nhân viên & Phân quyền</h6>
@@ -593,7 +593,7 @@
 
                 <!-- 10. Thống kê & Báo cáo -->
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="#" class="action-card">
+                    <a href="${pageContext.request.contextPath}/admin/report" class="action-card">
                         <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
                         <div class="action-icon icon-slate"><i class="bi bi-bar-chart-line"></i></div>
                         <h6>Thống kê & Báo cáo</h6>
