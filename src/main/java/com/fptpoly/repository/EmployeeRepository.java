@@ -25,8 +25,7 @@ public class EmployeeRepository {
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
-        ) {
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(mapEmployee(rs));
@@ -52,8 +51,7 @@ public class EmployeeRepository {
 
         try (
                 Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, maNhanVien);
 
@@ -92,8 +90,7 @@ public class EmployeeRepository {
 
         try (
                 Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             String key = "%" + keyword + "%";
 
@@ -124,7 +121,7 @@ public class EmployeeRepository {
 
     // Đổi vai trò
     public boolean updateRole(String maNhanVien,
-                              String maVaiTro) {
+            String maVaiTro) {
 
         String sql = """
                 UPDATE NHAN_VIEN
@@ -134,8 +131,7 @@ public class EmployeeRepository {
 
         try (
                 Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, maVaiTro);
             ps.setString(2, maNhanVien);
@@ -154,7 +150,7 @@ public class EmployeeRepository {
 
     // Khóa / Mở khóa
     public boolean updateStatus(String maNhanVien,
-                                String trangThai) {
+            String trangThai) {
 
         String sql = """
                 UPDATE NHAN_VIEN
@@ -164,8 +160,7 @@ public class EmployeeRepository {
 
         try (
                 Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, trangThai);
             ps.setString(2, maNhanVien);
@@ -180,6 +175,33 @@ public class EmployeeRepository {
 
         return false;
 
+    }
+
+    // Thêm mới nhân viên
+    public boolean insert(Employee e) {
+        String sql = """
+                INSERT INTO NHAN_VIEN (MaNhanVien, MaVaiTro, TenDangNhap, MatKhau, HoTen, Email, SoDienThoai, GioiTinh, TrangThai)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, e.getMaNhanVien());
+            ps.setString(2, e.getMaVaiTro());
+            ps.setString(3, e.getTenDangNhap());
+            ps.setString(4, e.getMatKhau());
+            ps.setString(5, e.getHoTen());
+            ps.setString(6, e.getEmail());
+            ps.setString(7, e.getSoDienThoai());
+            ps.setString(8, e.getGioiTinh());
+            ps.setString(9, e.getTrangThai());
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     // Mapping dữ liệu
@@ -226,6 +248,27 @@ public class EmployeeRepository {
 
         return e;
 
+    }
+    public boolean existsById(String maNhanVien) {
+
+        String sql = "SELECT 1 FROM NHAN_VIEN WHERE MaNhanVien = ?";
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, maNhanVien);
+
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }

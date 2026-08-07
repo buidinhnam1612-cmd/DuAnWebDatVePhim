@@ -41,6 +41,10 @@ public class ReportController extends HttpServlet {
         double doanhThu =
                 reportService.getTotalRevenue();
 
+        // Tổng doanh thu hôm nay
+        double doanhThuHomNay =
+                reportService.getTodayRevenue();
+
 
 
         // Tổng vé bán
@@ -97,6 +101,11 @@ public class ReportController extends HttpServlet {
                 doanhThu
         );
 
+        request.setAttribute(
+                "doanhThuHomNay",
+                doanhThuHomNay
+        );
+
 
         request.setAttribute(
                 "tongVe",
@@ -144,6 +153,7 @@ public class ReportController extends HttpServlet {
                 "seatOccupancy",
                 seatOccupancy
         );
+
 
 
 

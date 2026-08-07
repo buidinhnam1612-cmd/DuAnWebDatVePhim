@@ -73,29 +73,29 @@
 
                 <div class="menu-header">Kinh doanh & Thành viên</div>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
                         <i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý danh sách đặt vé
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
                         <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/user">
                         <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
                     </a>
                 </li>
 
                 <div class="menu-header">Hệ thống & Báo cáo</div>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/employee">
                         <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/report">
                         <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
                     </a>
                 </li>
