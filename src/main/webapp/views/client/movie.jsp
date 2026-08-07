@@ -3,7 +3,9 @@
 <jsp:include page="/views/common/header.jsp"/>
 <jsp:include page="/views/common/navbar.jsp"/>
 
+
 <section class="container py-5">
+
 
     <div class="text-center mb-5">
 
@@ -17,9 +19,11 @@
 
     </div>
 
+
+
     <div class="row g-4">
 
-        <!-- Avengers -->
+
         <div class="col-lg-3 col-md-6">
 
             <div class="movie-card shadow">
@@ -28,26 +32,31 @@
                      class="w-100"
                      alt="Movie">
 
+
                 <div class="card-body">
 
                     <h5 class="fw-bold">
                         Avengers Endgame
                     </h5>
 
+
                     <p class="text-muted">
                         Hành động • 181 phút
                     </p>
+
 
                     <span class="badge bg-danger">
                         Đang chiếu
                     </span>
 
-                    <a href="${pageContext.request.contextPath}/booking?maPhong=P01&maSuatChieu=SC01"
+
+                    <a href="#"
                        class="btn btn-warning w-100 mt-3">
 
                         Đặt vé ngay
 
                     </a>
+
 
                 </div>
 
@@ -55,7 +64,8 @@
 
         </div>
 
-        <!-- Conan -->
+
+
         <div class="col-lg-3 col-md-6">
 
             <div class="movie-card shadow">
@@ -64,21 +74,25 @@
                      class="w-100"
                      alt="Movie">
 
+
                 <div class="card-body">
 
                     <h5 class="fw-bold">
                         Conan Movie
                     </h5>
 
+
                     <p class="text-muted">
                         Trinh thám • 110 phút
                     </p>
+
 
                     <span class="badge bg-danger">
                         Đang chiếu
                     </span>
 
-                    <a href="${pageContext.request.contextPath}/booking?maPhong=P02&maSuatChieu=SC03"
+
+                    <a href="${pageContext.request.contextPath}/booking"
                        class="btn btn-warning w-100 mt-3">
 
                         Đặt vé ngay
@@ -91,9 +105,13 @@
 
         </div>
 
+
+
     </div>
 
+
 </section>
+
 
 <jsp:include page="/views/common/footer.jsp"/>
 <jsp:include page="/views/common/script.jsp"/>

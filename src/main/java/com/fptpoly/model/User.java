@@ -1,10 +1,5 @@
 package com.fptpoly.model;
 
-import java.time.LocalDate;
-
-public class User {
-
-    private String maNguoiDung;
 import java.sql.Date;
 
 public class User {
@@ -15,7 +10,6 @@ public class User {
     private String hoTen;
     private String email;
     private String soDienThoai;
-    private LocalDate ngaySinh;
     private Date ngaySinh;
     private String gioiTinh;
     private int diemTichLuy;
@@ -25,12 +19,6 @@ public class User {
     public User() {
     }
 
-    public String getMaNguoiDung() {
-        return maNguoiDung;
-    }
-
-    public void setMaNguoiDung(String maNguoiDung) {
-        this.maNguoiDung = maNguoiDung;
     public User(String maKhachHang, String tenDangNhap, String matKhau,
                 String hoTen, String email, String soDienThoai,
                 Date ngaySinh, String gioiTinh,
@@ -97,11 +85,6 @@ public class User {
         this.soDienThoai = soDienThoai;
     }
 
-    public LocalDate getNgaySinh() {
-        return ngaySinh;
-    }
-
-    public void setNgaySinh(LocalDate ngaySinh) {
     public Date getNgaySinh() {
         return ngaySinh;
     }

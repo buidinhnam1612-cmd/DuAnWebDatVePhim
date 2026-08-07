@@ -73,49 +73,6 @@ img{
 }
 
 
-.navbar{
-
-    background: rgba(17, 24, 39, 0.95) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
-
-}
-
-.navbar-brand{
-
-    font-size:30px;
-    font-weight:700;
-    color:#ffc107 !important;
-
-}
-
-.nav-link{
-
-    color:#d1d5db !important;
-    font-weight:500;
-    margin-left:12px;
-    transition:.3s;
-
-}
-
-.nav-link:hover{
-
-    color:#ffc107 !important;
-
-}
-
-.navbar .form-control{
-
-    background:#1f2937;
-    border:1px solid #374151;
-    color:#fff;
-
-}
-
-.navbar .form-control::placeholder{
-
 
 /* ==========================
    HERO

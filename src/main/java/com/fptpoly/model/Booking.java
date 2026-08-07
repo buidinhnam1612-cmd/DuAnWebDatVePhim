@@ -1,72 +1,11 @@
 package com.fptpoly.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Booking {
 
     private String maDatVe;
-
-    private String hoTen;
-
-    private String soDienThoai;
-
-    private String email;
-
-    private String tenPhim;
-
-    private LocalDate ngayChieu;
-
-    private LocalTime gioBatDau;
-
-    private BigDecimal tongTien;
-
-    private String trangThai;
-
-    private LocalDateTime thoiGianDat;
-
-    private boolean allowCancel;
-
-    public Booking() {
-    }
-
-    public String getMaDatVe() {
-        return maDatVe;
-    }
-
-    public void setMaDatVe(String maDatVe) {
-        this.maDatVe = maDatVe;
-    }
-
-    public String getHoTen() {
-        return hoTen;
-    }
-
-    public void setHoTen(String hoTen) {
-        this.hoTen = hoTen;
-    }
-
-    public String getSoDienThoai() {
-        return soDienThoai;
-    }
-
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    private LocalDateTime thoiGianDat;
-    private double tongTien;
     private Timestamp thoiGianDat;
     private BigDecimal tongTien;
     private String trangThai;
@@ -90,14 +29,6 @@ public class Booking {
     public Booking() {
     }
 
-    public Booking(String maDatVe,
-                   LocalDateTime thoiGianDat,
-                   double tongTien,
-                   String trangThai,
-                   String maKhachHang,
-                   String maNhanVien,
-                   String maVoucher) {
-
     public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
                    String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
         this.maDatVe = maDatVe;
@@ -117,19 +48,6 @@ public class Booking {
         this.maDatVe = maDatVe;
     }
 
-    public LocalDateTime getThoiGianDat() {
-        return thoiGianDat;
-    }
-
-    public void setThoiGianDat(LocalDateTime thoiGianDat) {
-        this.thoiGianDat = thoiGianDat;
-    }
-
-    public double getTongTien() {
-        return tongTien;
-    }
-
-    public void setTongTien(double tongTien) {
     public Timestamp getThoiGianDat() {
         return thoiGianDat;
     }
@@ -193,52 +111,6 @@ public class Booking {
         this.tenPhim = tenPhim;
     }
 
-    public LocalDate getNgayChieu() {
-        return ngayChieu;
-    }
-
-    public void setNgayChieu(LocalDate ngayChieu) {
-        this.ngayChieu = ngayChieu;
-    }
-
-    public LocalTime getGioBatDau() {
-        return gioBatDau;
-    }
-
-    public void setGioBatDau(LocalTime gioBatDau) {
-        this.gioBatDau = gioBatDau;
-    }
-
-    public BigDecimal getTongTien() {
-        return tongTien;
-    }
-
-    public void setTongTien(BigDecimal tongTien) {
-        this.tongTien = tongTien;
-    }
-
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
-
-    public LocalDateTime getThoiGianDat() {
-        return thoiGianDat;
-    }
-
-    public void setThoiGianDat(LocalDateTime thoiGianDat) {
-        this.thoiGianDat = thoiGianDat;
-    }
-    public boolean isAllowCancel() {
-        return allowCancel;
-    }
-
-    public void setAllowCancel(boolean allowCancel) {
-        this.allowCancel = allowCancel;
-    }
     public String getTenRap() {
         return tenRap;
     }
