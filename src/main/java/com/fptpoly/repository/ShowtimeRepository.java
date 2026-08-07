@@ -85,5 +85,72 @@ public class ShowtimeRepository {
         }
         return false;
     }
+    // ================= TRA CỨU SUẤT CHIẾU (NHÂN VIÊN) =================
+
+    public List<Showtime> searchShowtime(String tenPhim) {
+
+        List<Showtime> list = new ArrayList<>();
+
+        String sql = """
+            
+                SELECT
+                sc.MaSuatChieu,
+                sc.NgayChieu,
+                sc.GioBatDau,
+                sc.GioKetThuc,
+            
+                p.TenPhim,
+            
+                pc.TenPhong,
+            
+                r.TenRap
+            
+            FROM SUAT_CHIEU sc
+            
+            INNER JOIN PHIM p
+            ON sc.MaPhim = p.MaPhim
+            
+            INNER JOIN PHONG_CHIEU pc
+            ON sc.MaPhong = pc.MaPhong
+            
+            INNER JOIN RAP r
+            ON pc.MaRap = r.MaRap
+            
+            WHERE p.TenPhim LIKE ?
+            
+            ORDER BY sc.NgayChieu, sc.GioBatDau;
+            """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, "%" + tenPhim + "%");
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Showtime st = new Showtime();
+
+                st.setMaSuatChieu(rs.getString("MaSuatChieu"));
+                st.setNgayChieu(rs.getDate("NgayChieu").toLocalDate());
+                st.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
+                st.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
+
+                st.setTenPhim(rs.getString("TenPhim"));
+                st.setTenPhong(rs.getString("TenPhong"));
+                st.setTenRap(rs.getString("TenRap"));
+
+                list.add(st);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }
 
