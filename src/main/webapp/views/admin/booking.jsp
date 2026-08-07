@@ -7,152 +7,379 @@
 
     <meta charset="UTF-8">
 
-    <title>Đặt vé xem phim</title>
+    <title>Quản lý đặt vé</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <style>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            background:#eef2f7;
+        }
+
+        .booking-container{
+            width:96%;
+            margin:30px auto;
+            background:#fff;
+            padding:25px;
+            border-radius:12px;
+            box-shadow:0 5px 15px rgba(0,0,0,.08);
+        }
+
+        .booking-title{
+            text-align:center;
+            color:#d61f26;
+            font-size:30px;
+            margin-bottom:25px;
+        }
+
+        .booking-search-form{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:10px;
+            margin-bottom:25px;
+        }
+
+        .booking-search-input{
+            width:420px;
+            padding:10px 15px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            outline:none;
+            font-size:14px;
+            transition:.3s;
+        }
+
+        .booking-search-input:focus{
+            border-color:#d61f26;
+            box-shadow:0 0 5px rgba(214,31,38,.25);
+        }
+
+        .booking-search-button{
+            padding:10px 18px;
+            background:#d61f26;
+            color:#fff;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:.3s;
+        }
+
+        .booking-search-button:hover{
+            background:#b6171d;
+        }
+
+        .booking-table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        .booking-table th{
+            background:#d61f26;
+            color:#fff;
+            padding:12px;
+            font-size:14px;
+            white-space:nowrap;
+        }
+
+        .booking-table td{
+            padding:10px;
+            border-bottom:1px solid #e8e8e8;
+            text-align:center;
+            font-size:14px;
+            vertical-align:middle;
+            word-break:break-word;
+        }
+
+        .booking-table tr:nth-child(even){
+            background:#fafafa;
+        }
+
+        .booking-table tr:hover{
+            background:#f5f7fb;
+        }
+
+        .money-column{
+            text-align:right !important;
+            font-weight:bold;
+            color:#d61f26;
+            white-space:nowrap;
+        }
+
+        .booking-status-select{
+            width:140px;
+            padding:7px;
+            border:1px solid #ccc;
+            border-radius:5px;
+            outline:none;
+        }
+
+        .booking-update-button{
+            margin-top:8px;
+            width:100%;
+            padding:8px;
+            background:#28a745;
+            color:#fff;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:.3s;
+        }
+
+        .booking-update-button:hover{
+            background:#218838;
+        }
+
+        .status-paid{
+            display:inline-block;
+            background:#28a745;
+            color:#fff;
+            padding:5px 12px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:bold;
+        }
+
+        .status-wait{
+            display:inline-block;
+            background:#ffc107;
+            color:#000;
+            padding:5px 12px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:bold;
+        }
+
+        .status-cancel{
+            display:inline-block;
+            background:#dc3545;
+            color:#fff;
+            padding:5px 12px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:bold;
+        }
+
+        .booking-empty{
+            text-align:center;
+            padding:25px;
+            color:#777;
+            font-style:italic;
+        }
+
+    </style>
 
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="booking-container">
 
-    <div class="card shadow">
+    <h2 class="booking-title">
+        QUẢN LÝ DANH SÁCH ĐẶT VÉ
+    </h2>
 
-        <div class="card-header bg-primary text-white">
+    <form action="${pageContext.request.contextPath}/admin/booking"
+          method="get"
+          class="booking-search-form">
 
-            <h3>Đặt vé xem phim</h3>
+        <input type="hidden"
+               name="action"
+               value="search">
 
-        </div>
+        <input type="text"
+               name="keyword"
+               class="booking-search-input"
+               placeholder="Tìm theo mã vé, khách hàng, phim, rạp hoặc trạng thái">
 
-        <div class="card-body">
+        <button type="submit"
+                class="booking-search-button">
+            Tìm kiếm
+        </button>
 
-            <form action="${pageContext.request.contextPath}/booking"
-                  method="post">
+    </form>
 
-                <input type="hidden"
-                       name="maKhachHang"
-                       value="${sessionScope.user.maKhachHang}">
+    <table class="booking-table">
 
-                <input type="hidden"
-                       name="maSuatChieu"
-                       value="${maSuatChieu}">
+        <tr>
 
-                <input type="hidden"
-                       id="seatIds"
-                       name="seatIds">
+            <th>Mã vé</th>
 
-                <input type="hidden"
-                       id="tongTien"
-                       name="tongTien">
+            <th>Khách hàng</th>
 
-                <h5>Số ghế lấy được : ${seatList.size()}</h5>
+            <th>Phim</th>
 
-                <div class="mb-4">
+            <th>Rạp</th>
 
-                    <c:forEach var="seat" items="${seatList}">
+            <th>Phòng</th>
 
-                        <button
-                                type="button"
-                                class="btn btn-outline-secondary m-1 seat-btn"
-                                data-id="${seat.maGhe}">
+            <th>Ghế</th>
 
-                            ${seat.hangGhe}${seat.soGhe}
+            <th>Ngày chiếu</th>
 
-                        </button>
+            <th>Giờ</th>
 
-                    </c:forEach>
+            <th>Hình thức</th>
 
-                </div>
+            <th>Tổng tiền</th>
 
-                <div class="alert alert-info">
+            <th>Trạng thái</th>
 
-                    Tổng tiền:
-                    <strong id="totalPrice">
-                        0
-                    </strong>
-                    VNĐ
+            <th>Thao tác</th>
 
-                </div>
+        </tr>
+        <%
 
-                <button class="btn btn-success">
+        if (bookingList != null && !bookingList.isEmpty()) {
 
-                    Thanh toán
+            for (Booking b : bookingList) {
 
-                </button>
+        %>
 
-            </form>
+        <tr>
 
-        </div>
+            <td>
+                <%= b.getMaDatVe() %>
+            </td>
 
-    </div>
+            <td>
+                <%= b.getTenKhachHang() %>
+            </td>
 
-</div>
+            <td>
+                <%= b.getTenPhim() %>
+            </td>
 
-<script>
+            <td>
+                <%= b.getTenRap() %>
+            </td>
 
-    const seatButtons =
-        document.querySelectorAll(".seat-btn");
+            <td>
+                <%= b.getTenPhong() %>
+            </td>
 
-    const seatIds =
-        document.getElementById("seatIds");
+            <td>
+                <%= b.getDanhSachGhe() %>
+            </td>
 
-    const tongTien =
-        document.getElementById("tongTien");
+            <td>
+                <%= b.getNgayChieu() %>
+            </td>
 
-    const totalPrice =
-        document.getElementById("totalPrice");
+            <td>
+                <%= b.getGioBatDau() %>
+            </td>
 
-    const selected = [];
+            <td>
+                <%= b.getHinhThucDat() %>
+            </td>
 
-    const PRICE = 110000;
+            <td class="money-column">
+                <%= String.format("%,.0f", b.getTongTien()) %> VNĐ
+            </td>
 
-    seatButtons.forEach(button => {
+                <%
+                String statusClass = "";
 
-        button.addEventListener("click", function () {
+                if ("Đã thanh toán".equals(b.getTrangThai())) {
+                    statusClass = "status-paid";
+                } else if ("Chờ thanh toán".equals(b.getTrangThai())) {
+                    statusClass = "status-wait";
+                } else {
+                    statusClass = "status-cancel";
+                }
+                %>
 
-            const id =
-                this.dataset.id;
+                <td>
+                    <span class="<%= statusClass %>">
+                        <%= b.getTrangThai() %>
+                    </span>
+                </td>
 
-            if (selected.includes(id)) {
+            <td>
 
-                selected.splice(
-                    selected.indexOf(id),
-                    1
-                );
+                <form action="${pageContext.request.contextPath}/admin/booking"
+                      method="post">
 
-                this.classList.remove("btn-success");
+                    <input type="hidden"
+                           name="action"
+                           value="updateStatus">
 
-                this.classList.add("btn-outline-secondary");
+                    <input type="hidden"
+                           name="maDatVe"
+                           value="<%= b.getMaDatVe() %>">
 
-            } else {
+                    <select name="trangThai"
+                            class="booking-status-select">
 
-                selected.push(id);
+                        <option value="Chờ thanh toán"
+                            <%= "Chờ thanh toán".equals(b.getTrangThai()) ? "selected" : "" %>>
+                            Chờ thanh toán
+                        </option>
 
-                this.classList.remove("btn-outline-secondary");
+                        <option value="Đã thanh toán"
+                            <%= "Đã thanh toán".equals(b.getTrangThai()) ? "selected" : "" %>>
+                            Đã thanh toán
+                        </option>
 
-                this.classList.add("btn-success");
+                        <option value="Đã hủy"
+                            <%= "Đã hủy".equals(b.getTrangThai()) ? "selected" : "" %>>
+                            Đã hủy
+                        </option>
+
+                    </select>
+
+                    <br><br>
+
+                    <button type="submit"
+                            class="booking-update-button">
+
+                        Cập nhật
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        <%
 
             }
 
-            seatIds.value =
-                selected.join(",");
+        } else {
 
-            tongTien.value =
-                selected.length * PRICE;
+        %>
 
-            totalPrice.innerText =
-                (selected.length * PRICE).toLocaleString("vi-VN");
+        <tr>
 
-        });
+            <td colspan="12"
+                class="booking-empty">
 
-    });
+                Không có dữ liệu đặt vé.
 
-</script>
+            </td>
+
+        </tr>
+
+        <%
+
+        }
+
+        %>
+    </table>
+
+</div>
 
 </body>
+
 </html>

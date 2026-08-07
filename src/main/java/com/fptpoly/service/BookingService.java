@@ -8,6 +8,9 @@ import com.fptpoly.repository.BookingRepository;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import com.fptpoly.model.Booking;
+import com.fptpoly.repository.BookingRepository;
+
 import java.util.List;
 
 public class BookingService {
@@ -251,6 +254,58 @@ public class BookingService {
 
         }
 
+
+    public BookingService() {
+        bookingRepository = new BookingRepository();
+    }
+
+    /**
+     * Lấy toàn bộ danh sách đặt vé
+     */
+    public List<Booking> getAllBookings() {
+        return bookingRepository.getAll();
+    }
+
+    /**
+     * Lấy thông tin đặt vé theo mã
+     */
+    public Booking getBookingById(String maDatVe) {
+        return bookingRepository.getById(maDatVe);
+    }
+
+    /**
+     * Tìm kiếm theo mã vé, khách hàng, phim, rạp hoặc trạng thái
+     */
+    public List<Booking> searchBooking(String keyword) {
+        return bookingRepository.search(keyword);
+    }
+
+    /**
+     * Cập nhật trạng thái đặt vé
+     */
+    public boolean updateStatus(String maDatVe, String trangThai) {
+        return bookingRepository.updateStatus(maDatVe, trangThai);
+    }
+
+    /**
+     * Đếm tổng số đơn đặt vé
+     */
+    public int countBooking() {
+        return bookingRepository.countBooking();
+    }
+
+    /**
+     * Đếm số đơn theo trạng thái
+     */
+    public int countByStatus(String trangThai) {
+        return bookingRepository.countByStatus(trangThai);
+    }
+
+    /**
+     * Tính tổng doanh thu các vé đã thanh toán
+     */
+    public double getTotalRevenue() {
+        return bookingRepository.getTotalRevenue();
     }
 
 }

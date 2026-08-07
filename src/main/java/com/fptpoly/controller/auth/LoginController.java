@@ -42,9 +42,24 @@ public class LoginController extends HttpServlet {
             session.setAttribute("userName", "Admin");
             session.setAttribute("email", email);
 
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
 
-        } else {
+        } // Demo đăng nhập NHÂN VIÊN
+        else if ("nhanvien@gmail.com".equals(email)
+                && "123456".equals(password)) {
+
+            HttpSession session = request.getSession();
+
+            session.setAttribute("userName", "Nhân viên");
+            session.setAttribute("email", email);
+            session.setAttribute("role", "EMPLOYEE");
+
+            response.sendRedirect(
+                    request.getContextPath() + "/employee/dashboard"
+            );
+
+        }
+        else {
 
             request.setAttribute("error",
                     "Email hoặc mật khẩu không đúng!");
@@ -53,7 +68,6 @@ public class LoginController extends HttpServlet {
                     .forward(request, response);
 
         }
-
     }
 
 }

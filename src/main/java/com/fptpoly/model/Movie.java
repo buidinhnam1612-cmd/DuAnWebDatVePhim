@@ -1,45 +1,23 @@
 package com.fptpoly.model;
 
 import java.time.LocalDate;
+import java.sql.Date;
 
 public class Movie {
-
-
     private String maPhim;
-
     private String tenPhim;
-
     private String moTa;
-
     private int thoiLuong;
-
     private String trailer;
-
     private String poster;
-
-    private LocalDate ngayKhoiChieu;
-
+    private Date ngayKhoiChieu;
     private String doTuoiGiaiTri;
-
     private String trangThai;
 
-
-
     public Movie() {
-
     }
 
-
-    public Movie(String maPhim,
-                 String tenPhim,
-                 String moTa,
-                 int thoiLuong,
-                 String trailer,
-                 String poster,
-                 LocalDate ngayKhoiChieu,
-                 String doTuoiGiaiTri,
-                 String trangThai) {
-
+    public Movie(String maPhim, String tenPhim, String moTa, int thoiLuong, String trailer, String poster, Date ngayKhoiChieu, String doTuoiGiaiTri, String trangThai) {
         this.maPhim = maPhim;
         this.tenPhim = tenPhim;
         this.moTa = moTa;
@@ -50,8 +28,6 @@ public class Movie {
         this.doTuoiGiaiTri = doTuoiGiaiTri;
         this.trangThai = trangThai;
     }
-
-
 
     public String getMaPhim() {
         return maPhim;
@@ -61,7 +37,6 @@ public class Movie {
         this.maPhim = maPhim;
     }
 
-
     public String getTenPhim() {
         return tenPhim;
     }
@@ -69,7 +44,6 @@ public class Movie {
     public void setTenPhim(String tenPhim) {
         this.tenPhim = tenPhim;
     }
-
 
     public String getMoTa() {
         return moTa;
@@ -79,7 +53,6 @@ public class Movie {
         this.moTa = moTa;
     }
 
-
     public int getThoiLuong() {
         return thoiLuong;
     }
@@ -87,7 +60,6 @@ public class Movie {
     public void setThoiLuong(int thoiLuong) {
         this.thoiLuong = thoiLuong;
     }
-
 
     public String getTrailer() {
         return trailer;
@@ -97,7 +69,6 @@ public class Movie {
         this.trailer = trailer;
     }
 
-
     public String getPoster() {
         return poster;
     }
@@ -106,15 +77,13 @@ public class Movie {
         this.poster = poster;
     }
 
-
-    public LocalDate getNgayKhoiChieu() {
+    public Date getNgayKhoiChieu() {
         return ngayKhoiChieu;
     }
 
-    public void setNgayKhoiChieu(LocalDate ngayKhoiChieu) {
+    public void setNgayKhoiChieu(Date ngayKhoiChieu) {
         this.ngayKhoiChieu = ngayKhoiChieu;
     }
-
 
     public String getDoTuoiGiaiTri() {
         return doTuoiGiaiTri;
@@ -124,7 +93,6 @@ public class Movie {
         this.doTuoiGiaiTri = doTuoiGiaiTri;
     }
 
-
     public String getTrangThai() {
         return trangThai;
     }
@@ -132,5 +100,4 @@ public class Movie {
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
-
 }
