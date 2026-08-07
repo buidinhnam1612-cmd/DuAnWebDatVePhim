@@ -35,5 +35,10 @@ public class ShowtimeService {
             return "Thất bại: Lỗi hệ thống khi lưu vào cơ sở dữ liệu.";
         }
     }
+    public List<Showtime> searchShowtime(String tenPhim) {
+
+        return showtimeRepository.searchShowtime(tenPhim);
+
+    }
 }
 

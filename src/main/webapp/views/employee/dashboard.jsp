@@ -174,15 +174,23 @@
 <span class="font-title-md text-sm font-semibold">Dashboard</span>
 </a>
 <!-- Inactive States -->
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
+<a class="flex items-center gap-stack-md py-3 px-4
+text-on-surface-variant
+hover:bg-surface-container-highest/50
+hover:text-on-surface
+transition-all duration-300 rounded-lg group"
+href="${pageContext.request.contextPath}/employee/showtime">
 <span class="material-symbols-outlined group-active:scale-95 duration-150">movie</span>
 <span class="font-body-md text-sm">Tra cứu xuất chiếu</span>
 </a>
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
-<span class="material-symbols-outlined group-active:scale-95 duration-150">event_seat</span>
-<span class="font-body-md text-sm">Quản lý đặt vé</span>
+
+<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group"
+   href="${pageContext.request.contextPath}/employee/booking-list">
+    <span class="material-symbols-outlined group-active:scale-95 duration-150">event_seat</span>
+    <span class="font-body-md text-sm">Quản lý danh sách đặt vé</span>
 </a>
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
+<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group"
+    href="${pageContext.request.contextPath}/employee/confirm-booking">
 <span class="material-symbols-outlined group-active:scale-95 duration-150">check_circle</span>
 <span class="font-body-md text-sm">Xác nhận</span>
 </a>
@@ -190,15 +198,18 @@
 <span class="material-symbols-outlined group-active:scale-95 duration-150">fastfood</span>
 <span class="font-body-md text-sm">F&amp;B</span>
 </a>
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
+<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group"
+href="${pageContext.request.contextPath}/employee/cancel-booking">
 <span class="material-symbols-outlined group-active:scale-95 duration-150">cancel</span>
 <span class="font-body-md text-sm">Hủy vé</span>
 </a>
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
+<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group"
+href="${pageContext.request.contextPath}/employee/comment-management">
 <span class="material-symbols-outlined group-active:scale-95 duration-150">rate_review</span>
 <span class="font-body-md text-sm">Đánh giá</span>
 </a>
-<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group" href="#">
+<a class="flex items-center gap-stack-md py-3 px-4 text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-all duration-300 rounded-lg group"
+    href="${pageContext.request.contextPath}/employee/report">
 <span class="material-symbols-outlined group-active:scale-95 duration-150">bar_chart</span>
 <span class="font-body-md text-sm">Báo cáo</span>
 </a>
