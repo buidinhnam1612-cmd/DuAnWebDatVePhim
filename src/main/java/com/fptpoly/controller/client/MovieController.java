@@ -6,24 +6,20 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
-
 @WebServlet("/movies")
 public class MovieController extends HttpServlet {
 
-
     @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
 
+        request.setAttribute("maPhong", "P01");
+        request.setAttribute("maSuatChieu", "SC01");
 
-        request.getRequestDispatcher(
-                "/views/client/movie.jsp"
-        ).forward(request, response);
-
+        request.getRequestDispatcher("/views/client/movie.jsp")
+                .forward(request, response);
 
     }
-
 
 }
