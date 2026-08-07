@@ -1,11 +1,14 @@
 package com.fptpoly.model;
 
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Booking {
 
     private String maDatVe;
+    private LocalDateTime thoiGianDat;
+    private double tongTien;
     private Timestamp thoiGianDat;
     private BigDecimal tongTien;
     private String trangThai;
@@ -29,6 +32,14 @@ public class Booking {
     public Booking() {
     }
 
+    public Booking(String maDatVe,
+                   LocalDateTime thoiGianDat,
+                   double tongTien,
+                   String trangThai,
+                   String maKhachHang,
+                   String maNhanVien,
+                   String maVoucher) {
+
     public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
                    String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
         this.maDatVe = maDatVe;
@@ -48,6 +59,19 @@ public class Booking {
         this.maDatVe = maDatVe;
     }
 
+    public LocalDateTime getThoiGianDat() {
+        return thoiGianDat;
+    }
+
+    public void setThoiGianDat(LocalDateTime thoiGianDat) {
+        this.thoiGianDat = thoiGianDat;
+    }
+
+    public double getTongTien() {
+        return tongTien;
+    }
+
+    public void setTongTien(double tongTien) {
     public Timestamp getThoiGianDat() {
         return thoiGianDat;
     }
