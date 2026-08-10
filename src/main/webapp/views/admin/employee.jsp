@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List"%>
 <%@ page import="com.fptpoly.model.Employee"%>
+<%@ page import="com.fptpoly.model.Permission"%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,48 +11,85 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .sidebar { min-height: 100vh; background-color: #1e293b; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
-        .sidebar .nav-link { color: #94a3b8; border-radius: 8px; margin: 2px 0; padding: 10px 12px; font-size: 14px; transition: all 0.2s; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #334155; color: #f8fafc !important; }
-        .sidebar .nav-link.active { border-left: 4px solid #ef4444; border-radius: 0 8px 8px 0; background-color: #334155; }
-        .menu-header { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-top: 15px; margin-bottom: 5px; padding-left: 10px; }
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --accent-red: #ef4444;
+            --bg-main: #f1f5f9;
+        }
+        body { background-color: var(--bg-main); font-family: 'Segoe UI', system-ui, sans-serif; }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            position: sticky; top: 0;
+        }
+        .sidebar-brand { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-brand .brand-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+        .sidebar .nav-link {
+            color: #94a3b8; border-radius: 8px;
+            margin: 1px 8px; padding: 9px 14px;
+            font-size: 13px; font-weight: 500;
+            transition: all 0.2s ease; display: flex; align-items: center;
+        }
+        .sidebar .nav-link:hover { background-color: var(--sidebar-hover); color: #e2e8f0 !important; }
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, rgba(239,68,68,0.15), transparent);
+            color: #f8fafc !important; border-left: 3px solid var(--accent-red);
+            border-radius: 0 8px 8px 0; margin-left: 5px;
+        }
+        .sidebar .nav-link i { width: 20px; text-align: center; font-size: 15px; }
+        .menu-header {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+            color: #475569; font-weight: 700;
+            margin-top: 18px; margin-bottom: 6px; padding-left: 22px;
+        }
         .content-card { border: none; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .table th { background-color: #f8fafc; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 700; }
         .table td { vertical-align: middle; font-size: 14px; }
         .btn-action { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+
+        /* Permission section styles */
+        .perm-section {
+            background: white; border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .perm-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white; padding: 18px 22px;
+        }
+        .perm-group-title {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #64748b; margin-top: 16px; margin-bottom: 8px;
+            padding-left: 4px;
+        }
+        .perm-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+        .perm-item:hover { background: #f8fafc; }
+        .perm-item input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: #22c55e; cursor: pointer;
+        }
+        .perm-item label { cursor: pointer; font-size: 14px; flex: 1; }
+        .perm-item .perm-desc { font-size: 12px; color: #94a3b8; }
     </style>
 </head>
 <body>
+<% request.setAttribute("currentPage", "employee"); %>
 
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 sidebar p-3 text-white">
-            <div class="d-flex align-items-center mb-3 px-2">
-                <i class="bi bi-film text-danger fs-3 me-2"></i>
-                <span class="fs-5 fw-bold text-uppercase tracking-wider">FPT Cinema</span>
-            </div>
-            <hr class="text-secondary my-2">
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/dashboard"><i class="bi bi-grid-1x2-fill me-2"></i> Tổng quan Dashboard</a></li>
-                <div class="menu-header">Hạ tầng & Danh mục</div>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/theater"><i class="bi bi-building me-2"></i> 1. Quản lý rạp phim</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/genre"><i class="bi bi-tags me-2"></i> 2. Quản lý thể loại phim</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/room"><i class="bi bi-door-open me-2"></i> 3. Quản lý phòng phim</a></li>
-                <div class="menu-header">Phim & Lịch chiếu</div>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/movie"><i class="bi bi-camera-reels me-2"></i> 4. Quản lý phim</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/showtime"><i class="bi bi-calendar3 me-2"></i> 5. Quản lý suất chiếu</a></li>
-                <div class="menu-header">Kinh doanh & Thành viên</div>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/booking"><i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý danh sách đặt vé</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/booking"><i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/user"><i class="bi bi-people me-2"></i> 8. Quản lý người dùng</a></li>
-                <div class="menu-header">Hệ thống & Báo cáo</div>
-                <li class="nav-item"><a class="nav-link active" href="${pageContext.request.contextPath}/admin/employee"><i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền</a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/report"><i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo</a></li>
-                <hr class="text-secondary my-3">
-                <li class="nav-item"><a class="nav-link text-danger fw-bold" href="${pageContext.request.contextPath}/home"><i class="bi bi-box-arrow-left me-2"></i> Trở về Trang chủ Website</a></li>
-            </ul>
+        <div class="col-md-3 col-lg-2 sidebar p-0">
+            <jsp:include page="/views/common/admin-sidebar.jsp" />
         </div>
 
         <!-- MAIN CONTENT -->
@@ -178,7 +216,7 @@
                                     <th>SĐT</th>
                                     <th class="text-center">Vai trò</th>
                                     <th class="text-center">Trạng thái</th>
-                                    <th class="text-center" style="min-width: 320px;">Thao tác</th>
+                                    <th class="text-center" style="min-width: 400px;">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -217,6 +255,13 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                                 </select>
                                                 <button type="submit" name="action" value="updateStatus" class="btn btn-sm btn-outline-success btn-action" title="Cập nhật TT"><i class="bi bi-check2-circle"></i></button>
                                             </form>
+
+                                            <% if (!"VT01".equals(e.getMaVaiTro())) { %>
+                                            <a href="${pageContext.request.contextPath}/admin/employee?editPermission=<%=e.getMaNhanVien()%>"
+                                               class="btn btn-sm btn-outline-warning btn-action" title="Phân quyền">
+                                                <i class="bi bi-key"></i> Phân quyền
+                                            </a>
+                                            <% } %>
                                         </div>
                                     </td>
                                 </tr>
@@ -238,6 +283,69 @@ if(employeeList!=null && !employeeList.isEmpty()){
                     </div>
                 </div>
             </div>
+
+            <!-- ==================== PHÂN QUYỀN CHO NHÂN VIÊN ==================== -->
+<%
+    Employee editEmployee = (Employee) request.getAttribute("editEmployee");
+    List<String> empPermissions = (List<String>) request.getAttribute("empPermissions");
+    List<Permission> allPermissions = (List<Permission>) request.getAttribute("allPermissions");
+
+    if (editEmployee != null && allPermissions != null) {
+%>
+            <div class="perm-section mt-4">
+                <div class="perm-header">
+                    <h5 class="mb-1" style="font-weight: 700;">
+                        <i class="bi bi-key-fill me-2"></i>Phân Quyền Cho Nhân Viên: <%= editEmployee.getHoTen() %>
+                    </h5>
+                    <p class="mb-0" style="font-size: 13px; color: #94a3b8;">
+                        Mã NV: <strong><%= editEmployee.getMaNhanVien() %></strong> —
+                        Vai trò: <strong><%= editEmployee.getTenVaiTro() != null ? editEmployee.getTenVaiTro() : editEmployee.getChucVu() %></strong>
+                    </p>
+                </div>
+                <div class="p-4">
+                    <form action="${pageContext.request.contextPath}/admin/employee" method="post">
+                        <input type="hidden" name="action" value="updatePermissions">
+                        <input type="hidden" name="maNhanVien" value="<%= editEmployee.getMaNhanVien() %>">
+
+                        <%
+                            String currentGroup = "";
+                            for (Permission p : allPermissions) {
+                                String group = p.getNhomQuyen() != null ? p.getNhomQuyen() : "Khác";
+                                if (!group.equals(currentGroup)) {
+                                    currentGroup = group;
+                        %>
+                        <div class="perm-group-title"><%= group %></div>
+                        <%
+                                }
+                                boolean checked = (empPermissions != null && empPermissions.contains(p.getMaQuyen()));
+                        %>
+                        <div class="perm-item">
+                            <input type="checkbox" name="permissions" value="<%= p.getMaQuyen() %>"
+                                   id="perm_<%= p.getMaQuyen() %>"
+                                   <%= checked ? "checked" : "" %>>
+                            <label for="perm_<%= p.getMaQuyen() %>">
+                                <strong><%= p.getTenQuyen() %></strong>
+                                <br><span class="perm-desc"><%= p.getMoTa() != null ? p.getMoTa() : "" %></span>
+                            </label>
+                        </div>
+                        <%
+                            }
+                        %>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg me-1"></i> Lưu Quyền
+                            </button>
+                            <a href="${pageContext.request.contextPath}/admin/employee" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-1"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+<%
+    }
+%>
 
         </div>
     </div>

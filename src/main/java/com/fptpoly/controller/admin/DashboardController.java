@@ -1,6 +1,5 @@
 package com.fptpoly.controller.admin;
 
-
 import com.fptpoly.service.GenreService;
 import com.fptpoly.service.TheaterService;
 import jakarta.servlet.ServletException;
@@ -22,17 +21,17 @@ public class DashboardController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
-        // 1. KIỂM TRA BẢO MẬT: Chỉ cho phép admin@gmail.com truy cập
+        // Không cần kiểm tra đăng nhập ở đây nữa vì Filter đã làm
         HttpSession session = req.getSession();
-        String email = (String) session.getAttribute("email");
 
-        if (email == null || !"admin@gmail.com".equals(email)) {
-            req.setAttribute("error", "Bạn không có quyền truy cập vào vùng quản trị!");
-            req.getRequestDispatcher("/views/auth/login.jsp").forward(req, resp);
-            return;
+        // Kiểm tra thông báo lỗi từ AuthorizationFilter
+        String error = (String) session.getAttribute("error");
+        if (error != null) {
+            req.setAttribute("error", error);
+            session.removeAttribute("error");
         }
 
-        // 2. TÍNH TOÁN SỐ LIỆU THỰC TẾ TỪ DATABASE
+        // TÍNH TOÁN SỐ LIỆU THỰC TẾ TỪ DATABASE
         int totalTheaters = 0;
         int totalGenres = 0;
         try {
@@ -42,20 +41,20 @@ public class DashboardController extends HttpServlet {
             e.printStackTrace();
         }
 
-        // 3. ĐẨY DỮ LIỆU SANG JSP (Bao gồm dữ liệu thật và dữ liệu giả lập cho các tính năng chưa viết)
+        // ĐẨY DỮ LIỆU SANG JSP
         req.setAttribute("totalTheaters", totalTheaters);
         req.setAttribute("totalGenres", totalGenres);
 
         // Demo số liệu giả lập khớp với các chức năng trong ảnh bạn gửi
-        req.setAttribute("totalRooms", 24);         // Quản lý phòng phim
-        req.setAttribute("totalMovies", 15);        // Quản lý phim
-        req.setAttribute("totalShowtimes", 48);     // Quản lý suất chiếu
-        req.setAttribute("totalTickets", 342);      // Quản lý danh sách đặt vé / Xác nhận trạng thái
-        req.setAttribute("totalUsers", 1250);       // Quản lý người dùng
-        req.setAttribute("totalStaffs", 18);        // Quản lý & Phân quyền nhân viên
-        req.setAttribute("totalRevenue", "154,250,000đ"); // Thống kê doanh thu
+        req.setAttribute("totalRooms", 24);
+        req.setAttribute("totalMovies", 15);
+        req.setAttribute("totalShowtimes", 48);
+        req.setAttribute("totalTickets", 342);
+        req.setAttribute("totalUsers", 1250);
+        req.setAttribute("totalStaffs", 18);
+        req.setAttribute("totalRevenue", "154,250,000đ");
 
-        // 4. CHUYỂN TIẾP SANG GIAO DIỆN
+        // CHUYỂN TIẾP SANG GIAO DIỆN
         req.getRequestDispatcher("/views/admin/dashboard.jsp").forward(req, resp);
     }
 
@@ -64,4 +63,3 @@ public class DashboardController extends HttpServlet {
         doGet(req, resp);
     }
 }
-

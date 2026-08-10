@@ -45,6 +45,53 @@ public class EmployeeService {
     }
 
     /**
+     * Đăng nhập Nhân viên / Admin (Tích hợp tra cứu DB + tài khoản Demo sẵn có)
+     */
+    public Employee login(String loginInput, String password) {
+        if (loginInput == null || password == null) {
+            return null;
+        }
+
+        String input = loginInput.trim();
+        Employee emp = employeeRepository.findByLoginInputAndPassword(input, password);
+
+        if (emp != null) {
+            return emp;
+        }
+
+        // Hỗ trợ Tài Khoản Demo mặc định nếu chưa có dữ liệu trong SQL Server DB
+        if (("admin@gmail.com".equalsIgnoreCase(input) || "admin".equalsIgnoreCase(input))
+                && "123456".equals(password)) {
+            Employee admin = new Employee();
+            admin.setMaNhanVien("NV001");
+            admin.setTenDangNhap("admin");
+            admin.setHoTen("Quản Trị Viên (Admin)");
+            admin.setEmail("admin@gmail.com");
+            admin.setMaVaiTro("VT01");
+            admin.setChucVu("Admin");
+            admin.setTenVaiTro("Quản lý");
+            admin.setTrangThai("Hoạt động");
+            return admin;
+        }
+
+        if (("nhanvien@gmail.com".equalsIgnoreCase(input) || "nv01".equalsIgnoreCase(input))
+                && "123456".equals(password)) {
+            Employee staff = new Employee();
+            staff.setMaNhanVien("NV002");
+            staff.setTenDangNhap("nv01");
+            staff.setHoTen("Nhân Viên Bán Vé");
+            staff.setEmail("nhanvien@gmail.com");
+            staff.setMaVaiTro("VT02");
+            staff.setChucVu("Nhân viên");
+            staff.setTenVaiTro("Nhân viên");
+            staff.setTrangThai("Hoạt động");
+            return staff;
+        }
+
+        return null;
+    }
+
+    /**
      * Cập nhật vai trò
      */
     public boolean updateRole(String maNhanVien, String maVaiTro) {
@@ -85,8 +132,9 @@ public class EmployeeService {
         }
         return employeeRepository.insert(e);
     }
-    /*
-    Check trùng mã
+
+    /**
+     * Check trùng mã
      */
     public boolean existsEmployee(String maNhanVien) {
         return employeeRepository.existsById(maNhanVien);

@@ -68,6 +68,38 @@ public class EmployeeRepository {
         return null;
     }
 
+    // Đăng nhập nhân viên theo Tên đăng nhập hoặc Email và Mật khẩu
+    public Employee findByLoginInputAndPassword(String loginInput, String password) {
+        String sql = """
+                SELECT nv.*, vt.TenVaiTro
+                FROM NHAN_VIEN nv
+                INNER JOIN VAI_TRO vt
+                ON nv.MaVaiTro = vt.MaVaiTro
+                WHERE (nv.TenDangNhap = ? OR nv.Email = ?)
+                  AND nv.MatKhau = ?
+                """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, loginInput);
+            ps.setString(2, loginInput);
+            ps.setString(3, password);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapEmployee(rs);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     // Tìm kiếm
     public List<Employee> search(String keyword) {
 
@@ -104,24 +136,18 @@ public class EmployeeRepository {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-
                 list.add(mapEmployee(rs));
-
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
 
         return list;
-
     }
 
     // Đổi vai trò
-    public boolean updateRole(String maNhanVien,
-            String maVaiTro) {
+    public boolean updateRole(String maNhanVien, String maVaiTro) {
 
         String sql = """
                 UPDATE NHAN_VIEN
@@ -139,18 +165,14 @@ public class EmployeeRepository {
             return ps.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
 
         return false;
-
     }
 
     // Khóa / Mở khóa
-    public boolean updateStatus(String maNhanVien,
-            String trangThai) {
+    public boolean updateStatus(String maNhanVien, String trangThai) {
 
         String sql = """
                 UPDATE NHAN_VIEN
@@ -168,13 +190,10 @@ public class EmployeeRepository {
             return ps.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
 
         return false;
-
     }
 
     // Thêm mới nhân viên
@@ -204,51 +223,6 @@ public class EmployeeRepository {
         return false;
     }
 
-    // Mapping dữ liệu
-    private Employee mapEmployee(ResultSet rs)
-            throws SQLException {
-
-        Employee e = new Employee();
-
-        e.setMaNhanVien(rs.getString("MaNhanVien"));
-        String maVaiTro = rs.getString("MaVaiTro");
-
-        e.setMaVaiTro(maVaiTro);
-
-        if ("VT01".equals(maVaiTro)) {
-
-            e.setChucVu("Admin");
-
-        } else if ("VT02".equals(maVaiTro)) {
-
-            e.setChucVu("Nhân viên bán vé");
-
-        } else if ("VT03".equals(maVaiTro)) {
-
-            e.setChucVu("Nhân viên rạp");
-
-        } else {
-
-            e.setChucVu("Chưa phân quyền");
-
-        }
-        e.setMaNhanVien(rs.getString("MaNhanVien"));
-        e.setMaVaiTro(rs.getString("MaVaiTro"));
-        e.setTenVaiTro(rs.getString("TenVaiTro"));
-        e.setTenDangNhap(rs.getString("TenDangNhap"));
-        e.setMatKhau(rs.getString("MatKhau"));
-        e.setHoTen(rs.getString("HoTen"));
-        e.setEmail(rs.getString("Email"));
-        e.setSoDienThoai(rs.getString("SoDienThoai"));
-        e.setNgaySinh(rs.getDate("NgaySinh"));
-        e.setGioiTinh(rs.getString("GioiTinh"));
-        e.setChucVu(rs.getString("ChucVu"));
-        e.setNgayVaoLam(rs.getDate("NgayVaoLam"));
-        e.setTrangThai(rs.getString("TrangThai"));
-
-        return e;
-
-    }
     public boolean existsById(String maNhanVien) {
 
         String sql = "SELECT 1 FROM NHAN_VIEN WHERE MaNhanVien = ?";
@@ -269,6 +243,39 @@ public class EmployeeRepository {
         }
 
         return false;
+    }
+
+    // Mapping dữ liệu
+    private Employee mapEmployee(ResultSet rs) throws SQLException {
+
+        Employee e = new Employee();
+
+        e.setMaNhanVien(rs.getString("MaNhanVien"));
+        String maVaiTro = rs.getString("MaVaiTro");
+        e.setMaVaiTro(maVaiTro);
+
+        if ("VT01".equals(maVaiTro)) {
+            e.setChucVu("Admin");
+        } else if ("VT02".equals(maVaiTro)) {
+            e.setChucVu("Nhân viên bán vé");
+        } else if ("VT03".equals(maVaiTro)) {
+            e.setChucVu("Nhân viên rạp");
+        } else {
+            e.setChucVu("Chưa phân quyền");
+        }
+
+        try { e.setTenVaiTro(rs.getString("TenVaiTro")); } catch (Exception ex) {}
+        try { e.setTenDangNhap(rs.getString("TenDangNhap")); } catch (Exception ex) {}
+        try { e.setMatKhau(rs.getString("MatKhau")); } catch (Exception ex) {}
+        try { e.setHoTen(rs.getString("HoTen")); } catch (Exception ex) {}
+        try { e.setEmail(rs.getString("Email")); } catch (Exception ex) {}
+        try { e.setSoDienThoai(rs.getString("SoDienThoai")); } catch (Exception ex) {}
+        try { e.setNgaySinh(rs.getDate("NgaySinh")); } catch (Exception ex) {}
+        try { e.setGioiTinh(rs.getString("GioiTinh")); } catch (Exception ex) {}
+        try { e.setNgayVaoLam(rs.getDate("NgayVaoLam")); } catch (Exception ex) {}
+        try { e.setTrangThai(rs.getString("TrangThai")); } catch (Exception ex) {}
+
+        return e;
     }
 
 }

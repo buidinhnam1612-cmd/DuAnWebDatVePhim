@@ -286,97 +286,24 @@
     </style>
 </head>
 <body>
+<% request.setAttribute("currentPage", "dashboard"); %>
 
 <div class="container-fluid p-0">
     <div class="row g-0">
         <!-- ==================== SIDEBAR MENU ==================== -->
         <div class="col-md-3 col-lg-2 sidebar p-0">
-            <div class="sidebar-brand d-flex align-items-center gap-3">
-                <div class="brand-icon"><i class="bi bi-film"></i></div>
-                <div>
-                    <div class="text-white fw-bold" style="font-size: 15px; letter-spacing: 0.5px;">FPT CINEMA</div>
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Admin Panel</div>
-                </div>
-            </div>
-
-            <div class="p-2">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="${pageContext.request.contextPath}/admin/dashboard">
-                            <i class="bi bi-grid-1x2-fill me-2"></i> Tổng quan Dashboard
-                        </a>
-                    </li>
-
-                    <div class="menu-header">Hạ tầng & Danh mục</div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/theater">
-                            <i class="bi bi-building me-2"></i> 1. Quản lý rạp phim
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/genre">
-                            <i class="bi bi-tags me-2"></i> 2. Quản lý thể loại phim
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/room">
-                            <i class="bi bi-door-open me-2"></i> 3. Quản lý phòng phim
-                        </a>
-                    </li>
-
-                    <div class="menu-header">Phim & Lịch chiếu</div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/movie">
-                            <i class="bi bi-camera-reels me-2"></i> 4. Quản lý phim
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/showtime">
-                            <i class="bi bi-calendar3 me-2"></i> 5. Quản lý suất chiếu
-                        </a>
-                    </li>
-
-                    <div class="menu-header">Kinh doanh & Thành viên</div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
-                            <i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý danh sách đặt vé
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
-                            <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/user">
-                            <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
-                        </a>
-                    </li>
-
-                    <div class="menu-header">Hệ thống & Báo cáo</div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/employee">
-                            <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/report">
-                            <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
-                        </a>
-                    </li>
-
-                    <li class="nav-item" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home" style="color: #f87171 !important;">
-                            <i class="bi bi-box-arrow-left me-2"></i> Trở về Trang chủ
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <jsp:include page="/views/common/admin-sidebar.jsp" />
         </div>
 
         <!-- ==================== MAIN CONTENT AREA ==================== -->
         <div class="col-md-9 ms-sm-auto col-lg-10 main-content">
 
+            <%-- Hiển thị thông báo lỗi (ví dụ: từ chối quyền truy cập) --%>
+            <% String dashError = (String) request.getAttribute("error"); if (dashError != null) { %>
+            <div style="background: #fee2e2; color: #991b1b; padding: 12px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; border: 1px solid #fecaca;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><%= dashError %>
+            </div>
+            <% } %>
             <!-- ===== HEADER HERO ===== -->
             <div class="page-header animate-in">
                 <div class="header-content d-flex justify-content-between align-items-center">
@@ -389,7 +316,12 @@
                             — Chúc bạn có ngày làm việc hiệu quả!
                         </p>
                         <span class="admin-badge">
-                            <i class="bi bi-shield-check me-1"></i> Quyền quản trị viên cấp cao
+                            <i class="bi bi-shield-check me-1"></i>
+                            <% if ("ADMIN".equals(session.getAttribute("role"))) { %>
+                                Quyền quản trị viên cấp cao
+                            <% } else { %>
+                                Nhân viên hệ thống
+                            <% } %>
                         </span>
                     </div>
                     <div class="header-time d-none d-lg-block">
@@ -448,277 +380,6 @@
                 </div>
             </div>
 
-            <!-- ===== LỐI TẮT THAO TÁC NHANH ===== -->
-            <div class="section-title">
-                <i class="bi bi-lightning-charge-fill" style="color: var(--accent-amber);"></i>
-                Truy Cập Nhanh Các Chức Năng
-                <span class="title-line"></span>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <!-- 1. Quản lý rạp phim -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/theater" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-blue"><i class="bi bi-building"></i></div>
-                        <h6>Quản lý rạp phim</h6>
-                        <p>Thêm, sửa chi nhánh rạp và thông tin liên hệ</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #dbeafe; color: #2563eb;">
-                                ${totalTheaters} chi nhánh
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 2. Quản lý thể loại -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/genre" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-amber"><i class="bi bi-tags"></i></div>
-                        <h6>Quản lý thể loại phim</h6>
-                        <p>Phân loại phim theo thể loại: hành động, tình cảm...</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #fef3c7; color: #d97706;">
-                                ${totalGenres} thể loại
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 3. Quản lý phòng chiếu -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/room" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-teal"><i class="bi bi-door-open"></i></div>
-                        <h6>Quản lý phòng chiếu</h6>
-                        <p>Thiết lập phòng chiếu và ma trận ghế ngồi</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #ccfbf1; color: #0d9488;">
-                                ${totalRooms} phòng
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 4. Quản lý phim -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/movie" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-purple"><i class="bi bi-camera-reels"></i></div>
-                        <h6>Quản lý phim</h6>
-                        <p>Thêm phim mới, cập nhật thông tin và poster</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #ede9fe; color: #7c3aed;">
-                                ${totalMovies} phim
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 5. Quản lý suất chiếu -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/showtime" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-rose"><i class="bi bi-calendar3"></i></div>
-                        <h6>Quản lý suất chiếu</h6>
-                        <p>Xếp lịch chiếu phim, kiểm tra trùng lịch</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #ffe4e6; color: #e11d48;">
-                                ${totalShowtimes} suất
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 6. Quản lý đặt vé -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/booking" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-green"><i class="bi bi-ticket-detailed"></i></div>
-                        <h6>Quản lý danh sách đặt vé</h6>
-                        <p>Xem và quản lý tất cả giao dịch đặt vé</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #dcfce7; color: #16a34a;">
-                                ${totalTickets} lượt
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 7. Xác nhận vé -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/booking" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-cyan"><i class="bi bi-check2-circle"></i></div>
-                        <h6>Xác nhận trạng thái vé</h6>
-                        <p>Duyệt, xác nhận hoặc hủy vé đặt</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #cffafe; color: #0891b2;">
-                                Kiểm duyệt
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 8. Quản lý người dùng -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/user" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-orange"><i class="bi bi-people"></i></div>
-                        <h6>Quản lý người dùng</h6>
-                        <p>Quản lý tài khoản khách hàng đã đăng ký</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #ffedd5; color: #ea580c;">
-                                ${totalUsers} thành viên
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 9. Nhân viên & Phân quyền -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/employee" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-indigo"><i class="bi bi-shield-lock"></i></div>
-                        <h6>Nhân viên & Phân quyền</h6>
-                        <p>Quản lý nhân viên, vai trò và quyền hạn</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #e0e7ff; color: #4f46e5;">
-                                ${totalStaffs} nhân viên
-                            </span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 10. Thống kê & Báo cáo -->
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <a href="${pageContext.request.contextPath}/admin/report" class="action-card">
-                        <div class="action-arrow"><i class="bi bi-arrow-right"></i></div>
-                        <div class="action-icon icon-slate"><i class="bi bi-bar-chart-line"></i></div>
-                        <h6>Thống kê & Báo cáo</h6>
-                        <p>Biểu đồ doanh thu, phân tích xu hướng</p>
-                        <div class="mt-2">
-                            <span class="module-badge" style="background: #e2e8f0; color: #475569;">
-                                ${totalRevenue}
-                            </span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- ===== BẢNG TỔNG HỢP TRẠNG THÁI MODULE ===== -->
-            <div class="section-title">
-                <i class="bi bi-clipboard-data-fill" style="color: var(--accent-blue);"></i>
-                Tổng Hợp Trạng Thái Hệ Thống
-                <span class="title-line"></span>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-lg-7">
-                    <div class="summary-card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5><i class="bi bi-activity me-2 text-primary"></i>Trạng thái các module</h5>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table summary-table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Module</th>
-                                        <th>Số lượng</th>
-                                        <th>Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><i class="bi bi-building me-2 text-primary"></i><strong>Rạp phim</strong></td>
-                                        <td><span class="badge bg-primary bg-opacity-10 text-primary">${totalTheaters} rạp</span></td>
-                                        <td><span class="status-dot active"></span> <span style="font-size: 12px; color: #16a34a;">Hoạt động</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-tags me-2 text-warning"></i><strong>Thể loại</strong></td>
-                                        <td><span class="badge bg-warning bg-opacity-10 text-warning">${totalGenres} loại</span></td>
-                                        <td><span class="status-dot active"></span> <span style="font-size: 12px; color: #16a34a;">Hoạt động</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-door-open me-2" style="color: #0d9488;"></i><strong>Phòng chiếu</strong></td>
-                                        <td><span class="badge" style="background: rgba(13,148,136,0.1); color: #0d9488;">${totalRooms} phòng</span></td>
-                                        <td><span class="status-dot active"></span> <span style="font-size: 12px; color: #16a34a;">Hoạt động</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-camera-reels me-2" style="color: #7c3aed;"></i><strong>Phim</strong></td>
-                                        <td><span class="badge" style="background: rgba(124,58,237,0.1); color: #7c3aed;">${totalMovies} phim</span></td>
-                                        <td><span class="status-dot active"></span> <span style="font-size: 12px; color: #16a34a;">Hoạt động</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-calendar3 me-2 text-danger"></i><strong>Suất chiếu</strong></td>
-                                        <td><span class="badge bg-danger bg-opacity-10 text-danger">${totalShowtimes} suất</span></td>
-                                        <td><span class="status-dot active"></span> <span style="font-size: 12px; color: #16a34a;">Hoạt động</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-ticket-detailed me-2 text-success"></i><strong>Đặt vé</strong></td>
-                                        <td><span class="badge bg-success bg-opacity-10 text-success">${totalTickets} vé</span></td>
-                                        <td><span class="status-dot pending"></span> <span style="font-size: 12px; color: #d97706;">Đang phát triển</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="bi bi-people me-2" style="color: #ea580c;"></i><strong>Người dùng</strong></td>
-                                        <td><span class="badge" style="background: rgba(234,88,12,0.1); color: #ea580c;">${totalUsers} user</span></td>
-                                        <td><span class="status-dot pending"></span> <span style="font-size: 12px; color: #d97706;">Đang phát triển</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="summary-card" style="height: 100%;">
-                        <div class="card-header">
-                            <h5><i class="bi bi-info-circle me-2" style="color: var(--accent-cyan);"></i>Thông tin hệ thống</h5>
-                        </div>
-                        <div class="p-4">
-                            <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom: 1px solid #f1f5f9;">
-                                <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #ef4444, #f97316); display: flex; align-items: center; justify-content: center; color: white; font-size: 22px;">
-                                    <i class="bi bi-film"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 16px; font-weight: 800; color: #0f172a;">FPT CINEMA</div>
-                                    <div style="font-size: 12px; color: #94a3b8;">Hệ thống quản trị rạp chiếu phim</div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span style="font-size: 13px; color: #64748b;"><i class="bi bi-person-badge me-2"></i>Quản trị viên</span>
-                                    <span style="font-size: 13px; font-weight: 600; color: #0f172a;">${sessionScope.userName}</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span style="font-size: 13px; color: #64748b;"><i class="bi bi-envelope me-2"></i>Email</span>
-                                    <span style="font-size: 13px; font-weight: 600; color: #0f172a;">${sessionScope.email}</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span style="font-size: 13px; color: #64748b;"><i class="bi bi-shield-check me-2"></i>Vai trò</span>
-                                    <span class="badge" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; font-size: 11px;">Admin</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span style="font-size: 13px; color: #64748b;"><i class="bi bi-hdd-stack me-2"></i>Phiên bản</span>
-                                    <span style="font-size: 13px; font-weight: 600; color: #0f172a;">v1.0.0</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span style="font-size: 13px; color: #64748b;"><i class="bi bi-gear me-2"></i>Nền tảng</span>
-                                    <span style="font-size: 13px; font-weight: 600; color: #0f172a;">Java Servlet + JSP</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 p-3" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 10px; border: 1px solid #bbf7d0;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="status-dot active"></span>
-                                    <span style="font-size: 13px; font-weight: 600; color: #166534;">Hệ thống đang hoạt động bình thường</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- ===== FOOTER ===== -->
             <div class="admin-footer">
