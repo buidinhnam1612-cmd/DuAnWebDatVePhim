@@ -23,89 +23,13 @@
     </style>
 </head>
 <body>
+<% request.setAttribute("currentPage", "showtime"); %>
 
 <div class="container-fluid">
     <div class="row">
         <!-- ==================== SIDEBAR MENU ==================== -->
-        <div class="col-md-3 col-lg-2 sidebar p-3 text-white">
-            <div class="d-flex align-items-center mb-3 px-2">
-                <i class="bi bi-film text-danger fs-3 me-2"></i>
-                <span class="fs-5 fw-bold text-uppercase tracking-wider">FPT Cinema</span>
-            </div>
-            <hr class="text-secondary my-2">
-
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/dashboard">
-                        <i class="bi bi-grid-1x2-fill me-2"></i> Tổng quan Dashboard
-                    </a>
-                </li>
-
-                <div class="menu-header">Hạ tầng & Danh mục</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/theater">
-                        <i class="bi bi-building me-2"></i> 1. Quản lý rạp phim
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/genre">
-                        <i class="bi bi-tags me-2"></i> 2. Quản lý thể loại phim
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/room">
-                        <i class="bi bi-door-open me-2"></i> 3. Quản lý phòng phim
-                    </a>
-                </li>
-
-                <div class="menu-header">Phim & Lịch chiếu</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/movie">
-                        <i class="bi bi-camera-reels me-2"></i> 4. Quản lý phim
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="${pageContext.request.contextPath}/admin/showtime">
-                        <i class="bi bi-calendar3 me-2"></i> 5. Quản lý suất chiếu
-                    </a>
-                </li>
-
-                <div class="menu-header">Kinh doanh & Thành viên</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
-                        <i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý danh sách đặt vé
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
-                        <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/user">
-                        <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
-                    </a>
-                </li>
-
-                <div class="menu-header">Hệ thống & Báo cáo</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/employee">
-                        <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/report">
-                        <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
-                    </a>
-                </li>
-
-                <hr class="text-secondary my-3">
-                <li class="nav-item">
-                    <a class="nav-link text-danger fw-bold" href="${pageContext.request.contextPath}/home">
-                        <i class="bi bi-box-arrow-left me-2"></i> Trở về Trang chủ Website
-                    </a>
-                </li>
-            </ul>
+        <div class="col-md-3 col-lg-2 sidebar p-0 text-white">
+            <jsp:include page="/views/common/admin-sidebar.jsp" />
         </div>
 
         <!-- ==================== MAIN CONTENT ==================== -->
@@ -127,6 +51,11 @@
             </c:if>
 
             <!-- ==================== FORM THÊM SUẤT CHIẾU ==================== -->
+            <%
+            String stRole = (String) session.getAttribute("role");
+            java.util.List<String> stPerms = (java.util.List<String>) session.getAttribute("userPermissions");
+            if ("ADMIN".equals(stRole) || (stPerms != null && stPerms.contains("MANAGE_SHOWTIME"))) {
+            %>
             <div class="card content-card mb-4">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 fw-bold">
@@ -172,6 +101,7 @@
                     </form>
                 </div>
             </div>
+            <% } %>
 
             <!-- ==================== BẢNG DANH SÁCH SUẤT CHIẾU ==================== -->
             <div class="card content-card">
