@@ -28,7 +28,9 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen AS TenKhachHang,
-
+                kh.SoDienThoai,
+                kh.Email,
+                
                 p.TenPhim,
 
                 r.TenRap,
@@ -85,6 +87,8 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen,
+                kh.SoDienThoai,
+                kh.Email,
 
                 p.TenPhim,
 
@@ -140,6 +144,8 @@ public class BookingRepository {
 
         // Thông tin hiển thị
         booking.setTenKhachHang(rs.getString("TenKhachHang"));
+        booking.setSoDienThoai(rs.getString("SoDienThoai"));
+        booking.setEmail(rs.getString("Email"));
         booking.setTenPhim(rs.getString("TenPhim"));
         booking.setTenRap(rs.getString("TenRap"));
         booking.setTenPhong(rs.getString("TenPhong"));
@@ -176,7 +182,9 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen AS TenKhachHang,
-
+                kh.SoDienThoai,
+                kh.Email,
+                
                 p.TenPhim,
 
                 r.TenRap,
@@ -234,6 +242,8 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen,
+                kh.SoDienThoai,
+                kh.Email,
 
                 p.TenPhim,
 
@@ -288,7 +298,9 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen AS TenKhachHang,
-
+                kh.SoDienThoai,
+                kh.Email,
+                
                 p.TenPhim,
 
                 r.TenRap,
@@ -351,6 +363,8 @@ public class BookingRepository {
                 dv.MaVoucher,
 
                 kh.HoTen,
+                kh.SoDienThoai,
+                kh.Email,
 
                 p.TenPhim,
 
@@ -501,5 +515,30 @@ public class BookingRepository {
         }
 
         return 0;
+    }
+    // xác nhận thanh toán
+    public boolean confirmBooking(String maDatVe) {
+
+        String sql = """
+        UPDATE DAT_VE
+        SET TrangThai = N'Đã sử dụng'
+        WHERE MaDatVe = ?
+        AND TrangThai = N'Đã thanh toán'
+        """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, maDatVe);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

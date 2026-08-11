@@ -25,12 +25,15 @@ public class Booking {
     private java.sql.Time gioBatDau;
 
     private String hinhThucDat;
+    private String soDienThoai;
+    private String email;
 
     public Booking() {
     }
 
     public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
+                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher, String soDienThoai,
+                    String email) {
         this.maDatVe = maDatVe;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
@@ -38,6 +41,8 @@ public class Booking {
         this.maKhachHang = maKhachHang;
         this.maNhanVien = maNhanVien;
         this.maVoucher = maVoucher;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
     }
 
     public String getMaDatVe() {
@@ -170,5 +175,19 @@ public class Booking {
     public void setTenNhanVien(String tenNhanVien) {
         this.tenNhanVien = tenNhanVien;
     }
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
 
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
