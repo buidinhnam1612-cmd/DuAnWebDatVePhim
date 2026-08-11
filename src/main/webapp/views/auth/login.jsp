@@ -3,6 +3,52 @@
 <%@ include file="../common/header.jsp" %>
 <%@ include file="../common/navbar.jsp" %>
 
+<style>
+    body {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+    }
+    .card {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    }
+    .card h2 {
+        color: #0f172a !important;
+    }
+    .form-label {
+        color: #475569 !important;
+    }
+    .form-control {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+    .form-control:focus {
+        background-color: #ffffff !important;
+        border-color: #e11d48 !important;
+        color: #0f172a !important;
+        box-shadow: 0 0 0 0.25rem rgba(225, 29, 72, 0.25) !important;
+    }
+    .btn-danger {
+        background-color: #e11d48 !important;
+        border: none !important;
+        font-weight: 600 !important;
+        padding: 10px !important;
+    }
+    .btn-danger:hover {
+        background-color: #be123c !important;
+        box-shadow: 0 0 15px rgba(225, 29, 72, 0.2) !important;
+    }
+    a.text-danger {
+        color: #e11d48 !important;
+    }
+    a.text-danger:hover {
+        color: #be123c !important;
+    }
+</style>
+
 <div class="container py-5">
 
     <div class="row justify-content-center">

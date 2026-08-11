@@ -62,4 +62,46 @@ public class UserService {
         return userRepository.updateStatus(maKhachHang, trangThai);
     }
 
+    /**
+     * Đăng ký tài khoản khách hàng mới
+     */
+    public boolean register(User user) {
+        if (user == null || user.getEmail() == null || user.getEmail().isBlank()) {
+            return false;
+        }
+
+        // Kiểm tra trùng email
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            return false;
+        }
+
+        // Thiết lập giá trị mặc định
+        user.setMaKhachHang(userRepository.generateUserId());
+        user.setTenDangNhap(user.getEmail().split("@")[0]);
+        user.setDiemTichLuy(0);
+        user.setTrangThai("Hoạt động");
+        user.setMaVaiTro("VT03"); // Vai trò khách hàng
+
+        return userRepository.add(user);
+    }
+
+    /**
+     * Xác thực thông tin đăng nhập của khách hàng
+     */
+    public User login(String email, String password) {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            return null;
+        }
+        return userRepository.findByEmailAndPassword(email.trim(), password);
+    }
+
+    /**
+     * Tìm khách hàng theo email
+     */
+    public User getUserByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return userRepository.findByEmail(email.trim());
+    }
 }
