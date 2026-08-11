@@ -3,9 +3,8 @@ package com.fptpoly.repository;
 import com.fptpoly.config.DBConnection;
 import com.fptpoly.model.Booking;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,8 +133,8 @@ public class BookingRepository {
 
         // Thông tin đặt vé
         booking.setMaDatVe(rs.getString("MaDatVe"));
-        booking.setThoiGianDat(rs.getTimestamp("ThoiGianDat"));
-        booking.setTongTien(rs.getBigDecimal("TongTien"));
+        booking.setThoiGianDat(rs.getTimestamp("ThoiGianDat").toLocalDateTime());
+        booking.setTongTien(rs.getDouble("TongTien"));
         booking.setTrangThai(rs.getString("TrangThai"));
 
         booking.setMaKhachHang(rs.getString("MaKhachHang"));
@@ -529,6 +528,157 @@ public class BookingRepository {
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)
+    public String generateBookingId() {
+
+        String sql = """
+                SELECT COALESCE(MAX(CAST(SUBSTRING(MaDatVe, 3, LEN(MaDatVe)) AS INT)), 0) AS MaxNum
+                FROM DAT_VE
+                """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ) {
+
+            if (rs.next()) {
+
+                int maxNum = rs.getInt("MaxNum");
+
+                return String.format("DV%02d", maxNum + 1);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "DV01";
+    }
+    public boolean insertBooking(Booking booking) {
+
+        String sql = """
+                INSERT INTO DAT_VE
+                (
+                    MaDatVe,
+                    ThoiGianDat,
+                    TongTien,
+                    TrangThai,
+                    MaKhachHang,
+                    MaNhanVien,
+                    MaVoucher
+                )
+                VALUES
+                (?,?,?,?,?,?,?)
+                """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+
+            if (booking.getMaDatVe() == null || booking.getMaDatVe().isBlank()) {
+
+                booking.setMaDatVe(generateBookingId());
+
+            }
+
+            if (booking.getThoiGianDat() == null) {
+
+                booking.setThoiGianDat(LocalDateTime.now());
+
+            }
+
+            ps.setString(1, booking.getMaDatVe());
+            ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
+            ps.setDouble(3, booking.getTongTien());
+            ps.setString(4, booking.getTrangThai());
+            ps.setString(5, booking.getMaKhachHang());
+
+            if (booking.getMaNhanVien() == null || booking.getMaNhanVien().isBlank()) {
+                ps.setNull(6, Types.VARCHAR);
+            } else {
+                ps.setString(6, booking.getMaNhanVien());
+            }
+
+            if (booking.getMaVoucher() == null || booking.getMaVoucher().isBlank()) {
+                ps.setNull(7, Types.VARCHAR);
+            } else {
+                ps.setString(7, booking.getMaVoucher());
+            }
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+        return false;
+    }
+
+    public boolean insertBooking(Connection con, Booking booking) {
+
+        String sql = """
+                INSERT INTO DAT_VE
+                (
+                    MaDatVe,
+                    ThoiGianDat,
+                    TongTien,
+                    TrangThai,
+                    MaKhachHang,
+                    MaNhanVien,
+                    MaVoucher
+                )
+                VALUES
+                (?,?,?,?,?,?,?)
+                """;
+
+        try (
+
+                PreparedStatement ps = con.prepareStatement(sql)
+
+        ) {
+
+            ps.setString(1, booking.getMaDatVe());
+            ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
+            ps.setDouble(3, booking.getTongTien());
+            ps.setString(4, booking.getTrangThai());
+            ps.setString(5, booking.getMaKhachHang());
+
+            if (booking.getMaNhanVien() == null || booking.getMaNhanVien().isBlank()) {
+                ps.setNull(6, Types.VARCHAR);
+            } else {
+                ps.setString(6, booking.getMaNhanVien());
+            }
+
+            if (booking.getMaVoucher() == null || booking.getMaVoucher().isBlank()) {
+                ps.setNull(7, Types.VARCHAR);
+            } else {
+                ps.setString(7, booking.getMaVoucher());
+            }
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+        return false;
+    }
+    public boolean deleteBooking(String maDatVe) {
+
+        String sql = "DELETE FROM DAT_VE WHERE MaDatVe=?";
+
+        try (
+
+                Connection con = DBConnection.getConnection();
+
+                PreparedStatement ps = con.prepareStatement(sql)
+
         ) {
 
             ps.setString(1, maDatVe);
@@ -537,8 +687,93 @@ public class BookingRepository {
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            e.printStackTrace();
+
         }
 
         return false;
+    }
+
+    // ===================== LẤY DANH SÁCH ĐẶT VÉ CỦA KHÁCH HÀNG =====================
+    public List<Booking> getByKhachHang(String maKhachHang) {
+
+        List<Booking> list = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                dv.MaDatVe,
+                dv.ThoiGianDat,
+                dv.TongTien,
+                dv.TrangThai,
+                dv.MaKhachHang,
+                dv.MaNhanVien,
+                dv.MaVoucher,
+                kh.HoTen AS TenKhachHang,
+                p.TenPhim,
+                r.TenRap,
+                pc.TenPhong,
+                sc.NgayChieu,
+                sc.GioBatDau,
+                STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
+                v.TenVoucher,
+                nv.HoTen AS TenNhanVien
+            FROM DAT_VE dv
+            INNER JOIN KHACH_HANG kh
+                ON dv.MaKhachHang = kh.MaKhachHang
+            INNER JOIN CHI_TIET_DAT_VE ct
+                ON dv.MaDatVe = ct.MaDatVe
+            INNER JOIN GHE g
+                ON ct.MaGhe = g.MaGhe
+            INNER JOIN SUAT_CHIEU sc
+                ON ct.MaSuatChieu = sc.MaSuatChieu
+            INNER JOIN PHIM p
+                ON sc.MaPhim = p.MaPhim
+            INNER JOIN PHONG_CHIEU pc
+                ON sc.MaPhong = pc.MaPhong
+            INNER JOIN RAP r
+                ON pc.MaRap = r.MaRap
+            LEFT JOIN VOUCHER v
+                ON dv.MaVoucher = v.MaVoucher
+            LEFT JOIN NHAN_VIEN nv
+                ON dv.MaNhanVien = nv.MaNhanVien
+            WHERE dv.MaKhachHang = ?
+            GROUP BY
+                dv.MaDatVe,
+                dv.ThoiGianDat,
+                dv.TongTien,
+                dv.TrangThai,
+                dv.MaKhachHang,
+                dv.MaNhanVien,
+                dv.MaVoucher,
+                kh.HoTen,
+                p.TenPhim,
+                r.TenRap,
+                pc.TenPhong,
+                sc.NgayChieu,
+                sc.GioBatDau,
+                v.TenVoucher,
+                nv.HoTen
+            ORDER BY dv.ThoiGianDat DESC
+            """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, maKhachHang);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapBooking(rs));
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 }

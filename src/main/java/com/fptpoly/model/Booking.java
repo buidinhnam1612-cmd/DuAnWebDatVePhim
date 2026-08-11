@@ -2,12 +2,13 @@ package com.fptpoly.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Booking {
 
     private String maDatVe;
-    private Timestamp thoiGianDat;
-    private BigDecimal tongTien;
+    private LocalDateTime thoiGianDat;
+    private double tongTien;
     private String trangThai;
     private String maKhachHang;
     private String maNhanVien;
@@ -34,6 +35,8 @@ public class Booking {
     public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
                    String trangThai, String maKhachHang, String maNhanVien, String maVoucher, String soDienThoai,
                     String email) {
+    public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
+                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
         this.maDatVe = maDatVe;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
@@ -53,19 +56,23 @@ public class Booking {
         this.maDatVe = maDatVe;
     }
 
-    public Timestamp getThoiGianDat() {
+    //public Timestamp getThoiGianDat() {
+   //     return thoiGianDat;
+  //  }
+
+    public LocalDateTime getThoiGianDat() {
         return thoiGianDat;
     }
 
-    public void setThoiGianDat(Timestamp thoiGianDat) {
+    public void setThoiGianDat(LocalDateTime thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
     }
 
-    public BigDecimal getTongTien() {
+    public double getTongTien() {
         return tongTien;
     }
 
-    public void setTongTien(BigDecimal tongTien) {
+    public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
     }
 

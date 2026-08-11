@@ -85,5 +85,56 @@ public class ShowtimeRepository {
         }
         return false;
     }
+
+    // 4. Lấy thông tin suất chiếu theo mã
+    public Showtime getById(String id) {
+        String sql = "SELECT * FROM SUAT_CHIEU WHERE MaSuatChieu = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Showtime st = new Showtime();
+                    st.setMaSuatChieu(rs.getString("MaSuatChieu"));
+                    st.setNgayChieu(rs.getDate("NgayChieu").toLocalDate());
+                    st.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
+                    st.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
+                    st.setMaPhim(rs.getString("MaPhim"));
+                    st.setMaPhong(rs.getString("MaPhong"));
+                    return st;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 5. Lấy danh sách suất chiếu theo phim
+    public List<Showtime> getByMovie(String maPhim) {
+        List<Showtime> list = new ArrayList<>();
+        String sql = "SELECT * FROM SUAT_CHIEU WHERE MaPhim = ? ORDER BY NgayChieu, GioBatDau";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, maPhim);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Showtime st = new Showtime();
+                    st.setMaSuatChieu(rs.getString("MaSuatChieu"));
+                    st.setNgayChieu(rs.getDate("NgayChieu").toLocalDate());
+                    st.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
+                    st.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
+                    st.setMaPhim(rs.getString("MaPhim"));
+                    st.setMaPhong(rs.getString("MaPhong"));
+                    list.add(st);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
 
