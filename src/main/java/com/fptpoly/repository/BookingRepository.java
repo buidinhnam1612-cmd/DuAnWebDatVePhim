@@ -517,7 +517,6 @@ public class BookingRepository {
     }
     // xác nhận thanh toán
     public boolean confirmBooking(String maDatVe) {
-
         String sql = """
         UPDATE DAT_VE
         SET TrangThai = N'Đã sử dụng'
@@ -528,8 +527,16 @@ public class BookingRepository {
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)
-    public String generateBookingId() {
+        ) {
+            ps.setString(1, maDatVe);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    public String generateBookingId() {
         String sql = """
                 SELECT COALESCE(MAX(CAST(SUBSTRING(MaDatVe, 3, LEN(MaDatVe)) AS INT)), 0) AS MaxNum
                 FROM DAT_VE
@@ -540,21 +547,17 @@ public class BookingRepository {
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {
-
             if (rs.next()) {
-
                 int maxNum = rs.getInt("MaxNum");
-
                 return String.format("DV%02d", maxNum + 1);
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return "DV01";
     }
+
     public boolean insertBooking(Booking booking) {
 
         String sql = """

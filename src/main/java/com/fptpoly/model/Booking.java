@@ -7,12 +7,13 @@ import java.time.LocalDateTime;
 public class Booking {
 
     private String maDatVe;
-    private LocalDateTime thoiGianDat;
+    private LocalDateTime thoiGianDat; // Giữ nguyên để tương thích với Repository
     private double tongTien;
     private String trangThai;
     private String maKhachHang;
     private String maNhanVien;
     private String maVoucher;
+
     // Thông tin hiển thị cho Admin
     private String tenKhachHang;
     private String tenPhim;
@@ -29,12 +30,11 @@ public class Booking {
     private String soDienThoai;
     private String email;
 
+    // 1. Hàm khởi tạo rỗng (Bắt buộc phải có)
     public Booking() {
     }
 
-    public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher, String soDienThoai,
-                    String email) {
+    // 2. Hàm khởi tạo đầy đủ tham số (Đã sửa lỗi cú pháp lồng nhau)
     public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
                    String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
         this.maDatVe = maDatVe;
@@ -44,9 +44,9 @@ public class Booking {
         this.maKhachHang = maKhachHang;
         this.maNhanVien = maNhanVien;
         this.maVoucher = maVoucher;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
     }
+
+    // --- Bắt đầu phần Getter và Setter để Repository gọi ---
 
     public String getMaDatVe() {
         return maDatVe;
@@ -56,10 +56,6 @@ public class Booking {
         this.maDatVe = maDatVe;
     }
 
-    //public Timestamp getThoiGianDat() {
-   //     return thoiGianDat;
-  //  }
-
     public LocalDateTime getThoiGianDat() {
         return thoiGianDat;
     }
@@ -67,6 +63,7 @@ public class Booking {
     public void setThoiGianDat(LocalDateTime thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
     }
+
 
     public double getTongTien() {
         return tongTien;
@@ -107,6 +104,7 @@ public class Booking {
     public void setMaVoucher(String maVoucher) {
         this.maVoucher = maVoucher;
     }
+
     public String getTenKhachHang() {
         return tenKhachHang;
     }
@@ -162,12 +160,15 @@ public class Booking {
     public void setHinhThucDat(String hinhThucDat) {
         this.hinhThucDat = hinhThucDat;
     }
+
     public String getDanhSachGhe() {
         return danhSachGhe;
     }
+
     public void setDanhSachGhe(String danhSachGhe) {
         this.danhSachGhe = danhSachGhe;
     }
+
     public String getTenVoucher() {
         return tenVoucher;
     }
@@ -175,6 +176,7 @@ public class Booking {
     public void setTenVoucher(String tenVoucher) {
         this.tenVoucher = tenVoucher;
     }
+
     public String getTenNhanVien() {
         return tenNhanVien;
     }
@@ -182,6 +184,7 @@ public class Booking {
     public void setTenNhanVien(String tenNhanVien) {
         this.tenNhanVien = tenNhanVien;
     }
+
     public String getSoDienThoai() {
         return soDienThoai;
     }

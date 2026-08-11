@@ -159,17 +159,8 @@ public class CommentRepository {
 
     /**
      * Cập nhật trạng thái
-     *
-     * Dùng cho:
-     * Chờ duyệt -> Đã duyệt
-     * Chờ duyệt -> Từ chối
-     * Đã duyệt -> Đã ẩn
-     * Từ chối -> Đã ẩn
-     * Đã ẩn -> Đã duyệt
      */
-    public boolean updateStatus(
-            String maBinhLuan,
-            String trangThai) {
+    public boolean updateStatus(String maBinhLuan, String trangThai) {
 
         String sql = """
                 UPDATE BINH_LUAN
@@ -253,6 +244,199 @@ public class CommentRepository {
     }
 
     /**
+     * Lấy bình luận theo mã phim
+     */
+    public List<Comment> getByMovie(String maPhim) {
+
+        List<Comment> list = new ArrayList<>();
+
+        String sql = """
+                SELECT
+                    bl.MaBinhLuan,
+                    bl.SoSao,
+                    bl.NoiDung,
+                    bl.NgayTao,
+                    bl.TrangThai,
+                    bl.MaKhachHang,
+                    bl.MaPhim,
+                    kh.HoTen AS TenKhachHang
+                FROM BINH_LUAN bl
+                INNER JOIN KHACH_HANG kh
+                    ON bl.MaKhachHang = kh.MaKhachHang
+                WHERE bl.MaPhim = ?
+                ORDER BY bl.NgayTao DESC
+                """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, maPhim);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Comment comment = new Comment();
+
+                    comment.setMaBinhLuan(
+                            rs.getString("MaBinhLuan")
+                    );
+
+                    comment.setSoSao(
+                            rs.getInt("SoSao")
+                    );
+
+                    comment.setNoiDung(
+                            rs.getString("NoiDung")
+                    );
+
+                    comment.setNgayTao(
+                            rs.getTimestamp("NgayTao")
+                    );
+
+                    comment.setTrangThai(
+                            rs.getString("TrangThai")
+                    );
+
+                    comment.setMaKhachHang(
+                            rs.getString("MaKhachHang")
+                    );
+
+                    comment.setMaPhim(
+                            rs.getString("MaPhim")
+                    );
+
+                    comment.setTenKhachHang(
+                            rs.getString("TenKhachHang")
+                    );
+
+                    list.add(comment);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    /**
+     * Tạo mã bình luận mới
+     */
+    public String generateCommentId() {
+
+        String sql = """
+                SELECT COALESCE(
+                    MAX(
+                        CAST(
+                            SUBSTRING(MaBinhLuan, 3, LEN(MaBinhLuan))
+                            AS INT
+                        )
+                    ),
+                    0
+                ) AS MaxNum
+                FROM BINH_LUAN
+                """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ) {
+
+            if (rs.next()) {
+
+                int maxNum = rs.getInt("MaxNum");
+
+                return String.format(
+                        "BL%02d",
+                        maxNum + 1
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "BL01";
+    }
+
+    /**
+     * Thêm bình luận
+     */
+    public boolean insert(Comment comment) {
+
+        if (comment.getMaBinhLuan() == null
+                || comment.getMaBinhLuan().isBlank()) {
+
+            comment.setMaBinhLuan(
+                    generateCommentId()
+            );
+        }
+
+        String sql = """
+                INSERT INTO BINH_LUAN
+                (
+                    MaBinhLuan,
+                    SoSao,
+                    NoiDung,
+                    NgayTao,
+                    MaKhachHang,
+                    MaPhim
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+
+            ps.setString(
+                    1,
+                    comment.getMaBinhLuan()
+            );
+
+            ps.setInt(
+                    2,
+                    comment.getSoSao()
+            );
+
+            ps.setString(
+                    3,
+                    comment.getNoiDung()
+            );
+
+            ps.setTimestamp(
+                    4,
+                    comment.getNgayTao() != null
+                            ? comment.getNgayTao()
+                            : new Timestamp(System.currentTimeMillis())
+            );
+
+            ps.setString(
+                    5,
+                    comment.getMaKhachHang()
+            );
+
+            ps.setString(
+                    6,
+                    comment.getMaPhim()
+            );
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
      * Mapping ResultSet -> Comment
      */
     private Comment mapResultSet(ResultSet rs) throws Exception {
@@ -260,104 +444,41 @@ public class CommentRepository {
         Comment comment = new Comment();
 
         comment.setMaBinhLuan(
-                rs.getString("MaBinhLuan"));
+                rs.getString("MaBinhLuan")
+        );
 
         comment.setSoSao(
-                rs.getInt("SoSao"));
+                rs.getInt("SoSao")
+        );
 
         comment.setNoiDung(
-                rs.getString("NoiDung"));
+                rs.getString("NoiDung")
+        );
 
         comment.setNgayTao(
-                rs.getTimestamp("NgayTao"));
+                rs.getTimestamp("NgayTao")
+        );
 
         comment.setTrangThai(
-                rs.getString("TrangThai"));
+                rs.getString("TrangThai")
+        );
 
         comment.setMaKhachHang(
-                rs.getString("MaKhachHang"));
+                rs.getString("MaKhachHang")
+        );
 
         comment.setMaPhim(
-                rs.getString("MaPhim"));
+                rs.getString("MaPhim")
+        );
 
         comment.setTenKhachHang(
-                rs.getString("TenKhachHang"));
+                rs.getString("TenKhachHang")
+        );
 
         comment.setTenPhim(
-                rs.getString("TenPhim"));
+                rs.getString("TenPhim")
+        );
 
         return comment;
-    }
-}
-    public List<Comment> getByMovie(String maPhim) {
-        List<Comment> list = new ArrayList<>();
-        String sql = """
-                SELECT bl.*, kh.HoTen AS TenKhachHang
-                FROM BINH_LUAN bl
-                INNER JOIN KHACH_HANG kh ON bl.MaKhachHang = kh.MaKhachHang
-                WHERE bl.MaPhim = ?
-                ORDER BY bl.NgayTao DESC
-                """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, maPhim);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Comment c = new Comment();
-                    c.setMaBinhLuan(rs.getString("MaBinhLuan"));
-                    c.setSoSao(rs.getInt("SoSao"));
-                    c.setNoiDung(rs.getString("NoiDung"));
-                    c.setNgayTao(rs.getTimestamp("NgayTao"));
-                    c.setMaKhachHang(rs.getString("MaKhachHang"));
-                    c.setMaPhim(rs.getString("MaPhim"));
-                    c.setTenKhachHang(rs.getString("TenKhachHang"));
-                    list.add(c);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public String generateCommentId() {
-        String sql = """
-                SELECT COALESCE(MAX(CAST(SUBSTRING(MaBinhLuan, 3, LEN(MaBinhLuan)) AS INT)), 0) AS MaxNum
-                FROM BINH_LUAN
-                """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                int maxNum = rs.getInt("MaxNum");
-                return String.format("BL%02d", maxNum + 1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "BL01";
-    }
-
-    public boolean insert(Comment c) {
-        if (c.getMaBinhLuan() == null || c.getMaBinhLuan().isBlank()) {
-            c.setMaBinhLuan(generateCommentId());
-        }
-        String sql = """
-                INSERT INTO BINH_LUAN (MaBinhLuan, SoSao, NoiDung, NgayTao, MaKhachHang, MaPhim)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, c.getMaBinhLuan());
-            ps.setInt(2, c.getSoSao());
-            ps.setString(3, c.getNoiDung());
-            ps.setTimestamp(4, c.getNgayTao() != null ? c.getNgayTao() : new Timestamp(System.currentTimeMillis()));
-            ps.setString(5, c.getMaKhachHang());
-            ps.setString(6, c.getMaPhim());
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }

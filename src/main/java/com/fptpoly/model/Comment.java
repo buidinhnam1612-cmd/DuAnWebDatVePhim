@@ -16,17 +16,12 @@ public class Comment {
     // Thông tin hiển thị
     private String tenKhachHang;
     private String tenPhim;
-    private int soSao;
-    private String noiDung;
-    private Timestamp ngayTao;
-    private String maKhachHang;
-    private String maPhim;
-    private String tenKhachHang;
 
     public Comment() {
     }
 
-    public Comment(String maBinhLuan, int soSao, String noiDung, Timestamp ngayTao, String maKhachHang, String maPhim) {
+    public Comment(String maBinhLuan, int soSao, String noiDung,
+                   Timestamp ngayTao, String maKhachHang, String maPhim) {
         this.maBinhLuan = maBinhLuan;
         this.soSao = soSao;
         this.noiDung = noiDung;
@@ -48,11 +43,6 @@ public class Comment {
     }
 
     public void setSoSao(Integer soSao) {
-    public int getSoSao() {
-        return soSao;
-    }
-
-    public void setSoSao(int soSao) {
         this.soSao = soSao;
     }
 
@@ -111,5 +101,4 @@ public class Comment {
     public void setTenPhim(String tenPhim) {
         this.tenPhim = tenPhim;
     }
-}
 }
