@@ -62,4 +62,10 @@ public class BookingService {
         return bookingRepository.getTotalRevenue();
     }
 
+    /**
+     * Xác nhận khách đã sử dụng vé
+     */
+    public boolean confirmBooking(String maDatVe) {
+        return bookingRepository.confirmBooking(maDatVe);
+    }
 }

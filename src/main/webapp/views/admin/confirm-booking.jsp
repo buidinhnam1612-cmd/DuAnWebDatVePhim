@@ -5,18 +5,19 @@
 <html lang="vi">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Xác nhận trạng thái vé - FPT CINEMA</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+          rel="stylesheet">
 
     <style>
 
@@ -68,93 +69,60 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        .page-header {
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
         .page-title {
-            font-size: 24px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 5px;
+            color: #1e293b;
         }
 
-        .page-description {
-            color: #6b7280;
-            margin-bottom: 0;
-            font-size: 14px;
-        }
-
-        .search-form {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-input {
-            height: 45px;
+        .search-box {
+            border-radius: 10px;
             border: 1px solid #d1d5db;
-            border-radius: 7px;
-            padding: 0 14px;
-            font-size: 14px;
-            outline: none;
+            height: 48px;
         }
 
-        .search-input:focus {
+        .search-box:focus {
             border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+            box-shadow: 0 0 0 0.2rem rgba(37,99,235,0.1);
         }
 
         .btn-search {
-            height: 45px;
-            padding: 0 22px;
-            border: none;
-            border-radius: 7px;
-            background-color: #2563eb;
-            color: white;
+            height: 48px;
+            border-radius: 8px;
+            padding: 0 25px;
             font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-search:hover {
-            background-color: #1d4ed8;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 20px;
         }
 
         .booking-info {
-            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 13px 0;
+            padding: 15px 18px;
             border-bottom: 1px solid #e5e7eb;
-            gap: 20px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
         }
 
         .info-label {
-            color: #6b7280;
+            color: #64748b;
             font-size: 14px;
         }
 
         .info-value {
+            color: #1e293b;
             font-weight: 600;
-            color: #1f2937;
             text-align: right;
         }
 
         .status {
             display: inline-block;
-            padding: 6px 13px;
+            padding: 7px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
@@ -171,8 +139,8 @@
         }
 
         .status-used {
-            background-color: #e0e7ff;
-            color: #3730a3;
+            background-color: #dbeafe;
+            color: #1e40af;
         }
 
         .status-cancelled {
@@ -186,80 +154,56 @@
         }
 
         .status-box {
-            margin-top: 22px;
-            padding: 16px;
-            border-radius: 9px;
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
             font-size: 14px;
-            font-weight: 600;
             line-height: 1.6;
         }
 
         .status-box.success {
             background-color: #dcfce7;
-            color: #166534;
             border: 1px solid #86efac;
+            color: #166534;
         }
 
         .status-box.warning {
             background-color: #fef3c7;
-            color: #92400e;
             border: 1px solid #fcd34d;
+            color: #92400e;
         }
 
         .status-box.danger {
             background-color: #fee2e2;
-            color: #991b1b;
             border: 1px solid #fca5a5;
-        }
-
-        .confirm-form {
-            margin-top: 20px;
+            color: #991b1b;
         }
 
         .btn-confirm {
-            width: 100%;
             height: 48px;
-            border: none;
             border-radius: 8px;
-            background-color: #16a34a;
-            color: white;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
+            font-weight: 600;
         }
 
-        .btn-confirm:hover {
-            background-color: #15803d;
-        }
-
-        .note {
-            margin-top: 18px;
-            padding: 15px;
-            background-color: #f3f4f6;
-            border-radius: 8px;
-            color: #6b7280;
+        .note-box {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            color: #64748b;
             font-size: 14px;
             line-height: 1.6;
         }
 
-        .message {
-            padding: 13px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .success-message {
-            background-color: #dcfce7;
-            color: #166534;
-            border: 1px solid #86efac;
-        }
-
-        .error-message {
+        .booking-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
             background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
         }
 
         @media (max-width: 768px) {
@@ -274,25 +218,19 @@
                 text-align: left;
             }
 
-            .search-form {
-                flex-direction: column;
-            }
-
-            .btn-search {
-                width: 100%;
-            }
-
         }
 
     </style>
 
 </head>
 
+
 <body>
 
 <%
     request.setAttribute("currentPage", "confirm-booking");
 %>
+
 
 <div class="container-fluid">
 
@@ -305,29 +243,45 @@
         </div>
 
 
-        <div class="col-md-9 col-lg-10 px-md-4 py-4">
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
 
-            <div class="page-header">
 
-                <div class="page-title">
-                    <i class="bi bi-ticket-perforated me-2"></i>
-                    Xác nhận trạng thái vé
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+
+                <div>
+
+                    <h1 class="h3 page-title mb-1">
+
+                        <i class="bi bi-ticket-perforated me-2 text-danger"></i>
+
+                        Xác Nhận Trạng Thái Vé
+
+                    </h1>
+
+                    <p class="text-muted mb-0">
+
+                        Tra cứu và xác nhận khách hàng đã sử dụng vé
+
+                    </p>
+
                 </div>
-
-                <p class="page-description">
-                    Tra cứu mã đặt vé để kiểm tra và xác nhận khách đã sử dụng vé.
-                </p>
 
             </div>
 
 
             <c:if test="${not empty sessionScope.success}">
 
-                <div class="message success-message">
+                <div class="alert alert-success alert-dismissible fade show"
+                     role="alert">
 
                     <i class="bi bi-check-circle-fill me-2"></i>
 
                     ${sessionScope.success}
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
 
                 </div>
 
@@ -338,11 +292,17 @@
 
             <c:if test="${not empty sessionScope.error}">
 
-                <div class="message error-message">
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
 
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
                     ${sessionScope.error}
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
 
                 </div>
 
@@ -355,44 +315,65 @@
 
                 <div class="card-body p-4">
 
-                    <div class="card-title">
+                    <div class="d-flex align-items-center mb-4">
 
-                        <i class="bi bi-search me-2"></i>
+                        <div class="booking-icon me-3">
 
-                        Tra cứu vé
+                            <i class="bi bi-search"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+                                Tra cứu vé
+                            </h5>
+
+                            <p class="text-muted mb-0">
+                                Nhập mã đặt vé để kiểm tra thông tin và trạng thái.
+                            </p>
+
+                        </div>
 
                     </div>
 
 
-                    <form
-                        method="get"
-                        action="${pageContext.request.contextPath}/admin/confirm-booking"
-                        class="search-form">
+                    <form method="get"
+                          action="${pageContext.request.contextPath}/admin/confirm-booking">
 
-                        <input
-                            type="text"
-                            name="maDatVe"
-                            class="form-control search-input"
-                            placeholder="Nhập mã vé, ví dụ: DV01"
-                            value="${param.maDatVe}"
-                            autocomplete="off"
-                            required>
+                        <div class="row g-2">
 
+                            <div class="col-md-9">
 
-                        <button
-                            type="submit"
-                            class="btn-search">
+                                <input type="text"
+                                       name="maDatVe"
+                                       class="form-control search-box"
+                                       placeholder="Nhập mã đặt vé, ví dụ: DV01"
+                                       value="${param.maDatVe}"
+                                       autocomplete="off"
+                                       required>
 
-                            <i class="bi bi-search me-1"></i>
+                            </div>
 
-                            Tra cứu vé
+                            <div class="col-md-3">
 
-                        </button>
+                                <button type="submit"
+                                        class="btn btn-primary btn-search w-100">
+
+                                    <i class="bi bi-search me-2"></i>
+
+                                    Tra cứu vé
+
+                                </button>
+
+                            </div>
+
+                        </div>
 
                     </form>
 
 
-                    <div class="note">
+                    <div class="note-box mt-3">
 
                         <i class="bi bi-info-circle me-2"></i>
 
@@ -410,18 +391,22 @@
 
                 <div class="card content-card">
 
-                    <div class="card-body p-4">
+                    <div class="card-header bg-white py-3">
 
-                        <div class="card-title">
+                        <h5 class="mb-0 fw-bold">
 
                             <i class="bi bi-ticket-detailed me-2"></i>
 
-                            Thông tin đặt vé
+                            Thông Tin Đặt Vé
 
-                        </div>
+                        </h5>
+
+                    </div>
 
 
-                        <div class="booking-info">
+                    <div class="card-body p-4">
+
+                        <div class="booking-info border">
 
 
                             <div class="info-row">
@@ -521,7 +506,7 @@
                                     Tổng tiền
                                 </span>
 
-                                <span class="info-value">
+                                <span class="info-value text-danger">
                                     ${booking.tongTien} VNĐ
                                 </span>
 
@@ -539,33 +524,61 @@
                                     <c:choose>
 
                                         <c:when test="${booking.trangThai == 'Đã thanh toán'}">
+
                                             <span class="status status-payment">
+
+                                                <i class="bi bi-check-circle me-1"></i>
+
                                                 Đã thanh toán
+
                                             </span>
+
                                         </c:when>
 
                                         <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
+
                                             <span class="status status-waiting">
+
+                                                <i class="bi bi-clock me-1"></i>
+
                                                 Chờ thanh toán
+
                                             </span>
+
                                         </c:when>
 
                                         <c:when test="${booking.trangThai == 'Đã sử dụng'}">
+
                                             <span class="status status-used">
+
+                                                <i class="bi bi-check2-all me-1"></i>
+
                                                 Đã sử dụng
+
                                             </span>
+
                                         </c:when>
 
                                         <c:when test="${booking.trangThai == 'Đã hủy'}">
+
                                             <span class="status status-cancelled">
+
+                                                <i class="bi bi-x-circle me-1"></i>
+
                                                 Đã hủy
+
                                             </span>
+
                                         </c:when>
 
                                         <c:otherwise>
+
                                             <span class="status status-default">
+
                                                 ${booking.trangThai}
+
                                             </span>
+
                                         </c:otherwise>
 
                                     </c:choose>
@@ -575,25 +588,35 @@
                             </div>
 
 
-                            <c:choose>
+                        </div>
 
-                                <c:when test="${booking.trangThai == 'Đã thanh toán'}">
 
-                                    <form
-                                        method="post"
-                                        action="${pageContext.request.contextPath}/admin/confirm-booking"
-                                        class="confirm-form">
+                        <c:choose>
 
-                                        <input
-                                            type="hidden"
-                                            name="maDatVe"
-                                            value="${booking.maDatVe}">
+                            <c:when test="${booking.trangThai == 'Đã thanh toán'}">
 
-                                        <button
-                                            type="submit"
-                                            class="btn-confirm">
+                                <div class="status-box success">
 
-                                            <i class="bi bi-check-circle-fill me-2"></i>
+                                    <div class="mb-3">
+
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+
+                                        Vé đã được thanh toán và khách hàng có thể sử dụng vé.
+
+                                    </div>
+
+
+                                    <form method="post"
+                                          action="${pageContext.request.contextPath}/admin/confirm-booking">
+
+                                        <input type="hidden"
+                                               name="maDatVe"
+                                               value="${booking.maDatVe}">
+
+                                        <button type="submit"
+                                                class="btn btn-success btn-confirm w-100">
+
+                                            <i class="bi bi-check2-circle me-2"></i>
 
                                             Xác nhận khách đã sử dụng vé
 
@@ -601,77 +624,77 @@
 
                                     </form>
 
-                                </c:when>
+                                </div>
+
+                            </c:when>
 
 
-                                <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
+                            <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
 
-                                    <div class="status-box warning">
+                                <div class="status-box warning">
 
-                                        <i class="bi bi-clock-history me-2"></i>
+                                    <i class="bi bi-clock-fill me-2"></i>
 
-                                        Vé này đang chờ thanh toán.
+                                    Vé này đang chờ thanh toán.
 
-                                        <br>
+                                    <br>
 
-                                        Khách hàng cần thanh toán trước
-                                        khi có thể sử dụng vé.
+                                    Khách hàng cần thanh toán trước khi có thể sử dụng vé.
 
-                                    </div>
+                                </div>
 
-                                </c:when>
-
-
-                                <c:when test="${booking.trangThai == 'Đã sử dụng'}">
-
-                                    <div class="status-box success">
-
-                                        <i class="bi bi-check-circle-fill me-2"></i>
-
-                                        Vé này đã được sử dụng.
-
-                                        <br>
-
-                                        Không thể xác nhận lại vé này.
-
-                                    </div>
-
-                                </c:when>
+                            </c:when>
 
 
-                                <c:when test="${booking.trangThai == 'Đã hủy'}">
+                            <c:when test="${booking.trangThai == 'Đã sử dụng'}">
 
-                                    <div class="status-box danger">
+                                <div class="status-box success">
 
-                                        <i class="bi bi-x-circle-fill me-2"></i>
+                                    <i class="bi bi-check-circle-fill me-2"></i>
 
-                                        Vé này đã bị hủy.
+                                    Vé này đã được xác nhận là đã sử dụng.
 
-                                        <br>
+                                    <br>
 
-                                        Không thể xác nhận vé đã hủy.
+                                    Không thể xác nhận lại vé này.
 
-                                    </div>
+                                </div>
 
-                                </c:when>
+                            </c:when>
 
 
-                                <c:otherwise>
+                            <c:when test="${booking.trangThai == 'Đã hủy'}">
 
-                                    <div class="status-box danger">
+                                <div class="status-box danger">
 
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <i class="bi bi-x-circle-fill me-2"></i>
 
-                                        Trạng thái vé không hợp lệ,
-                                        không thể xác nhận.
+                                    Vé này đã bị hủy.
 
-                                    </div>
+                                    <br>
 
-                                </c:otherwise>
+                                    Không thể xác nhận vé đã hủy.
 
-                            </c:choose>
+                                </div>
 
-                        </div>
+                            </c:when>
+
+
+                            <c:otherwise>
+
+                                <div class="status-box danger">
+
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                                    Trạng thái vé không hợp lệ.
+
+                                    Không thể xác nhận vé này.
+
+                                </div>
+
+                            </c:otherwise>
+
+                        </c:choose>
 
                     </div>
 
@@ -679,11 +702,16 @@
 
             </c:if>
 
+
         </div>
 
     </div>
 
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+</script>
 
 </body>
 
