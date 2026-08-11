@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "LoginController", urlPatterns = "/login")
@@ -31,18 +32,13 @@ public class LoginController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.getRequestDispatcher("/views/auth/login.jsp")
-                .forward(request, response);
-
+        request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
@@ -54,11 +50,8 @@ public class LoginController extends HttpServlet {
         if (loginInput == null || loginInput.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
 
-            request.setAttribute("error",
-                    "Vui lòng nhập đầy đủ thông tin đăng nhập!");
-
-            request.getRequestDispatcher("/views/auth/login.jsp")
-                    .forward(request, response);
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin đăng nhập!");
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
             return;
         }
 
@@ -69,10 +62,8 @@ public class LoginController extends HttpServlet {
 
             // Kiểm tra trạng thái tài khoản
             if ("Khóa".equals(employee.getTrangThai())) {
-                request.setAttribute("error",
-                        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên.");
-                request.getRequestDispatcher("/views/auth/login.jsp")
-                        .forward(request, response);
+                request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên.");
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
                 return;
             }
 
@@ -83,41 +74,39 @@ public class LoginController extends HttpServlet {
             session.setAttribute("email", employee.getEmail());
             session.setAttribute("maNhanVien", employee.getMaNhanVien());
 
-            // Xác định vai trò
+            // Xác định vai trò và nạp quyền vào Session
             String maVaiTro = employee.getMaVaiTro();
 
             if ("VT01".equals(maVaiTro)) {
-                // ADMIN - Toàn quyền
+                // ADMIN - Toàn quyền (Nạp danh sách rỗng thay vì null để Filter không bị crash)
                 session.setAttribute("role", "ADMIN");
-                session.setAttribute("userPermissions", null);
+                List<String> adminPermissions = new ArrayList<>();
+                // Tự động add full quyền thử nghiệm cho admin nếu Filter check bằng mã Q
+                for (int i = 1; i <= 15; i++) {
+                    adminPermissions.add(String.format("Q%02d", i));
+                }
+                session.setAttribute("userPermissions", adminPermissions);
             } else {
-                // NHÂN VIÊN - Lấy danh sách quyền được cấp
+                // NHÂN VIÊN - Lấy danh sách quyền được kích hoạt (TrangThai = 1) từ database
                 session.setAttribute("role", "EMPLOYEE");
-                List<String> permissions =
-                        permissionService.getPermissionsByEmployee(
-                                employee.getMaNhanVien()
-                        );
+                List<String> permissions = permissionService.getPermissionsByEmployee(employee.getMaNhanVien());
                 session.setAttribute("userPermissions", permissions);
             }
 
-            // Cả Admin và Nhân viên đều vào cùng /admin/dashboard
-            response.sendRedirect(
-                    request.getContextPath() + "/admin/dashboard"
-            );
+            // Điều hướng vào trang quản trị
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
 
-        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG
-        User user = userService.login(email.trim(), password);
+        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG (Đã sửa lỗi biến loginInput ở đây)
+        User user = userService.login(loginInput.trim(), password);
 
         if (user != null) {
 
             // Kiểm tra trạng thái tài khoản
             if ("Khóa".equals(user.getTrangThai())) {
-                request.setAttribute("error",
-                        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
-                request.getRequestDispatcher("/views/auth/login.jsp")
-                        .forward(request, response);
+                request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
                 return;
             }
 
@@ -134,11 +123,7 @@ public class LoginController extends HttpServlet {
         }
 
         // Đăng nhập thất bại
-        request.setAttribute("error",
-                "Email/Tên đăng nhập hoặc mật khẩu không đúng!");
-
-        request.getRequestDispatcher("/views/auth/login.jsp")
-                .forward(request, response);
-
+        request.setAttribute("error", "Email/Tên đăng nhập hoặc mật khẩu không đúng!");
+        request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 }

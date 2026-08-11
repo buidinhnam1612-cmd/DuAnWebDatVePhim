@@ -369,12 +369,14 @@ public class PermissionRepository {
 
     private String generatePermissionId(Connection conn) throws SQLException {
 
+        // Bổ sung điều kiện LIKE 'NVQ%' để ngăn chặn crash sập luồng dữ liệu khi quét trúng dấu gạch dưới '_'
         String sql = """
         SELECT ISNULL(
             MAX(CAST(SUBSTRING(MaNhanVienQuyen, 4, 10) AS INT)),
             0
         ) + 1
         FROM NHAN_VIEN_QUYEN
+        WHERE MaNhanVienQuyen LIKE 'NVQ%'
         """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -413,6 +415,7 @@ public class PermissionRepository {
         }
         return success;
     }
+
     public boolean initializeEmployeePermissions(String maNhanVien, String maVaiTro) {
         String sql = """
         INSERT INTO NHAN_VIEN_QUYEN
@@ -448,6 +451,7 @@ public class PermissionRepository {
             return false;
         }
     }
+
     public boolean initializeDefaultPermissions(String maNhanVien, String maVaiTro) {
 
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
@@ -467,8 +471,9 @@ public class PermissionRepository {
                     "Q11", "Q12", "Q13", "Q14", "Q15"
             };
         } else if ("VT02".equals(maVaiTro)) {
+            // ĐÃ ĐƯỢC VÁ LỖI: Thêm mã quyền Q07 vào danh sách mặc định khởi tạo của Nhân viên bán vé
             defaultPermissions = new String[]{
-                    "Q01", "Q02", "Q03", "Q11", "Q13"
+                    "Q01", "Q02", "Q03", "Q07", "Q11", "Q13"
             };
         } else {
             return true;
@@ -527,3 +532,4 @@ public class PermissionRepository {
         }
     }
 }
+

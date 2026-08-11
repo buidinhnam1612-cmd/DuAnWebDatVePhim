@@ -1,6 +1,7 @@
 package com.fptpoly.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+@WebFilter("/admin/*") // Đảm bảo bộ lọc bao phủ toàn bộ phân hệ quản trị admin
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -25,68 +27,65 @@ public class AuthorizationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession(false);
 
-        if (session == null) {
+        // Đọc URL path thuần túy loại bỏ contextPath để so sánh chính xác
+        String requestURI = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        String path = requestURI;
+        if (contextPath != null && !contextPath.isEmpty()) {
+            path = requestURI.substring(contextPath.length());
+        }
+
+        // Nếu là trang Login hoặc các file tĩnh (css, js, image) thì bỏ qua không chặn
+        if (path.startsWith("/login") || path.contains(".") || path.startsWith("/assets")) {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        if (session == null || session.getAttribute("role") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
         String role = (String) session.getAttribute("role");
 
-        if (role == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        // Admin (ADMIN hoặc VT01) có toàn bộ quyền -> cho đi tiếp
+        // ADMIN hoặc VT01 sở hữu toàn quyền hệ thống -> Cho qua trực tiếp
         if ("ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role)) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        // Nhân viên (EMPLOYEE hoặc VT02) -> kiểm tra quyền theo URL
+        // NHÂN VIÊN hoặc VT02 -> Tiến hành kiểm soát chặt chẽ danh sách mã Q
         if ("EMPLOYEE".equalsIgnoreCase(role) || "VT02".equalsIgnoreCase(role)) {
 
-            String requestURI = request.getRequestURI();
-            String contextPath = request.getContextPath();
-
-            // Bỏ contextPath để lấy path thuần
-            String path = requestURI;
-            if (contextPath != null && !contextPath.isEmpty()) {
-                path = requestURI.substring(contextPath.length());
-            }
-
-            // Dashboard luôn được truy cập
+            // Trang tổng quan Dashboard luôn mở cho mọi nhân viên
             if ("/admin/dashboard".equals(path)) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }
 
-            // Lấy danh sách quyền từ session
-            List<String> userPermissions =
-                    (List<String>) session.getAttribute("userPermissions");
+            List<String> userPermissions = (List<String>) session.getAttribute("userPermissions");
 
-            // Kiểm tra quyền dựa theo URL
+            // Thực hiện gọi hàm kiểm tra quyền khớp nối giữa URL và mã Q
             boolean hasPermission = checkPermission(path, userPermissions);
 
             if (hasPermission) {
                 chain.doFilter(servletRequest, servletResponse);
             } else {
-                // Không có quyền -> redirect về dashboard kèm thông báo lỗi
-                session.setAttribute("error",
-                        "Bạn không có quyền truy cập chức năng này!");
-                response.sendRedirect(
-                        request.getContextPath() + "/admin/dashboard"
-                );
+                // ĐỒNG BỘ DỮ LIỆU: Đẩy thông báo lỗi sang cả Request và Session để giao diện jsp đọc không bị sót
+                request.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
+                session.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
+
+                request.getRequestDispatcher("/views/admin/dashboard.jsp").forward(request, response);
             }
             return;
         }
 
-        // Role không xác định
+        // Vai trò không hợp lệ
         response.sendRedirect(request.getContextPath() + "/login");
     }
 
     /**
-     * Kiểm tra quyền dựa trên URL path và danh sách permission (mã Q01 -> Q15)
+     * Kiểm tra quyền dựa trên URL path và danh sách mã quyền (Q01 -> Q15)
      */
     private boolean checkPermission(String path, List<String> permissions) {
 
@@ -94,15 +93,17 @@ public class AuthorizationFilter implements Filter {
             return false;
         }
 
-        if ("/admin/booking".equals(path)) {
-            return permissions.contains("Q02") || permissions.contains("Q03")
-                    || permissions.contains("VIEW_BOOKING") || permissions.contains("CHECKIN_BOOKING")
-                    || permissions.contains("CANCEL_BOOKING") || permissions.contains("CHANGE_BOOKING");
-        }
-
-        if ("/admin/showtime".equals(path)) {
+        // Đã sửa lỗi: Thêm đường dẫn mục số 7 gán đồng bộ vào mã quyền Q07 soát vé
+        if ("/admin/confirm-booking".equals(path) || "/admin/showtime".equals(path)) {
             return permissions.contains("Q07") || permissions.contains("VIEW_SHOWTIME")
                     || permissions.contains("MANAGE_SHOWTIME");
+        }
+
+        if ("/admin/booking".equals(path)) {
+            return permissions.contains("Q02") || permissions.contains("Q03")
+                    // Giữ lại bộ quyền mở rộng an toàn của bạn nhóm bạn
+                    || permissions.contains("VIEW_BOOKING") || permissions.contains("CHECKIN_BOOKING")
+                    || permissions.contains("CANCEL_BOOKING") || permissions.contains("CHANGE_BOOKING");
         }
 
         if ("/admin/food".equals(path)) {
@@ -114,9 +115,9 @@ public class AuthorizationFilter implements Filter {
             return permissions.contains("Q10") || permissions.contains("VIEW_SEAT");
         }
 
-        if ("/admin/report".equals(path)) {
+        if ("/admin/report".equals(path) || "/admin/export-report".equals(path)) {
             return permissions.contains("Q13") || permissions.contains("VIEW_SHIFT_REPORT")
-                    || permissions.contains("VIEW_REPORT");
+                    || permissions.contains("VIEW_REPORT") || permissions.contains("EXPORT_REPORT");
         }
 
         if ("/admin/employee".equals(path) || "/admin/employee/permission".equals(path) || path.startsWith("/admin/employee")) {
@@ -141,10 +142,6 @@ public class AuthorizationFilter implements Filter {
 
         if ("/genre".equals(path)) {
             return permissions.contains("Q06") || permissions.contains("MANAGE_GENRE");
-        }
-
-        if ("/admin/export-report".equals(path)) {
-            return permissions.contains("Q13") || permissions.contains("EXPORT_REPORT");
         }
 
         return false;
