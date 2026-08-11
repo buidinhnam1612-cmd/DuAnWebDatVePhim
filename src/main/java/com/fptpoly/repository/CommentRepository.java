@@ -159,17 +159,8 @@ public class CommentRepository {
 
     /**
      * Cập nhật trạng thái
-     *
-     * Dùng cho:
-     * Chờ duyệt -> Đã duyệt
-     * Chờ duyệt -> Từ chối
-     * Đã duyệt -> Đã ẩn
-     * Từ chối -> Đã ẩn
-     * Đã ẩn -> Đã duyệt
      */
-    public boolean updateStatus(
-            String maBinhLuan,
-            String trangThai) {
+    public boolean updateStatus(String maBinhLuan, String trangThai) {
 
         String sql = """
                 UPDATE BINH_LUAN
@@ -253,42 +244,8 @@ public class CommentRepository {
     }
 
     /**
-     * Mapping ResultSet -> Comment
+     * Lấy danh sách bình luận theo mã phim (Đã sửa lỗi và đưa vào trong Class)
      */
-    private Comment mapResultSet(ResultSet rs) throws Exception {
-
-        Comment comment = new Comment();
-
-        comment.setMaBinhLuan(
-                rs.getString("MaBinhLuan"));
-
-        comment.setSoSao(
-                rs.getInt("SoSao"));
-
-        comment.setNoiDung(
-                rs.getString("NoiDung"));
-
-        comment.setNgayTao(
-                rs.getTimestamp("NgayTao"));
-
-        comment.setTrangThai(
-                rs.getString("TrangThai"));
-
-        comment.setMaKhachHang(
-                rs.getString("MaKhachHang"));
-
-        comment.setMaPhim(
-                rs.getString("MaPhim"));
-
-        comment.setTenKhachHang(
-                rs.getString("TenKhachHang"));
-
-        comment.setTenPhim(
-                rs.getString("TenPhim"));
-
-        return comment;
-    }
-}
     public List<Comment> getByMovie(String maPhim) {
         List<Comment> list = new ArrayList<>();
         String sql = """
@@ -298,8 +255,10 @@ public class CommentRepository {
                 WHERE bl.MaPhim = ?
                 ORDER BY bl.NgayTao DESC
                 """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
             ps.setString(1, maPhim);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -311,6 +270,11 @@ public class CommentRepository {
                     c.setMaKhachHang(rs.getString("MaKhachHang"));
                     c.setMaPhim(rs.getString("MaPhim"));
                     c.setTenKhachHang(rs.getString("TenKhachHang"));
+                    // Thử lấy thêm cột trạng thái an toàn nếu có dùng bộ lọc hiển thị
+                    try {
+                        c.setTrangThai(rs.getString("TrangThai"));
+                    } catch (Exception ignored) {}
+
                     list.add(c);
                 }
             }
@@ -320,44 +284,55 @@ public class CommentRepository {
         return list;
     }
 
-    public String generateCommentId() {
-        String sql = """
-                SELECT COALESCE(MAX(CAST(SUBSTRING(MaBinhLuan, 3, LEN(MaBinhLuan)) AS INT)), 0) AS MaxNum
-                FROM BINH_LUAN
-                """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                int maxNum = rs.getInt("MaxNum");
-                return String.format("BL%02d", maxNum + 1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "BL01";
-    }
+    /**
+     * Mapping ResultSet -> Comment
+     */
+    private Comment mapResultSet(ResultSet rs) throws Exception {
 
-    public boolean insert(Comment c) {
-        if (c.getMaBinhLuan() == null || c.getMaBinhLuan().isBlank()) {
-            c.setMaBinhLuan(generateCommentId());
-        }
+        Comment comment = new Comment();
+
+        comment.setMaBinhLuan(rs.getString("MaBinhLuan"));
+        comment.setSoSao(rs.getInt("SoSao"));
+        comment.setNoiDung(rs.getString("NoiDung"));
+        comment.setNgayTao(rs.getTimestamp("NgayTao"));
+        comment.setTrangThai(rs.getString("TrangThai"));
+        comment.setMaKhachHang(rs.getString("MaKhachHang"));
+        comment.setMaPhim(rs.getString("MaPhim"));
+        comment.setTenKhachHang(rs.getString("TenKhachHang"));
+        comment.setTenPhim(rs.getString("TenPhim"));
+
+        return comment;
+    }
+    /**
+     * Thêm mới một bình luận từ khách hàng
+     */
+    public boolean insert(Comment comment) {
         String sql = """
-                INSERT INTO BINH_LUAN (MaBinhLuan, SoSao, NoiDung, NgayTao, MaKhachHang, MaPhim)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO BINH_LUAN (MaBinhLuan, SoSao, NoiDung, NgayTao, MaKhachHang, MaPhim, TrangThai)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, c.getMaBinhLuan());
-            ps.setInt(2, c.getSoSao());
-            ps.setString(3, c.getNoiDung());
-            ps.setTimestamp(4, c.getNgayTao() != null ? c.getNgayTao() : new Timestamp(System.currentTimeMillis()));
-            ps.setString(5, c.getMaKhachHang());
-            ps.setString(6, c.getMaPhim());
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            // Tự động sinh mã bình luận ngẫu nhiên để không bị trùng khóa chính (UUID)
+            String uniqueId = "BL_" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+            ps.setString(1, uniqueId);
+            ps.setInt(2, comment.getSoSao());
+            ps.setString(3, comment.getNoiDung());
+            ps.setTimestamp(4, comment.getNgayTao() != null ? comment.getNgayTao() : new Timestamp(System.currentTimeMillis()));
+            ps.setString(5, comment.getMaKhachHang());
+            ps.setString(6, comment.getMaPhim());
+
+            // Thiết lập trạng thái mặc định ban đầu khi khách gửi bình luận (ví dụ: Chờ duyệt hoặc Hiện)
+            ps.setString(7, "Chờ duyệt");
+
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
 }

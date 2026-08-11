@@ -13,7 +13,8 @@ public class Booking {
     private String maKhachHang;
     private String maNhanVien;
     private String maVoucher;
-    // Thông tin hiển thị cho Admin
+
+    // Thông tin hiển thị cho Admin (Lấy từ các câu lệnh JOIN)
     private String tenKhachHang;
     private String tenPhim;
     private String tenRap;
@@ -29,14 +30,14 @@ public class Booking {
     private String soDienThoai;
     private String email;
 
+    // 1. Hàm khởi tạo không tham số (Bắt buộc phải giữ cho JDBC)
     public Booking() {
     }
 
-    public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher, String soDienThoai,
-                    String email) {
+    // 2. Hàm khởi tạo đầy đủ tham số chính xác (Đã dọn dẹp lỗi viết đè lồng nhau)
     public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
+                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher,
+                   String soDienThoai, String email) {
         this.maDatVe = maDatVe;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
@@ -48,6 +49,8 @@ public class Booking {
         this.email = email;
     }
 
+    // ===================== TOÀN BỘ GETTER & SETTER CHUẨN HÓA =====================
+
     public String getMaDatVe() {
         return maDatVe;
     }
@@ -55,10 +58,6 @@ public class Booking {
     public void setMaDatVe(String maDatVe) {
         this.maDatVe = maDatVe;
     }
-
-    //public Timestamp getThoiGianDat() {
-   //     return thoiGianDat;
-  //  }
 
     public LocalDateTime getThoiGianDat() {
         return thoiGianDat;
@@ -107,6 +106,7 @@ public class Booking {
     public void setMaVoucher(String maVoucher) {
         this.maVoucher = maVoucher;
     }
+
     public String getTenKhachHang() {
         return tenKhachHang;
     }
@@ -162,12 +162,15 @@ public class Booking {
     public void setHinhThucDat(String hinhThucDat) {
         this.hinhThucDat = hinhThucDat;
     }
+
     public String getDanhSachGhe() {
         return danhSachGhe;
     }
+
     public void setDanhSachGhe(String danhSachGhe) {
         this.danhSachGhe = danhSachGhe;
     }
+
     public String getTenVoucher() {
         return tenVoucher;
     }
@@ -175,6 +178,7 @@ public class Booking {
     public void setTenVoucher(String tenVoucher) {
         this.tenVoucher = tenVoucher;
     }
+
     public String getTenNhanVien() {
         return tenNhanVien;
     }
@@ -182,6 +186,7 @@ public class Booking {
     public void setTenNhanVien(String tenNhanVien) {
         this.tenNhanVien = tenNhanVien;
     }
+
     public String getSoDienThoai() {
         return soDienThoai;
     }

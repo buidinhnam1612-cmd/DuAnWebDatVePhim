@@ -5,28 +5,24 @@ import java.sql.Timestamp;
 public class Comment {
 
     private String maBinhLuan;
-    private Integer soSao;
+    private Integer soSao; // Dùng Integer để đồng bộ tốt với giá trị null hoặc int
     private String noiDung;
     private Timestamp ngayTao;
-    private String trangThai;
+    private String trangThai; // Giữ lại để xử lý bộ lọc ẩn/hiện bình luận trên giao diện
 
     private String maKhachHang;
     private String maPhim;
 
-    // Thông tin hiển thị
+    // Thông tin hiển thị mở rộng (Lấy từ câu lệnh INNER JOIN sang các bảng khác)
     private String tenKhachHang;
     private String tenPhim;
-    private int soSao;
-    private String noiDung;
-    private Timestamp ngayTao;
-    private String maKhachHang;
-    private String maPhim;
-    private String tenKhachHang;
 
+    // 1. Hàm khởi tạo không tham số (Bắt buộc cho JDBC)
     public Comment() {
     }
 
-    public Comment(String maBinhLuan, int soSao, String noiDung, Timestamp ngayTao, String maKhachHang, String maPhim) {
+    // 2. Hàm khởi tạo đầy đủ tham số cốt lõi
+    public Comment(String maBinhLuan, Integer soSao, String noiDung, Timestamp ngayTao, String maKhachHang, String maPhim) {
         this.maBinhLuan = maBinhLuan;
         this.soSao = soSao;
         this.noiDung = noiDung;
@@ -34,6 +30,8 @@ public class Comment {
         this.maKhachHang = maKhachHang;
         this.maPhim = maPhim;
     }
+
+    // ===================== TOÀN BỘ GETTER & SETTER CHUẨN HÓA =====================
 
     public String getMaBinhLuan() {
         return maBinhLuan;
@@ -48,11 +46,6 @@ public class Comment {
     }
 
     public void setSoSao(Integer soSao) {
-    public int getSoSao() {
-        return soSao;
-    }
-
-    public void setSoSao(int soSao) {
         this.soSao = soSao;
     }
 
@@ -111,5 +104,4 @@ public class Comment {
     public void setTenPhim(String tenPhim) {
         this.tenPhim = tenPhim;
     }
-}
 }
