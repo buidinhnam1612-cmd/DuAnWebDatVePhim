@@ -119,7 +119,7 @@
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
                 "CHECKIN_BOOKING", "MANAGE_BOOKING")) { %>
         <li class="nav-item">
-            <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
+            <a class="nav-link" href="${pageContext.request.contextPath}/admin/confirm-booking">
                 <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
             </a>
         </li>
@@ -180,12 +180,17 @@
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
                 "VIEW_COMMENT", "MODERATE_COMMENT")) { %>
+
         <li class="nav-item">
             <a class="nav-link<%= "comment".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/booking">
-                <i class="bi bi-chat-dots me-2"></i> Kiểm duyệt bình luận
+               href="${pageContext.request.contextPath}/admin/comment">
+
+                <i class="bi bi-chat-dots me-2"></i>
+                Kiểm duyệt bình luận
+
             </a>
         </li>
+
         <% } %>
 
         <li class="nav-item" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">

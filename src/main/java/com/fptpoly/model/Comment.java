@@ -5,6 +5,17 @@ import java.sql.Timestamp;
 public class Comment {
 
     private String maBinhLuan;
+    private Integer soSao;
+    private String noiDung;
+    private Timestamp ngayTao;
+    private String trangThai;
+
+    private String maKhachHang;
+    private String maPhim;
+
+    // Thông tin hiển thị
+    private String tenKhachHang;
+    private String tenPhim;
     private int soSao;
     private String noiDung;
     private Timestamp ngayTao;
@@ -32,6 +43,11 @@ public class Comment {
         this.maBinhLuan = maBinhLuan;
     }
 
+    public Integer getSoSao() {
+        return soSao;
+    }
+
+    public void setSoSao(Integer soSao) {
     public int getSoSao() {
         return soSao;
     }
@@ -54,6 +70,14 @@ public class Comment {
 
     public void setNgayTao(Timestamp ngayTao) {
         this.ngayTao = ngayTao;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
     }
 
     public String getMaKhachHang() {
@@ -79,4 +103,13 @@ public class Comment {
     public void setTenKhachHang(String tenKhachHang) {
         this.tenKhachHang = tenKhachHang;
     }
+
+    public String getTenPhim() {
+        return tenPhim;
+    }
+
+    public void setTenPhim(String tenPhim) {
+        this.tenPhim = tenPhim;
+    }
+}
 }
