@@ -190,11 +190,6 @@
 
         <li class="nav-item" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
             <a class="nav-link" href="${pageContext.request.contextPath}/home" style="color: #f87171 !important;">
-                <i class="bi bi-box-arrow-left me-2"></i> Trở về Trang chủ
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="${pageContext.request.contextPath}/logout" style="color: #f87171 !important;">
                 <i class="bi bi-power me-2"></i> Đăng xuất
             </a>
         </li>

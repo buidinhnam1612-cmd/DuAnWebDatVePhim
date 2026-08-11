@@ -7,22 +7,22 @@
 
 <style>
     .movie-detail-page {
-        background-color: #0f172a;
-        color: #f8fafc;
+        background-color: #f8fafc;
+        color: #0f172a;
         min-height: 90vh;
         padding-bottom: 60px;
     }
     .movie-detail-banner {
         position: relative;
         padding: 80px 0;
-        background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), #0f172a), 
+        background: linear-gradient(to bottom, rgba(248, 250, 252, 0.8), #f8fafc), 
                     url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200') no-repeat center center;
         background-size: cover;
     }
     .movie-detail-poster {
-        border: 4px solid #334155;
+        border: 4px solid #ffffff;
         border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         width: 100%;
         max-width: 320px;
     }
@@ -30,17 +30,17 @@
         font-size: 36px;
         font-weight: 800;
         margin-bottom: 15px;
-        color: #fff;
+        color: #0f172a;
     }
     .movie-detail-description {
         font-size: 16px;
-        color: #cbd5e1;
+        color: #475569;
         line-height: 1.6;
         margin-bottom: 25px;
     }
     .movie-info-item {
-        background-color: #1e293b;
-        border: 1px solid #334155;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 12px;
         padding: 15px 20px;
         margin-bottom: 15px;
@@ -48,14 +48,14 @@
     .movie-info-label {
         font-size: 12px;
         text-transform: uppercase;
-        color: #94a3b8;
+        color: #64748b;
         font-weight: 700;
         letter-spacing: 1px;
     }
     .movie-info-value {
         font-size: 16px;
         font-weight: 600;
-        color: #fff;
+        color: #0f172a;
         margin-top: 5px;
     }
     .section-detail-title {
@@ -64,7 +64,7 @@
         border-left: 5px solid #e11d48;
         padding-left: 15px;
         margin-bottom: 25px;
-        color: #fff;
+        color: #0f172a;
     }
     .showtime-btn:hover {
         background-color: #e11d48 !important;
@@ -73,8 +73,8 @@
         transform: translateY(-2px);
     }
     .comment-item {
-        background: #1e293b;
-        border: 1px solid #334155;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 15px;
@@ -94,6 +94,7 @@
                 <!-- POSTER -->
                 <div class="col-lg-4 text-center mb-4 mb-lg-0">
                     <img src="<c:choose>
+                             <c:when test="${not empty movie.poster}">${movie.poster}</c:when>
                              <c:when test="${movie.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=400</c:when>
                              <c:when test="${movie.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400</c:when>
                              <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400</c:otherwise>
@@ -141,8 +142,8 @@
         <h2 class="section-detail-title">📅 Chọn suất chiếu để đặt vé</h2>
         <c:choose>
             <c:when test="${empty listSuatChieu}">
-                <div class="text-center py-4" style="background: #1e293b; border: 1px solid #334155; border-radius: 12px;">
-                    <i class="bi bi-calendar-x" style="font-size: 32px; color: #64748b;"></i>
+                <div class="text-center py-4" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;">
+                    <i class="bi bi-calendar-x" style="font-size: 32px; color: #94a3b8;"></i>
                     <p class="mt-2 text-muted m-0">Phim hiện tại chưa có lịch chiếu mới.</p>
                 </div>
             </c:when>
@@ -151,7 +152,7 @@
                     <c:forEach var="sc" items="${listSuatChieu}">
                         <a href="${pageContext.request.contextPath}/booking?maSuatChieu=${sc.maSuatChieu}" 
                            class="showtime-btn" 
-                           style="background: #1e293b; border: 1px solid #334155; color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.2s ease;">
+                           style="background: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.2s ease;">
                             <i class="bi bi-clock me-2 text-danger"></i>${sc.gioBatDau} (${sc.ngayChieu})
                         </a>
                     </c:forEach>
@@ -174,14 +175,14 @@
                         <c:forEach var="bl" items="${listBinhLuan}">
                             <div class="comment-item shadow-sm">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <strong style="color: #fff; font-size: 16px;">
+                                    <strong style="color: #0f172a; font-size: 16px;">
                                         <i class="bi bi-person-fill text-muted me-2"></i>${bl.tenKhachHang}
                                     </strong>
                                     <span style="color: #ffc107; font-size: 14px;">
                                         <c:forEach begin="1" end="${bl.soSao}">⭐</c:forEach>
                                     </span>
                                 </div>
-                                <p class="m-0" style="color: #cbd5e1; font-size: 15px; line-height: 1.5;">${bl.noiDung}</p>
+                                <p class="m-0" style="color: #475569; font-size: 15px; line-height: 1.5;">${bl.noiDung}</p>
                                 <div class="text-end mt-2">
                                     <small class="text-muted" style="font-size: 11px;">${bl.ngayTao}</small>
                                 </div>
@@ -196,11 +197,11 @@
                 <h2 class="section-detail-title">✏️ Viết bình luận của bạn</h2>
                 <c:choose>
                     <c:when test="${not empty sessionScope.user}">
-                        <form action="${pageContext.request.contextPath}/comment" method="post" style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px;">
+                        <form action="${pageContext.request.contextPath}/comment" method="post" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px;">
                             <input type="hidden" name="maPhim" value="${movie.maPhim}">
                             <div class="mb-3">
-                                <label class="form-label" style="color: #94a3b8; font-weight: 600;">Đánh giá phim (Số sao):</label>
-                                <select name="soSao" class="form-select" style="background: #0f172a; border: 1px solid #334155; color: #fff; width: 100%; border-radius: 8px; height: 45px;">
+                                <label class="form-label" style="color: #64748b; font-weight: 600;">Đánh giá phim (Số sao):</label>
+                                <select name="soSao" class="form-select" style="background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; width: 100%; border-radius: 8px; height: 45px;">
                                     <option value="5">⭐⭐⭐⭐⭐ (5 sao) - Cực phẩm</option>
                                     <option value="4">⭐⭐⭐⭐ (4 sao) - Rất hay</option>
                                     <option value="3">⭐⭐⭐ (3 sao) - Bình thường</option>
@@ -209,8 +210,8 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label" style="color: #94a3b8; font-weight: 600;">Ý kiến đóng góp:</label>
-                                <textarea name="noiDung" rows="4" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn về bộ phim..." required style="background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px;"></textarea>
+                                <label class="form-label" style="color: #64748b; font-weight: 600;">Ý kiến đóng góp:</label>
+                                <textarea name="noiDung" rows="4" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn về bộ phim..." required style="background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 8px;"></textarea>
                             </div>
                             <button type="submit" class="btn btn-danger w-100" style="background: #e11d48; border: none; font-weight: 600; padding: 12px; border-radius: 8px; transition: background-color 0.2s ease;">
                                 <i class="bi bi-send-fill me-2"></i>Gửi đánh giá
@@ -218,8 +219,8 @@
                         </form>
                     </c:when>
                     <c:otherwise>
-                        <div class="text-center py-5" style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 30px;">
-                            <i class="bi bi-lock-fill" style="font-size: 32px; color: #64748b;"></i>
+                        <div class="text-center py-5" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px;">
+                            <i class="bi bi-lock-fill" style="font-size: 32px; color: #94a3b8;"></i>
                             <p class="text-muted mt-2">Vui lòng đăng nhập tài khoản thành viên để viết đánh giá và bình luận phim.</p>
                             <a href="${pageContext.request.contextPath}/login" class="btn btn-danger mt-2" style="background: #e11d48; border: none; font-weight: 600; padding: 8px 30px; border-radius: 8px;">
                                 Đăng nhập ngay

@@ -222,13 +222,27 @@
                 <input type="text" name="maVoucher" class="form-control form-control-sm" placeholder="Nhập mã giảm giá (nếu có)" style="width: 180px; background: #1e293b; border: 1px solid var(--border); color: #fff; height: 38px; border-radius: 8px;">
             </div>
 
-            <button type="submit"
-                    id="btnSubmit"
-                    class="btn btn-danger btn-lg"
-                    disabled
-                    style="padding: 12px 40px; font-size: 18px; font-weight: 700; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                <i class="bi bi-cart-check me-2"></i>Mua vé
-            </button>
+            <c:choose>
+                <c:when test="${not empty sessionScope.user}">
+                    <button type="submit"
+                            id="btnSubmit"
+                            class="btn btn-danger btn-lg"
+                            disabled
+                            style="padding: 12px 40px; font-size: 18px; font-weight: 700; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-cart-check me-2"></i>Mua vé
+                    </button>
+                </c:when>
+                <c:otherwise>
+                    <button type="button"
+                            id="btnSubmit"
+                            class="btn btn-danger btn-lg"
+                            disabled
+                            onclick="window.location.href='${pageContext.request.contextPath}/login'"
+                            style="padding: 12px 40px; font-size: 18px; font-weight: 700; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để Mua vé
+                    </button>
+                </c:otherwise>
+            </c:choose>
         </div>
 
     </div>
@@ -381,21 +395,13 @@
 
     /* Bottom Bar */
     .booking-bottom-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 1050;
         background: rgba(17, 24, 39, 0.95);
-        backdrop-filter: blur(15px);
-        border-top: 1px solid var(--border);
-        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
+        border-radius: 16px;
+        margin: 30px auto 0;
+        max-width: 900px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         padding: 18px 0;
-    }
-
-    /* Add bottom padding to body so content isn't hidden */
-    body {
-        padding-bottom: 130px;
     }
 
     /* Responsive seats */

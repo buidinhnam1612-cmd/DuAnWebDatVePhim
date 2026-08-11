@@ -142,7 +142,7 @@
                                         </td>
                                         <td><span class="badge bg-dark">${r.maRap}</span></td>
                                         <td class="text-center">
-                                            <a href="#" class="btn btn-outline-primary btn-action">
+                                            <a href="${pageContext.request.contextPath}/admin/seat?maPhong=${r.maPhong}" class="btn btn-outline-primary btn-action">
                                                 <i class="bi bi-eye"></i> Xem ghế
                                             </a>
                                         </td>

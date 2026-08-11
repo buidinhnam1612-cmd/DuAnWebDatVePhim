@@ -6,14 +6,14 @@
 
 <style>
     .movie-list-page {
-        background-color: #0f172a;
-        color: #f8fafc;
+        background-color: #f8fafc;
+        color: #0f172a;
         min-height: 90vh;
         padding: 60px 0;
     }
     .movie-grid-card {
-        background-color: #1e293b;
-        border: 1px solid #334155;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -23,7 +23,7 @@
     }
     .movie-grid-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 10px 25px rgba(225, 29, 72, 0.3);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         border-color: #e11d48;
     }
     .movie-grid-img {
@@ -41,7 +41,7 @@
         font-size: 18px;
         font-weight: 700;
         margin-bottom: 8px;
-        color: #fff;
+        color: #0f172a;
     }
     .movie-grid-meta {
         font-size: 14px;
@@ -100,7 +100,7 @@
             </div>
             
             <form action="${pageContext.request.contextPath}/movies" method="get" class="d-flex" style="max-width: 400px; width: 100%;">
-                <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Nhập tên phim cần tìm..." style="background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px 0 0 8px;">
+                <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Nhập tên phim cần tìm..." style="background: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 8px 0 0 8px;">
                 <button type="submit" class="btn btn-danger" style="border-radius: 0 8px 8px 0; background: #e11d48; border: none;">Tìm</button>
             </form>
         </div>
@@ -120,6 +120,7 @@
                             <div class="movie-grid-card shadow">
                                 <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}">
                                     <img src="<c:choose>
+                                         <c:when test="${not empty m.poster}">${m.poster}</c:when>
                                          <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=300</c:when>
                                          <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=300</c:when>
                                          <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300</c:otherwise>
