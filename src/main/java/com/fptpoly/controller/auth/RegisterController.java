@@ -1,5 +1,8 @@
 package com.fptpoly.controller.auth;
 
+import com.fptpoly.model.User;
+import com.fptpoly.service.UserService;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +13,8 @@ import java.io.IOException;
 
 @WebServlet(name = "RegisterController", urlPatterns = "/register")
 public class RegisterController extends HttpServlet {
+
+    private final UserService userService = new UserService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -23,7 +28,7 @@ public class RegisterController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+                           HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
@@ -35,25 +40,36 @@ public class RegisterController extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
 
-        // Kiểm tra mật khẩu
-        if (!password.equals(confirmPassword)) {
+        if (fullName == null || fullName.isBlank()
+                || email == null || email.isBlank()
+                || phone == null || phone.isBlank()
+                || password == null || password.isBlank()) {
 
-            request.setAttribute("error",
-                    "Mật khẩu xác nhận không khớp!");
-
-            request.getRequestDispatcher("/views/auth/register.jsp")
-                    .forward(request, response);
-
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin đăng ký!");
+            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
             return;
         }
 
-        // Demo đăng ký thành công
-        request.setAttribute("success",
-                "Đăng ký thành công! Vui lòng đăng nhập.");
+        // Kiểm tra mật khẩu
+        if (!password.equals(confirmPassword)) {
+            request.setAttribute("error", "Mật khẩu xác nhận không khớp!");
+            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+            return;
+        }
 
-        request.getRequestDispatcher("/views/auth/login.jsp")
-                .forward(request, response);
+        User user = new User();
+        user.setHoTen(fullName.trim());
+        user.setEmail(email.trim());
+        user.setSoDienThoai(phone.trim());
+        user.setMatKhau(password);
 
+        boolean success = userService.register(user);
+        if (success) {
+            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+        } else {
+            request.setAttribute("error", "Email đăng ký đã tồn tại hoặc đăng ký thất bại!");
+            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+        }
     }
-
 }
