@@ -4,6 +4,10 @@ import com.fptpoly.model.Genre;
 import com.fptpoly.model.Theater;
 import com.fptpoly.service.GenreService;
 import com.fptpoly.service.TheaterService;
+import com.fptpoly.model.Movie;
+import com.fptpoly.model.Food;
+import com.fptpoly.repository.MovieRepository;
+import com.fptpoly.service.CustomerFoodService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,9 +19,10 @@ import java.util.List;
 @WebServlet(name = "HomeController", urlPatterns = {"/", "/home"})
 public class HomeController extends HttpServlet {
 
-    // Khởi tạo các dịch vụ để lấy dữ liệu từ database
     private final GenreService genreService = new GenreService();
     private final TheaterService theaterService = new TheaterService();
+    private final MovieRepository movieRepository = new MovieRepository();
+    private final CustomerFoodService customerFoodService = new CustomerFoodService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,7 +39,15 @@ public class HomeController extends HttpServlet {
         List<Theater> listTheater = theaterService.getall();
         request.setAttribute("listRap", listTheater);
 
-        // 3. Chuyển tiếp dữ liệu sang giao diện trang chủ
+        // 3. Lấy danh sách toàn bộ phim và đẩy vào request scope
+        List<Movie> listMovies = movieRepository.getAll();
+        request.setAttribute("listPhim", listMovies);
+
+        // 4. Lấy danh sách đồ ăn thức uống và đẩy vào request scope
+        List<Food> listFoods = customerFoodService.getActiveFoods();
+        request.setAttribute("listFoods", listFoods);
+
+        // 5. Chuyển tiếp dữ liệu sang giao diện trang chủ
         request.getRequestDispatcher("/views/client/home.jsp").forward(request, response);
     }
 }

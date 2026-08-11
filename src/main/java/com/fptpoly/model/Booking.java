@@ -2,17 +2,19 @@ package com.fptpoly.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Booking {
 
     private String maDatVe;
-    private Timestamp thoiGianDat;
-    private BigDecimal tongTien;
+    private LocalDateTime thoiGianDat;
+    private double tongTien;
     private String trangThai;
     private String maKhachHang;
     private String maNhanVien;
     private String maVoucher;
-    // Thông tin hiển thị cho Admin
+
+    // Thông tin hiển thị cho Admin (Lấy từ các câu lệnh JOIN)
     private String tenKhachHang;
     private String tenPhim;
     private String tenRap;
@@ -25,12 +27,17 @@ public class Booking {
     private java.sql.Time gioBatDau;
 
     private String hinhThucDat;
+    private String soDienThoai;
+    private String email;
 
+    // 1. Hàm khởi tạo không tham số (Bắt buộc phải giữ cho JDBC)
     public Booking() {
     }
 
-    public Booking(String maDatVe, Timestamp thoiGianDat, BigDecimal tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
+    // 2. Hàm khởi tạo đầy đủ tham số chính xác (Đã dọn dẹp lỗi viết đè lồng nhau)
+    public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
+                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher,
+                   String soDienThoai, String email) {
         this.maDatVe = maDatVe;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
@@ -38,7 +45,11 @@ public class Booking {
         this.maKhachHang = maKhachHang;
         this.maNhanVien = maNhanVien;
         this.maVoucher = maVoucher;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
     }
+
+    // ===================== TOÀN BỘ GETTER & SETTER CHUẨN HÓA =====================
 
     public String getMaDatVe() {
         return maDatVe;
@@ -48,19 +59,19 @@ public class Booking {
         this.maDatVe = maDatVe;
     }
 
-    public Timestamp getThoiGianDat() {
+    public LocalDateTime getThoiGianDat() {
         return thoiGianDat;
     }
 
-    public void setThoiGianDat(Timestamp thoiGianDat) {
+    public void setThoiGianDat(LocalDateTime thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
     }
 
-    public BigDecimal getTongTien() {
+    public double getTongTien() {
         return tongTien;
     }
 
-    public void setTongTien(BigDecimal tongTien) {
+    public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
     }
 
@@ -95,6 +106,7 @@ public class Booking {
     public void setMaVoucher(String maVoucher) {
         this.maVoucher = maVoucher;
     }
+
     public String getTenKhachHang() {
         return tenKhachHang;
     }
@@ -150,12 +162,15 @@ public class Booking {
     public void setHinhThucDat(String hinhThucDat) {
         this.hinhThucDat = hinhThucDat;
     }
+
     public String getDanhSachGhe() {
         return danhSachGhe;
     }
+
     public void setDanhSachGhe(String danhSachGhe) {
         this.danhSachGhe = danhSachGhe;
     }
+
     public String getTenVoucher() {
         return tenVoucher;
     }
@@ -163,6 +178,7 @@ public class Booking {
     public void setTenVoucher(String tenVoucher) {
         this.tenVoucher = tenVoucher;
     }
+
     public String getTenNhanVien() {
         return tenNhanVien;
     }
@@ -171,4 +187,19 @@ public class Booking {
         this.tenNhanVien = tenNhanVien;
     }
 
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

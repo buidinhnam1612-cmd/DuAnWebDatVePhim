@@ -1,8 +1,10 @@
 package com.fptpoly.controller.auth;
 
 import com.fptpoly.model.Employee;
+import com.fptpoly.model.User;
 import com.fptpoly.service.EmployeeService;
 import com.fptpoly.service.PermissionService;
+import com.fptpoly.service.UserService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,11 +21,13 @@ public class LoginController extends HttpServlet {
 
     private EmployeeService employeeService;
     private PermissionService permissionService;
+    private UserService userService;
 
     @Override
     public void init() {
         employeeService = new EmployeeService();
         permissionService = new PermissionService();
+        userService = new UserService();
     }
 
     @Override
@@ -103,8 +107,31 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // 2. TODO: Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG
-        // (Giữ chỗ cho tương lai khi cần đăng nhập khách hàng)
+        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG
+        User user = userService.login(email.trim(), password);
+
+        if (user != null) {
+
+            // Kiểm tra trạng thái tài khoản
+            if ("Khóa".equals(user.getTrangThai())) {
+                request.setAttribute("error",
+                        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
+                request.getRequestDispatcher("/views/auth/login.jsp")
+                        .forward(request, response);
+                return;
+            }
+
+            HttpSession session = request.getSession();
+
+            session.setAttribute("user", user);
+            session.setAttribute("userName", user.getHoTen());
+            session.setAttribute("email", user.getEmail());
+            session.setAttribute("maKhachHang", user.getMaKhachHang());
+            session.setAttribute("role", "CUSTOMER");
+
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
 
         // Đăng nhập thất bại
         request.setAttribute("error",
