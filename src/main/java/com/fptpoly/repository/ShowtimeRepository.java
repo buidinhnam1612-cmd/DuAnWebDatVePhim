@@ -136,5 +136,24 @@ public class ShowtimeRepository {
         }
         return list;
     }
+    // 6. Cập nhật suất chiếu
+    public boolean update(Showtime st) {
+        String sql = "UPDATE SUAT_CHIEU SET NgayChieu = ?, GioBatDau = ?, GioKetThuc = ?, MaPhim = ?, MaPhong = ? WHERE MaSuatChieu = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, Date.valueOf(st.getNgayChieu()));
+            ps.setTime(2, Time.valueOf(st.getGioBatDau()));
+            ps.setTime(3, Time.valueOf(st.getGioKetThuc()));
+            ps.setString(4, st.getMaPhim());
+            ps.setString(5, st.getMaPhong());
+            ps.setString(6, st.getMaSuatChieu());
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
 

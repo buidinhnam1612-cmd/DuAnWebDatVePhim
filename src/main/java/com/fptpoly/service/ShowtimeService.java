@@ -36,5 +36,32 @@ public class ShowtimeService {
         }
     }
 
+    public Showtime getShowtimeById(String id) {
+        return showtimeRepository.getById(id);
+    }
+
+    public String updateShowtime(Showtime st) {
+        // 1. Kiểm tra xem phòng đó vào ngày đó đã có những suất nào
+        List<Showtime> existingShowtimes = showtimeRepository.getByPhongAndNgay(
+                st.getMaPhong(), st.getNgayChieu());
+
+        // 2. Thuật toán kiểm tra trùng lịch (bỏ qua chính nó)
+        for (Showtime oldShowtime : existingShowtimes) {
+            if (!oldShowtime.getMaSuatChieu().equals(st.getMaSuatChieu())) {
+                if (st.getGioBatDau().isBefore(oldShowtime.getGioKetThuc()) &&
+                        st.getGioKetThuc().isAfter(oldShowtime.getGioBatDau())) {
+                    return "Thất bại: Phòng này đã có lịch chiếu trong khoảng thời gian trên!";
+                }
+            }
+        }
+
+        // 3. Cập nhật nếu không trùng
+        boolean isSuccess = showtimeRepository.update(st);
+        if (isSuccess) {
+            return "Thành công: Đã cập nhật suất chiếu.";
+        } else {
+            return "Thất bại: Lỗi hệ thống khi cập nhật vào cơ sở dữ liệu.";
+        }
+    }
 }
 
