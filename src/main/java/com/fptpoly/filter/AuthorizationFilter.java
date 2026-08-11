@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-// Filter đăng ký trong web.xml để đảm bảo thứ tự chạy sau AuthenticationFilter
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -38,14 +37,14 @@ public class AuthorizationFilter implements Filter {
             return;
         }
 
-        // Admin có toàn bộ quyền -> cho đi tiếp
-        if ("ADMIN".equals(role)) {
+        // Admin (ADMIN hoặc VT01) có toàn bộ quyền -> cho đi tiếp
+        if ("ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role)) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        // Nhân viên -> kiểm tra quyền theo URL
-        if ("EMPLOYEE".equals(role)) {
+        // Nhân viên (EMPLOYEE hoặc VT02) -> kiểm tra quyền theo URL
+        if ("EMPLOYEE".equalsIgnoreCase(role) || "VT02".equalsIgnoreCase(role)) {
 
             String requestURI = request.getRequestURI();
             String contextPath = request.getContextPath();
@@ -87,74 +86,67 @@ public class AuthorizationFilter implements Filter {
     }
 
     /**
-     * Kiểm tra quyền dựa trên URL path và danh sách permission
+     * Kiểm tra quyền dựa trên URL path và danh sách permission (mã Q01 -> Q15)
      */
-    private boolean checkPermission(String path,
-                                    List<String> permissions) {
+    private boolean checkPermission(String path, List<String> permissions) {
 
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
 
-        // Mapping URL -> các quyền cần thiết
-        // Chỉ cần CÓ MỘT trong các quyền là được truy cập
-
         if ("/admin/booking".equals(path)) {
-            return permissions.contains("VIEW_BOOKING")
-                    || permissions.contains("CHECKIN_BOOKING")
-                    || permissions.contains("CANCEL_BOOKING")
-                    || permissions.contains("CHANGE_BOOKING");
+            return permissions.contains("Q02") || permissions.contains("Q03")
+                    || permissions.contains("VIEW_BOOKING") || permissions.contains("CHECKIN_BOOKING")
+                    || permissions.contains("CANCEL_BOOKING") || permissions.contains("CHANGE_BOOKING");
         }
 
         if ("/admin/showtime".equals(path)) {
-            return permissions.contains("VIEW_SHOWTIME")
+            return permissions.contains("Q07") || permissions.contains("VIEW_SHOWTIME")
                     || permissions.contains("MANAGE_SHOWTIME");
         }
 
         if ("/admin/food".equals(path)) {
-            return permissions.contains("VIEW_FOOD")
+            return permissions.contains("Q11") || permissions.contains("VIEW_FOOD")
                     || permissions.contains("MANAGE_FOOD");
         }
 
         if ("/admin/seat".equals(path)) {
-            return permissions.contains("VIEW_SEAT");
+            return permissions.contains("Q10") || permissions.contains("VIEW_SEAT");
         }
 
         if ("/admin/report".equals(path)) {
-            return permissions.contains("VIEW_SHIFT_REPORT")
+            return permissions.contains("Q13") || permissions.contains("VIEW_SHIFT_REPORT")
                     || permissions.contains("VIEW_REPORT");
         }
 
-        // Các trang quản trị nặng -> cần quyền quản lý tương ứng
-        if ("/admin/employee".equals(path)) {
-            return permissions.contains("MANAGE_EMPLOYEE");
+        if ("/admin/employee".equals(path) || "/admin/employee/permission".equals(path) || path.startsWith("/admin/employee")) {
+            return permissions.contains("Q14") || permissions.contains("Q15") || permissions.contains("MANAGE_EMPLOYEE");
         }
 
         if ("/admin/user".equals(path)) {
-            return permissions.contains("MANAGE_USER");
+            return permissions.contains("Q04") || permissions.contains("MANAGE_USER");
         }
 
         if ("/admin/movie".equals(path)) {
-            return permissions.contains("MANAGE_MOVIE");
+            return permissions.contains("Q05") || permissions.contains("MANAGE_MOVIE");
         }
 
         if ("/admin/room".equals(path)) {
-            return permissions.contains("MANAGE_ROOM");
+            return permissions.contains("Q09") || permissions.contains("MANAGE_ROOM");
         }
 
         if ("/theater".equals(path)) {
-            return permissions.contains("MANAGE_THEATER");
+            return permissions.contains("Q08") || permissions.contains("MANAGE_THEATER");
         }
 
         if ("/genre".equals(path)) {
-            return permissions.contains("MANAGE_GENRE");
+            return permissions.contains("Q06") || permissions.contains("MANAGE_GENRE");
         }
 
         if ("/admin/export-report".equals(path)) {
-            return permissions.contains("EXPORT_REPORT");
+            return permissions.contains("Q13") || permissions.contains("EXPORT_REPORT");
         }
 
-        // Mặc định từ chối
         return false;
     }
 

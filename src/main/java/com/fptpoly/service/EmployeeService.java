@@ -2,15 +2,18 @@ package com.fptpoly.service;
 
 import com.fptpoly.model.Employee;
 import com.fptpoly.repository.EmployeeRepository;
+import com.fptpoly.service.PermissionService;
 
 import java.util.List;
 
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PermissionService permissionService;
 
     public EmployeeService() {
         employeeRepository = new EmployeeRepository();
+        permissionService = new PermissionService();
     }
 
     /**
@@ -45,24 +48,33 @@ public class EmployeeService {
     }
 
     /**
-     * Đăng nhập Nhân viên / Admin (Tích hợp tra cứu DB + tài khoản Demo sẵn có)
+     * Đăng nhập Nhân viên / Admin
      */
     public Employee login(String loginInput, String password) {
+
         if (loginInput == null || password == null) {
             return null;
         }
 
         String input = loginInput.trim();
-        Employee emp = employeeRepository.findByLoginInputAndPassword(input, password);
+
+        Employee emp =
+                employeeRepository.findByLoginInputAndPassword(
+                        input,
+                        password
+                );
 
         if (emp != null) {
             return emp;
         }
 
-        // Hỗ trợ Tài Khoản Demo mặc định nếu chưa có dữ liệu trong SQL Server DB
-        if (("admin@gmail.com".equalsIgnoreCase(input) || "admin".equalsIgnoreCase(input))
+        // Tài khoản Demo Admin
+        if (("admin@gmail.com".equalsIgnoreCase(input)
+                || "admin".equalsIgnoreCase(input))
                 && "123456".equals(password)) {
+
             Employee admin = new Employee();
+
             admin.setMaNhanVien("NV001");
             admin.setTenDangNhap("admin");
             admin.setHoTen("Quản Trị Viên (Admin)");
@@ -71,12 +83,17 @@ public class EmployeeService {
             admin.setChucVu("Admin");
             admin.setTenVaiTro("Quản lý");
             admin.setTrangThai("Hoạt động");
+
             return admin;
         }
 
-        if (("nhanvien@gmail.com".equalsIgnoreCase(input) || "nv01".equalsIgnoreCase(input))
+        // Tài khoản Demo Nhân viên
+        if (("nhanvien@gmail.com".equalsIgnoreCase(input)
+                || "nv01".equalsIgnoreCase(input))
                 && "123456".equals(password)) {
+
             Employee staff = new Employee();
+
             staff.setMaNhanVien("NV002");
             staff.setTenDangNhap("nv01");
             staff.setHoTen("Nhân Viên Bán Vé");
@@ -85,6 +102,7 @@ public class EmployeeService {
             staff.setChucVu("Nhân viên");
             staff.setTenVaiTro("Nhân viên");
             staff.setTrangThai("Hoạt động");
+
             return staff;
         }
 
@@ -120,24 +138,46 @@ public class EmployeeService {
             return false;
         }
 
-        return employeeRepository.updateStatus(maNhanVien, trangThai);
+        return employeeRepository.updateStatus(
+                maNhanVien,
+                trangThai
+        );
     }
 
     /**
      * Thêm tài khoản mới
+     * Sau khi tạo thành công, tự động cấp quyền mặc định
+     * theo vai trò của nhân viên.
      */
     public boolean createEmployee(Employee e) {
-        if (e == null || e.getMaNhanVien() == null || e.getMaNhanVien().trim().isEmpty()) {
+
+        if (e == null
+                || e.getMaNhanVien() == null
+                || e.getMaNhanVien().trim().isEmpty()) {
             return false;
         }
-        return employeeRepository.insert(e);
-    }
 
+        boolean created = employeeRepository.insert(e);
+
+        if (!created) {
+            return false;
+        }
+
+        permissionService.initializeDefaultPermissions(
+                e.getMaNhanVien(),
+                e.getMaVaiTro()
+        );
+
+        return true;
+    }
     /**
-     * Check trùng mã
+     * Kiểm tra trùng mã nhân viên
      */
     public boolean existsEmployee(String maNhanVien) {
+        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
+            return false;
+        }
+
         return employeeRepository.existsById(maNhanVien);
     }
-
 }

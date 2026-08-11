@@ -44,10 +44,10 @@ public class LoginController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        String email = request.getParameter("email");
+        String loginInput = request.getParameter("loginInput");
         String password = request.getParameter("password");
 
-        if (email == null || email.trim().isEmpty()
+        if (loginInput == null || loginInput.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
 
             request.setAttribute("error",
@@ -59,7 +59,7 @@ public class LoginController extends HttpServlet {
         }
 
         // 1. Kiểm tra đăng nhập Nhân viên / Admin từ bảng NHAN_VIEN
-        Employee employee = employeeService.login(email.trim(), password);
+        Employee employee = employeeService.login(loginInput.trim(), password);
 
         if (employee != null) {
 

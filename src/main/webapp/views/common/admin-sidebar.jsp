@@ -15,7 +15,7 @@
 <%!
     // Phương thức kiểm tra quyền dùng trong JSP
     public static boolean hasAnyPerm(String role, java.util.List<String> perms, String... required) {
-        if ("ADMIN".equals(role)) return true;
+        if ("ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role)) return true;
         if (perms == null || perms.isEmpty()) return false;
         for (String r : required) {
             if (perms.contains(r)) return true;
@@ -43,11 +43,11 @@
         </li>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "MANAGE_THEATER", "MANAGE_GENRE", "MANAGE_ROOM")) { %>
+                "Q08", "Q06", "Q09", "MANAGE_THEATER", "MANAGE_GENRE", "MANAGE_ROOM")) { %>
         <div class="menu-header">Hạ tầng & Danh mục</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_THEATER")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q08", "MANAGE_THEATER")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "theater".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/theater">
@@ -56,7 +56,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_GENRE")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q06", "MANAGE_GENRE")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "genre".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/genre">
@@ -65,7 +65,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_ROOM")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q09", "MANAGE_ROOM")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "room".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/room">
@@ -75,11 +75,11 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "MANAGE_MOVIE", "MANAGE_SHOWTIME", "VIEW_SHOWTIME")) { %>
+                "Q05", "Q07", "MANAGE_MOVIE", "MANAGE_SHOWTIME", "VIEW_SHOWTIME")) { %>
         <div class="menu-header">Phim & Lịch chiếu</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_MOVIE")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q05", "MANAGE_MOVIE")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "movie".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/movie">
@@ -89,7 +89,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "VIEW_SHOWTIME", "MANAGE_SHOWTIME")) { %>
+                "Q07", "VIEW_SHOWTIME", "MANAGE_SHOWTIME")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "showtime".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/showtime">
@@ -99,6 +99,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
+                "Q02", "Q03", "Q04", "Q10", "Q11", "Q12",
                 "VIEW_BOOKING", "CHECKIN_BOOKING", "CANCEL_BOOKING", "CHANGE_BOOKING",
                 "MANAGE_BOOKING", "MANAGE_USER", "VIEW_SEAT",
                 "VIEW_FOOD", "MANAGE_FOOD")) { %>
@@ -106,7 +107,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "VIEW_BOOKING", "CHECKIN_BOOKING", "CANCEL_BOOKING",
+                "Q02", "Q03", "VIEW_BOOKING", "CHECKIN_BOOKING", "CANCEL_BOOKING",
                 "CHANGE_BOOKING", "MANAGE_BOOKING")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "booking".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
@@ -117,7 +118,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "CHECKIN_BOOKING", "MANAGE_BOOKING")) { %>
+                "Q02", "Q03", "CHECKIN_BOOKING", "MANAGE_BOOKING")) { %>
         <li class="nav-item">
             <a class="nav-link" href="${pageContext.request.contextPath}/admin/booking">
                 <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
@@ -125,7 +126,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "VIEW_SEAT")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q10", "VIEW_SEAT")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "seat".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/seat">
@@ -135,7 +136,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "VIEW_FOOD", "MANAGE_FOOD")) { %>
+                "Q11", "VIEW_FOOD", "MANAGE_FOOD")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "food".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/food">
@@ -144,7 +145,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_USER")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_USER")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "user".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/user">
@@ -154,12 +155,12 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "MANAGE_EMPLOYEE", "VIEW_REPORT", "EXPORT_REPORT",
+                "Q13", "Q14", "Q15", "MANAGE_EMPLOYEE", "VIEW_REPORT", "EXPORT_REPORT",
                 "VIEW_SHIFT_REPORT", "VIEW_COMMENT", "MODERATE_COMMENT")) { %>
         <div class="menu-header">Hệ thống & Báo cáo</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "MANAGE_EMPLOYEE")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "Q15", "MANAGE_EMPLOYEE")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "employee".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/employee">
@@ -169,7 +170,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "VIEW_REPORT", "VIEW_SHIFT_REPORT")) { %>
+                "Q13", "VIEW_REPORT", "VIEW_SHIFT_REPORT")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "report".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/report">

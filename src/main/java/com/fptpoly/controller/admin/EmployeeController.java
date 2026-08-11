@@ -1,6 +1,7 @@
 package com.fptpoly.controller.admin;
 
 import com.fptpoly.model.Employee;
+import com.fptpoly.model.EmployeePermission;
 import com.fptpoly.model.Permission;
 import com.fptpoly.service.EmployeeService;
 import com.fptpoly.service.PermissionService;
@@ -10,10 +11,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/admin/employee")
+@WebServlet(name = "EmployeeController", urlPatterns = {"/admin/employee", "/admin/employee/permission"})
 public class EmployeeController extends HttpServlet {
 
     private EmployeeService employeeService;
@@ -26,15 +26,42 @@ public class EmployeeController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        String action = request.getParameter("action");
+        String uri = request.getRequestURI();
 
+        // Xử lý riêng cho URL /admin/employee/permission
+        if (uri != null && uri.endsWith("/permission")) {
+            String maNhanVien = request.getParameter("maNhanVien");
+            if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
+                maNhanVien = request.getParameter("selectedMaNhanVien");
+            }
+            if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
+                maNhanVien = request.getParameter("editPermission");
+            }
+
+            if (maNhanVien != null && !maNhanVien.trim().isEmpty()) {
+                Employee emp = employeeService.getEmployeeById(maNhanVien.trim());
+                if (emp != null) {
+                    List<EmployeePermission> employeePermissions = permissionService.getEmployeePermissions(maNhanVien.trim());
+                    request.setAttribute("employee", emp);
+                    request.setAttribute("employeePermissions", employeePermissions);
+                    request.getRequestDispatcher("/views/admin/employee-permission.jsp").forward(request, response);
+                    return;
+                }
+            }
+
+            request.getSession().setAttribute("error", "Nhân viên không tồn tại!");
+            response.sendRedirect(request.getContextPath() + "/admin/employee");
+            return;
+        }
+
+        // Xử lý cho URL /admin/employee (Danh sách nhân viên)
+        String action = request.getParameter("action");
         List<Employee> employeeList;
 
         if ("search".equals(action)) {
@@ -46,37 +73,53 @@ public class EmployeeController extends HttpServlet {
 
         request.setAttribute("employeeList", employeeList);
 
-        // Lấy danh sách tất cả quyền trong hệ thống
         List<Permission> allPermissions = permissionService.getAllPermissions();
         request.setAttribute("allPermissions", allPermissions);
 
-        // Nếu đang xem chi tiết / phân quyền cho 1 nhân viên
-        String editId = request.getParameter("editPermission");
-        if (editId != null && !editId.trim().isEmpty()) {
-            Employee editEmployee = employeeService.getEmployeeById(editId);
-            if (editEmployee != null) {
-                List<String> empPermissions =
-                        permissionService.getPermissionsByEmployee(editId);
-                request.setAttribute("editEmployee", editEmployee);
-                request.setAttribute("empPermissions", empPermissions);
-            }
-        }
-
-        request.getRequestDispatcher("/views/admin/employee.jsp")
-                .forward(request, response);
+        request.getRequestDispatcher("/views/admin/employee.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
 
+        String uri = request.getRequestURI();
         String action = request.getParameter("action");
 
-        if ("create".equals(action)) {
+        // Xử lý Bật/Tắt quyền (POST từ trang permission hoặc action togglePermission)
+        if ((uri != null && uri.endsWith("/permission")) || "togglePermission".equals(action)) {
+            String maNhanVien = request.getParameter("maNhanVien");
+            String maQuyen = request.getParameter("maQuyen");
+            String trangThaiStr = request.getParameter("trangThai");
 
+            if (maNhanVien == null || maNhanVien.trim().isEmpty() || maQuyen == null || maQuyen.trim().isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/admin/employee");
+                return;
+            }
+
+            int trangThai = 0;
+            try {
+                trangThai = Integer.parseInt(trangThaiStr);
+            } catch (Exception ignored) {}
+
+            boolean result = permissionService.togglePermission(maNhanVien.trim(), maQuyen.trim(), trangThai);
+
+            if (result) {
+                String statusText = (trangThai == 1) ? "BẬT" : "TẮT";
+                request.getSession().setAttribute("success",
+                        "Cập nhật trạng thái quyền " + maQuyen + " sang [" + statusText + "] cho nhân viên " + maNhanVien + " thành công!");
+            } else {
+                request.getSession().setAttribute("error", "Cập nhật quyền thất bại!");
+            }
+
+            response.sendRedirect(request.getContextPath() + "/admin/employee/permission?maNhanVien=" + maNhanVien.trim());
+            return;
+        }
+
+        // Xử lý Thêm mới Nhân viên
+        if ("create".equals(action)) {
             String maNhanVien = request.getParameter("maNhanVien");
             String maVaiTro = request.getParameter("maVaiTro");
             String tenDangNhap = request.getParameter("tenDangNhap");
@@ -86,7 +129,6 @@ public class EmployeeController extends HttpServlet {
             String soDienThoai = request.getParameter("soDienThoai");
             String gioiTinh = request.getParameter("gioiTinh");
 
-            // Kiểm tra mã nhân viên đã tồn tại
             if (employeeService.existsEmployee(maNhanVien)) {
                 request.getSession().setAttribute("error", "Mã nhân viên đã tồn tại!");
                 response.sendRedirect(request.getContextPath() + "/admin/employee");
@@ -113,6 +155,7 @@ public class EmployeeController extends HttpServlet {
             }
         }
 
+        // Xử lý Cập nhật vai trò
         if ("updateRole".equals(action)) {
             String maNhanVien = request.getParameter("maNhanVien");
             String maVaiTro = request.getParameter("maVaiTro");
@@ -120,6 +163,7 @@ public class EmployeeController extends HttpServlet {
             request.getSession().setAttribute("success", "Cập nhật vai trò thành công!");
         }
 
+        // Xử lý Cập nhật trạng thái
         if ("updateStatus".equals(action)) {
             String maNhanVien = request.getParameter("maNhanVien");
             String trangThai = request.getParameter("trangThai");
@@ -127,29 +171,6 @@ public class EmployeeController extends HttpServlet {
             request.getSession().setAttribute("success", "Cập nhật trạng thái thành công!");
         }
 
-        if ("updatePermissions".equals(action)) {
-            String maNhanVien = request.getParameter("maNhanVien");
-            String[] selectedPermissions = request.getParameterValues("permissions");
-
-            List<String> permList = new ArrayList<>();
-            if (selectedPermissions != null) {
-                for (String p : selectedPermissions) {
-                    permList.add(p);
-                }
-            }
-
-            boolean result = permissionService.updateEmployeePermissions(maNhanVien, permList);
-
-            if (result) {
-                request.getSession().setAttribute("success",
-                        "Cập nhật quyền cho nhân viên " + maNhanVien + " thành công!");
-            } else {
-                request.getSession().setAttribute("error",
-                        "Cập nhật quyền thất bại!");
-            }
-        }
-
         response.sendRedirect(request.getContextPath() + "/admin/employee");
     }
-
 }
