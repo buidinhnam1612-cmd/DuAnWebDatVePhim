@@ -11,31 +11,15 @@ import java.util.List;
 public class BookingRepository {
 
     // ===================== LẤY TOÀN BỘ DANH SÁCH ĐẶT VÉ =====================
-
     public List<Booking> getAll() {
-
         List<Booking> list = new ArrayList<>();
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-                v.TenVoucher,
-                nv.HoTen AS TenNhanVien
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
             INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
             INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
@@ -68,29 +52,14 @@ public class BookingRepository {
     }
 
     // ===================== LẤY ĐẶT VÉ THEO MÃ =====================
-
     public Booking getById(String maDatVe) {
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-                v.TenVoucher,
-                nv.HoTen AS TenNhanVien
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
             INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
             INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
@@ -124,32 +93,16 @@ public class BookingRepository {
         return null;
     }
 
-    // ===================== TÌM KIẾM (Đã hoàn thiện phần thiếu) =====================
-
+    // ===================== TÌM KIẾM ĐƠN ĐẶT VÉ =====================
     public List<Booking> search(String keyword) {
-
         List<Booking> list = new ArrayList<>();
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-                v.TenVoucher,
-                nv.HoTen AS TenNhanVien
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
             INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
             INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
@@ -191,100 +144,7 @@ public class BookingRepository {
         }
         return list;
     }
-
-    // ===================== TỰ ĐỘNG SINH MÃ ĐẶT VÉ (Bổ sung mới) =====================
-
-    public String generateBookingId() {
-        String sql = "SELECT MAX(CAST(SUBSTRING(MaDatVe, 3, LEN(MaDatVe)) AS INT)) FROM DAT_VE";
-        try (
-                Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
-        ) {
-            if (rs.next()) {
-                int maxId = rs.getInt(1);
-                return String.format("BK%04d", maxId + 1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "BK0001";
-    }
-
-    // ===================== THÊM MỚI HÓA ĐƠN ĐẶT VÉ (Sửa lỗi chữ đỏ ảnh trước) =====================
-
-    public boolean insert(Booking booking) {
-        String sql = """
-            INSERT INTO DAT_VE (MaDatVe, ThoiGianDat, TongTien, TrangThai, MaKhachHang, MaNhanVien, MaVoucher)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """;
-        try (
-                Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
-            if (booking.getMaDatVe() == null || booking.getMaDatVe().isBlank()) {
-                booking.setMaDatVe(generateBookingId());
-            }
-            if (booking.getThoiGianDat() == null) {
-                booking.setThoiGianDat(LocalDateTime.now());
-            }
-
-            ps.setString(1, booking.getMaDatVe());
-            ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
-            ps.setDouble(3, booking.getTongTien());
-            ps.setString(4, booking.getTrangThai());
-            ps.setString(5, booking.getMaKhachHang());
-
-            if (booking.getMaNhanVien() == null || booking.getMaNhanVien().isBlank()) {
-                ps.setNull(6, Types.VARCHAR);
-            } else {
-                ps.setString(6, booking.getMaNhanVien());
-            }
-
-            if (booking.getMaVoucher() == null || booking.getMaVoucher().isBlank()) {
-                ps.setNull(7, Types.VARCHAR);
-            } else {
-                ps.setString(7, booking.getMaVoucher());
-            }
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // ===================== MAP RESULTSET -> BOOKING =====================
-
-    private Booking mapBooking(ResultSet rs) throws Exception {
-        Booking booking = new Booking();
-
-        booking.setMaDatVe(rs.getString("MaDatVe"));
-        booking.setThoiGianDat(rs.getTimestamp("ThoiGianDat").toLocalDateTime());
-        booking.setTongTien(rs.getDouble("TongTien"));
-        booking.setTrangThai(rs.getString("TrangThai"));
-        booking.setMaKhachHang(rs.getString("MaKhachHang"));
-        booking.setMaNhanVien(rs.getString("MaNhanVien"));
-        booking.setMaVoucher(rs.getString("MaVoucher"));
-        booking.setTenKhachHang(rs.getString("TenKhachHang"));
-        booking.setSoDienThoai(rs.getString("SoDienThoai"));
-        booking.setEmail(rs.getString("Email"));
-        booking.setTenPhim(rs.getString("TenPhim"));
-        booking.setTenRap(rs.getString("TenRap"));
-        booking.setTenPhong(rs.getString("TenPhong"));
-        booking.setNgayChieu(rs.getDate("NgayChieu"));
-        booking.setGioBatDau(rs.getTime("GioBatDau"));
-        booking.setDanhSachGhe(rs.getString("DanhSachGhe"));
-        booking.setTenVoucher(rs.getString("TenVoucher"));
-        booking.setTenNhanVien(rs.getString("TenNhanVien"));
-        if (booking.getMaNhanVien() == null) {
-            booking.setHinhThucDat("Online");
-        }
-        else {booking.setHinhThucDat("Tại quầy");
-        }
-        return booking;
-    }
-    // ===================== CẬP NHẬT TRẠNG THÁI ĐẶT VÉ =====================
+    // ===================== CẬP NHẬT TRẠNG THÁI TỔNG QUÁT =====================
     public boolean updateStatus(String maDatVe, String trangThai) {
         String sql = "UPDATE DAT_VE SET TrangThai = ? WHERE MaDatVe = ?";
         try (
@@ -338,7 +198,6 @@ public class BookingRepository {
 
     // ===================== TÍNH TỔNG DOANH THU ĐÃ THANH TOÁN =====================
     public double getTotalRevenue() {
-        // Chỉ tính tổng tiền của các hóa đơn có trạng thái là Đã thanh toán (NVARCHAR)
         String sql = "SELECT SUM(TongTien) FROM DAT_VE WHERE TrangThai = N'Đã thanh toán'";
         try (
                 Connection con = DBConnection.getConnection();
@@ -354,13 +213,18 @@ public class BookingRepository {
         return 0.0;
     }
 
-    // ===================== XÁC NHẬN SOÁT VÉ THÀNH CÔNG =====================
+    // ===================== XÁC NHẬN KHÁCH ĐÃ SỬ DỤNG VÉ (SOÁT VÉ ONLINE) =====================
     public boolean confirmBooking(String maDatVe) {
-        // Cập nhật trạng thái đơn vé sang Đã sử dụng khi khách đến rạp quét mã soát vé
-        String sql = "UPDATE DAT_VE SET TrangThai = N'Đã sử dụng' WHERE MaDatVe = ?";
+        String sql = """
+            UPDATE DAT_VE
+            SET TrangThai = N'Đã sử dụng'
+            WHERE MaDatVe = ?
+            AND TrangThai = N'Đã thanh toán'
+            """;
+
         try (
-                Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
         ) {
             ps.setString(1, maDatVe);
             return ps.executeUpdate() > 0;
@@ -369,29 +233,80 @@ public class BookingRepository {
         }
         return false;
     }
+    // ===================== TỰ ĐỘNG SINH MÃ ĐẶT VÉ (BÁN VÉ TẠI QUẦY) =====================
+    public String generateBookingId() {
+        String sql = """
+                SELECT COALESCE(MAX(CAST(SUBSTRING(MaDatVe, 3, LEN(MaDatVe)) AS INT)), 0) AS MaxNum
+                FROM DAT_VE
+                """;
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ) {
+            if (rs.next()) {
+                int maxNum = rs.getInt("MaxNum");
+                return String.format("DV%02d", maxNum + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "DV01";
+    }
+
+    // ===================== THÊM MỚI ĐƠN ĐẶT VÉ (BÁN VÉ TẠI QUẦY) =====================
+    public boolean insert(Booking booking) {
+        String sql = """
+            INSERT INTO DAT_VE (MaDatVe, ThoiGianDat, TongTien, TrangThai, MaKhachHang, MaNhanVien, MaVoucher)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+            if (booking.getMaDatVe() == null || booking.getMaDatVe().isBlank()) {
+                booking.setMaDatVe(generateBookingId());
+            }
+            if (booking.getThoiGianDat() == null) {
+                booking.setThoiGianDat(LocalDateTime.now());
+            }
+
+            ps.setString(1, booking.getMaDatVe());
+            ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
+            ps.setDouble(3, booking.getTongTien());
+            ps.setString(4, booking.getTrangThai());
+            ps.setString(5, booking.getMaKhachHang());
+
+            if (booking.getMaNhanVien() == null || booking.getMaNhanVien().isBlank()) {
+                ps.setNull(6, Types.VARCHAR);
+            } else {
+                ps.setString(6, booking.getMaNhanVien());
+            }
+
+            if (booking.getMaVoucher() == null || booking.getMaVoucher().isBlank()) {
+                ps.setNull(7, Types.VARCHAR);
+            } else {
+                ps.setString(7, booking.getMaVoucher());
+            }
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // ===================== LẤY LỊCH SỬ ĐẶT VÉ CỦA MỘT KHÁCH HÀNG =====================
     public List<Booking> getByKhachHang(String maKhachHang) {
         List<Booking> list = new ArrayList<>();
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-                v.TenVoucher,
-                nv.HoTen AS TenNhanVien
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
             INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
             INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
@@ -417,7 +332,7 @@ public class BookingRepository {
             ps.setString(1, maKhachHang);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapBooking(rs)); // Gọi lại hàm map dữ liệu có sẵn của bạn
+                    list.add(mapBooking(rs));
                 }
             }
         } catch (Exception e) {
@@ -426,5 +341,41 @@ public class BookingRepository {
         return list;
     }
 
+    // ===================== HÀM MAP DỮ LIỆU TỪ RESULTSET SANG MODEL =====================
+    private Booking mapBooking(ResultSet rs) throws SQLException {
+        Booking booking = new Booking();
 
+        booking.setMaDatVe(rs.getString("MaDatVe"));
+
+        Timestamp timestamp = rs.getTimestamp("ThoiGianDat");
+        if (timestamp != null) {
+            booking.setThoiGianDat(timestamp.toLocalDateTime());
+        }
+
+        booking.setTongTien(rs.getDouble("TongTien"));
+        booking.setTrangThai(rs.getString("TrangThai"));
+        booking.setMaKhachHang(rs.getString("MaKhachHang"));
+        booking.setMaNhanVien(rs.getString("MaNhanVien"));
+        booking.setMaVoucher(rs.getString("MaVoucher"));
+
+        booking.setTenKhachHang(rs.getString("TenKhachHang"));
+        booking.setSoDienThoai(rs.getString("SoDienThoai"));
+        booking.setEmail(rs.getString("Email"));
+        booking.setTenPhim(rs.getString("TenPhim"));
+        booking.setTenRap(rs.getString("TenRap"));
+        booking.setTenPhong(rs.getString("TenPhong"));
+        booking.setNgayChieu(rs.getDate("NgayChieu"));
+        booking.setGioBatDau(rs.getTime("GioBatDau"));
+        booking.setDanhSachGhe(rs.getString("DanhSachGhe"));
+        booking.setTenVoucher(rs.getString("TenVoucher"));
+        booking.setTenNhanVien(rs.getString("TenNhanVien"));
+
+        if (booking.getMaNhanVien() == null) {
+            booking.setHinhThucDat("Online");
+        } else {
+            booking.setHinhThucDat("Tại quầy");
+        }
+
+        return booking;
+    }
 }

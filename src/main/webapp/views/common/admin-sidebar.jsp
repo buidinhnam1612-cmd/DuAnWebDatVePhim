@@ -117,90 +117,117 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q02", "Q03", "CHECKIN_BOOKING", "MANAGE_BOOKING")) { %>
-        <li class="nav-item">
+        <%-- ===================== 7. XÁC NHẬN TRẠNG THÁI VÉ ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q02", "Q03", "CHECKIN_BOOKING", "MANAGE_BOOKING")) {
+            boolean isConfirmActive = "confirmBooking".equals(request.getAttribute("currentPage"))
+                                   || request.getRequestURI().contains("confirm-booking");
+        %>
+        <li class="nav-item <%= isConfirmActive ? "active" : "" %>" style="position: relative;">
+            <% if (isConfirmActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
             <a class="nav-link" href="${pageContext.request.contextPath}/admin/confirm-booking">
                 <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
             </a>
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q10", "VIEW_SEAT")) { %>
-        <li class="nav-item">
-            <a class="nav-link<%= "seat".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/seat">
+        <%-- ===================== SƠ ĐỒ GHẾ ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q10", "VIEW_SEAT")) {
+            boolean isSeatActive = "seat".equals(request.getAttribute("currentPage"));
+        %>
+        <li class="nav-item <%= isSeatActive ? "active" : "" %>" style="position: relative;">
+            <% if (isSeatActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isSeatActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/seat">
                 <i class="bi bi-grid-3x3 me-2"></i> Sơ đồ ghế
             </a>
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q11", "VIEW_FOOD", "MANAGE_FOOD")) { %>
-        <li class="nav-item">
-            <a class="nav-link<%= "food".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/food">
+        <%-- ===================== QUẢN LÝ ĐỒ ĂN ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q11", "VIEW_FOOD", "MANAGE_FOOD")) {
+            boolean isFoodActive = "food".equals(request.getAttribute("currentPage"));
+        %>
+        <li class="nav-item <%= isFoodActive ? "active" : "" %>" style="position: relative;">
+            <% if (isFoodActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isFoodActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/food">
                 <i class="bi bi-cup-straw me-2"></i> Quản lý đồ ăn
             </a>
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_USER")) { %>
-        <li class="nav-item">
-            <a class="nav-link<%= "user".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/user">
+        <%-- ===================== 8. QUẢN LÝ NGƯỜI DÙNG ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_USER")) {
+            boolean isUserActive = "user".equals(request.getAttribute("currentPage"));
+        %>
+        <li class="nav-item <%= isUserActive ? "active" : "" %>" style="position: relative;">
+            <% if (isUserActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isUserActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/user">
                 <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
             </a>
         </li>
         <% } %>
 
+        <%-- ===================== TIÊU ĐỀ HỆ THỐNG & BÁO CÁO ===================== --%>
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
                 "Q13", "Q14", "Q15", "MANAGE_EMPLOYEE", "VIEW_REPORT", "EXPORT_REPORT",
                 "VIEW_SHIFT_REPORT", "VIEW_COMMENT", "MODERATE_COMMENT")) { %>
         <div class="menu-header">Hệ thống & Báo cáo</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "Q15", "MANAGE_EMPLOYEE")) { %>
-        <li class="nav-item">
-            <a class="nav-link<%= "employee".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/employee">
+        <%-- ===================== 9. NHÂN VIÊN & PHÂN QUYỀN ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "Q15", "MANAGE_EMPLOYEE")) {
+            boolean isEmployeeActive = "employee".equals(request.getAttribute("currentPage"));
+        %>
+        <li class="nav-item <%= isEmployeeActive ? "active" : "" %>" style="position: relative;">
+            <% if (isEmployeeActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isEmployeeActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/employee">
                 <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
             </a>
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q13", "VIEW_REPORT", "VIEW_SHIFT_REPORT")) { %>
-        <li class="nav-item">
-            <a class="nav-link<%= "report".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/report">
+        <%-- ===================== 10. THỐNG KÊ & BÁO CÁO ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q13", "VIEW_REPORT", "VIEW_SHIFT_REPORT")) {
+            boolean isReportActive = "report".equals(request.getAttribute("currentPage"));
+        %>
+        <li class="nav-item <%= isReportActive ? "active" : "" %>" style="position: relative;">
+            <% if (isReportActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isReportActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/report">
                 <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
             </a>
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "VIEW_COMMENT", "MODERATE_COMMENT")) { %>
-
-        <li class="nav-item">
-            <a class="nav-link<%= "comment".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/comment">
-
-                <i class="bi bi-chat-dots me-2"></i>
-                Kiểm duyệt bình luận
-
+        <%-- ===================== KIỂM DUYỆT BÌNH LUẬN (Đã sửa lỗi phân quyền ẩn menu) ===================== --%>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q13", "Q14", "Q15", "VIEW_COMMENT", "MODERATE_COMMENT")) {
+            boolean isCommentActive = "comment".equals(request.getAttribute("currentPage"))
+                                   || request.getRequestURI().contains("comment");
+        %>
+        <li class="nav-item <%= isCommentActive ? "active" : "" %>" style="position: relative;">
+            <% if (isCommentActive) { %>
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
+            <% } %>
+            <a class="nav-link<%= isCommentActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/comment">
+                <i class="bi bi-chat-dots me-2"></i> Kiểm duyệt bình luận
             </a>
         </li>
-
         <% } %>
+
+
 
         <li class="nav-item" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
             <a class="nav-link" href="${pageContext.request.contextPath}/home" style="color: #f87171 !important;">
-                <i class="bi bi-box-arrow-left me-2"></i> Trở về Trang chủ
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="${pageContext.request.contextPath}/logout" style="color: #f87171 !important;">
                 <i class="bi bi-power me-2"></i> Đăng xuất
             </a>
         </li>

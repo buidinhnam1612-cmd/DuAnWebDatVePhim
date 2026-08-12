@@ -128,11 +128,22 @@
                                                class="btn btn-outline-warning btn-action me-1">
                                                 <i class="bi bi-pencil"></i> Sửa
                                             </a>
-                                            <a href="${pageContext.request.contextPath}/genre?action=lock&id=${g.maTheLoai}"
-                                               class="btn btn-outline-danger btn-action"
-                                               onclick="return confirm('Bạn có chắc muốn khóa/mở khóa thể loại này?');">
-                                                <i class="bi bi-lock"></i> Khóa
-                                            </a>
+                                            <c:choose>
+                                                <c:when test="${g.tenTheLoai.contains('(Đã khóa)')}">
+                                                    <a href="${pageContext.request.contextPath}/genre?action=lock&id=${g.maTheLoai}"
+                                                       class="btn btn-outline-success btn-action"
+                                                       onclick="return confirm('Bạn có chắc muốn mở khóa thể loại này?');">
+                                                        <i class="bi bi-unlock"></i> Mở khóa
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="${pageContext.request.contextPath}/genre?action=lock&id=${g.maTheLoai}"
+                                                       class="btn btn-outline-danger btn-action"
+                                                       onclick="return confirm('Bạn có chắc muốn khóa thể loại này?');">
+                                                        <i class="bi bi-lock"></i> Khóa
+                                                    </a>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                     </tr>
                                 </c:forEach>

@@ -6,10 +6,10 @@
 <jsp:include page="/views/common/navbar.jsp"/>
 
 <style>
-    /* Premium Radial Cinema Gradient Background */
+    /* Premium Light Cinema Gradient Background */
     body {
-        background: radial-gradient(circle at top, #1e293b 0%, #0f172a 60%, #020617 100%) !important;
-        color: #f8fafc !important;
+        background: radial-gradient(circle at top, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%) !important;
+        color: #0f172a !important;
     }
 
     /* Mockup Cinema Movie Cards */
@@ -40,8 +40,8 @@
         height: 330px;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-        border: 2px solid rgba(255,255,255,0.05);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        border: 2px solid rgba(0,0,0,0.05);
         transition: all 0.3s ease;
     }
 
@@ -64,9 +64,9 @@
         width: 55px;
         height: 55px;
         border-radius: 50%;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(255, 255, 255, 0.95);
         border: 2px solid #fbbf24;
-        color: #fff;
+        color: #0f172a;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -81,7 +81,7 @@
     }
 
     .mockup-movie-title {
-        color: #fff;
+        color: #0f172a;
         font-size: 16px;
         font-weight: 700;
         margin-bottom: 5px;
@@ -115,18 +115,18 @@
 
     /* Food Menu Style */
     .food-menu-container {
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.08);
         border-radius: 24px;
         padding: 40px;
         backdrop-filter: blur(12px);
         margin-top: 60px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
 
     .food-menu-item {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid #334155;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
         padding: 20px;
         display: flex;
@@ -237,6 +237,7 @@
             <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}" class="mockup-movie-card">
                 <div class="mockup-poster-wrapper">
                     <img src="<c:choose>
+                         <c:when test="${not empty m.poster}">${m.poster}</c:when>
                          <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=400</c:when>
                          <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400</c:when>
                          <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400</c:otherwise>
@@ -290,8 +291,8 @@
                                     <i class="bi bi-basket3-fill" style="font-size: 22px; color: #fff;"></i>
                                 </div>
                                 <div style="flex-grow: 1; min-width: 0;">
-                                    <h5 style="color: #fff; font-size: 15px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${food.tenDoAn}</h5>
-                                    <p style="color: #fbbf24; font-weight: 700; font-size: 16px; margin: 5px 0 0 0;">
+                                    <h5 style="color: #0f172a; font-size: 15px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${food.tenDoAn}</h5>
+                                    <p style="color: #ea580c; font-weight: 700; font-size: 16px; margin: 5px 0 0 0;">
                                         <fmt:formatNumber value="${food.gia}" pattern="#,###"/>đ
                                     </p>
                                 </div>

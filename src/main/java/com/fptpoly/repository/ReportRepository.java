@@ -11,12 +11,13 @@ import java.util.List;
 
 public class ReportRepository {
 
+    // ===================== TÍNH TỔNG DOANH THU HỆ THỐNG =====================
     public double getTotalRevenue() {
-
+        // Mở rộng: Tính doanh thu cho cả vé Đã thanh toán và Đã sử dụng
         String sql = """
                 SELECT ISNULL(SUM(TongTien),0)
                 FROM DAT_VE
-                WHERE TrangThai = N'Đã thanh toán'
+                WHERE TrangThai = N'Đã thanh toán' OR TrangThai = N'Đã sử dụng'
                 """;
 
         try (Connection con = DBConnection.getConnection();
@@ -30,18 +31,16 @@ public class ReportRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 
+    // ===================== TÍNH TỔNG SỐ VÉ ĐÃ BÁN =====================
     public int getTotalTicket() {
-
         String sql = """
         SELECT COUNT(*)
         FROM CHI_TIET_DAT_VE CT
-        JOIN DAT_VE DV
-            ON CT.MaDatVe = DV.MaDatVe
-        WHERE DV.TrangThai = N'Đã thanh toán'
+        JOIN DAT_VE DV ON CT.MaDatVe = DV.MaDatVe
+        WHERE DV.TrangThai = N'Đã thanh toán' OR DV.TrangThai = N'Đã sử dụng'
         """;
 
         try (Connection con = DBConnection.getConnection();
@@ -55,14 +54,12 @@ public class ReportRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 
+    // ===================== TOP PHIM BÁN CHẠY =====================
     public List<Report> getTopMovie() {
-
         List<Report> list = new ArrayList<>();
-
         String sql = """
         SELECT TOP 10
             P.TenPhim,
@@ -70,20 +67,13 @@ public class ReportRepository {
             COUNT(*) AS SoVe,
             SUM(CT.GiaVe) AS DoanhThu
         FROM CHI_TIET_DAT_VE CT
-        JOIN DAT_VE DV
-            ON CT.MaDatVe = DV.MaDatVe
-        JOIN SUAT_CHIEU SC
-            ON CT.MaSuatChieu = SC.MaSuatChieu
-        JOIN PHIM P
-            ON SC.MaPhim = P.MaPhim
-        JOIN PHONG_CHIEU PC
-            ON SC.MaPhong = PC.MaPhong
-        JOIN RAP R
-            ON PC.MaRap = R.MaRap
-        WHERE DV.TrangThai = N'Đã thanh toán'
-        GROUP BY
-            P.TenPhim,
-            R.TenRap
+        JOIN DAT_VE DV ON CT.MaDatVe = DV.MaDatVe
+        JOIN SUAT_CHIEU SC ON CT.MaSuatChieu = SC.MaSuatChieu
+        JOIN PHIM P ON SC.MaPhim = P.MaPhim
+        JOIN PHONG_CHIEU PC ON SC.MaPhong = PC.MaPhong
+        JOIN RAP R ON PC.MaRap = R.MaRap
+        WHERE DV.TrangThai = N'Đã thanh toán' OR DV.TrangThai = N'Đã sử dụng'
+        GROUP BY P.TenPhim, R.TenRap
         ORDER BY SoVe DESC
         """;
 
@@ -92,35 +82,28 @@ public class ReportRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
                 Report report = new Report();
-
                 report.setTenPhim(rs.getString("TenPhim"));
                 report.setTenRap(rs.getString("TenRap"));
                 report.setSoVe(rs.getInt("SoVe"));
                 report.setDoanhThu(rs.getBigDecimal("DoanhThu"));
-
                 list.add(report);
             }
-
             System.out.println("Top Movie Size = " + list.size());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
+    // ===================== DOANH THU THEO NGÀY VÀ DOANH THU HÔM NAY =====================
     public List<Report> getRevenueByDate() {
-
         List<Report> list = new ArrayList<>();
-
         String sql = """
         SELECT
             CONVERT(varchar(10), ThoiGianDat, 103) AS Ngay,
             SUM(TongTien) AS DoanhThu
         FROM DAT_VE
-        WHERE TrangThai = N'Đã thanh toán'
+        WHERE TrangThai = N'Đã thanh toán' OR TrangThai = N'Đã sử dụng'
         GROUP BY CONVERT(varchar(10), ThoiGianDat, 103)
         ORDER BY MIN(ThoiGianDat) DESC
         """;
@@ -130,42 +113,32 @@ public class ReportRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
                 Report report = new Report();
-
                 report.setNgay(rs.getString("Ngay"));
                 report.setDoanhThu(rs.getBigDecimal("DoanhThu"));
-
                 list.add(report);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
+
+    // ===================== TOP RẠP DOANH THU CAO =====================
     public List<Report> getTopCinema() {
-
         List<Report> list = new ArrayList<>();
-
         String sql = """
         SELECT
             R.TenRap,
             COUNT(*) AS TongVe,
             SUM(CT.GiaVe) AS DoanhThu
         FROM CHI_TIET_DAT_VE CT
-        JOIN DAT_VE DV
-            ON CT.MaDatVe = DV.MaDatVe
-        JOIN SUAT_CHIEU SC
-            ON CT.MaSuatChieu = SC.MaSuatChieu
-        JOIN PHONG_CHIEU PC
-            ON SC.MaPhong = PC.MaPhong
-        JOIN RAP R
-            ON PC.MaRap = R.MaRap
-        WHERE DV.TrangThai = N'Đã thanh toán'
-        GROUP BY
-            R.TenRap
+        JOIN DAT_VE DV ON CT.MaDatVe = DV.MaDatVe
+        JOIN SUAT_CHIEU SC ON CT.MaSuatChieu = SC.MaSuatChieu
+        JOIN PHONG_CHIEU PC ON SC.MaPhong = PC.MaPhong
+        JOIN RAP R ON PC.MaRap = R.MaRap
+        WHERE DV.TrangThai = N'Đã thanh toán' OR DV.TrangThai = N'Đã sử dụng'
+        GROUP BY R.TenRap
         ORDER BY DoanhThu DESC
         """;
 
@@ -174,40 +147,29 @@ public class ReportRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
                 Report report = new Report();
-
                 report.setTenRap(rs.getString("TenRap"));
                 report.setTongVe(rs.getInt("TongVe"));
                 report.setDoanhThu(rs.getBigDecimal("DoanhThu"));
-
                 list.add(report);
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
+    // ===================== THỐNG KÊ DOANH THU THEO THÁNG =====================
     public List<Report> getRevenueByMonth() {
-
         List<Report> list = new ArrayList<>();
-
         String sql = """
         SELECT
             MONTH(ThoiGianDat) AS Thang,
             YEAR(ThoiGianDat) AS Nam,
             SUM(TongTien) AS DoanhThu
         FROM DAT_VE
-        WHERE TrangThai = N'Đã thanh toán'
-        GROUP BY
-            YEAR(ThoiGianDat),
-            MONTH(ThoiGianDat)
-        ORDER BY
-            YEAR(ThoiGianDat) DESC,
-            MONTH(ThoiGianDat) DESC
+        WHERE TrangThai = N'Đã thanh toán' OR TrangThai = N'Đã sử dụng'
+        GROUP BY YEAR(ThoiGianDat), MONTH(ThoiGianDat)
+        ORDER BY YEAR(ThoiGianDat) DESC, MONTH(ThoiGianDat) DESC
         """;
 
         try (Connection con = DBConnection.getConnection();
@@ -215,67 +177,54 @@ public class ReportRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
                 Report report = new Report();
 
-                report.setThang(
-                        rs.getInt("Thang") + "/" + rs.getInt("Nam")
-                );
+                // Cách 1: Thử đặt vào hàm setThang dưới dạng Chuỗi (String) "Tháng/Năm"
+                try {
+                    report.setThang(rs.getInt("Thang") + "/" + rs.getInt("Nam"));
+                } catch (Exception e) {
+                    // Nếu Model của bạn quy định setThang nhận số INT, hệ thống sẽ tự nhảy vào đây để gán số thuần túy
+                    report.setThang(String.valueOf(rs.getInt("Thang")));
+                }
 
-                report.setDoanhThu(
-                        rs.getBigDecimal("DoanhThu")
-                );
-
+                report.setDoanhThu(rs.getBigDecimal("DoanhThu"));
                 list.add(report);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
+
+    // ===================== THỐNG KÊ DOANH THU THEO NĂM =====================
     public List<Report> getRevenueByYear() {
-
         List<Report> list = new ArrayList<>();
-
         String sql = """
         SELECT
             YEAR(ThoiGianDat) AS Nam,
             SUM(TongTien) AS DoanhThu
         FROM DAT_VE
-        WHERE TrangThai = N'Đã thanh toán'
+        WHERE TrangThai = N'Đã thanh toán' OR TrangThai = N'Đã sử dụng'
         GROUP BY YEAR(ThoiGianDat)
         ORDER BY Nam DESC
         """;
-
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-
             while (rs.next()) {
-
                 Report report = new Report();
 
-                report.setNam(
-                        rs.getInt("Nam")
-                );
+                // Đồng bộ ép kiểu dữ liệu Năm số nguyên chuẩn JDBC
+                report.setNam(rs.getInt("Nam"));
 
-                report.setDoanhThu(
-                        rs.getBigDecimal("DoanhThu")
-                );
-
+                report.setDoanhThu(rs.getBigDecimal("DoanhThu"));
                 list.add(report);
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         return list;
     }
     public List<Report> getBookingStatusReport() {

@@ -18,12 +18,22 @@ import java.time.LocalTime;
 public class ShowtimeController extends HttpServlet {
 
     private ShowtimeService showtimeService = new ShowtimeService();
+    private com.fptpoly.service.MovieService movieService = new com.fptpoly.service.MovieService();
 
     // 1. Hàm hiển thị giao diện và danh sách (Khi người dùng vào trang)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String action = request.getParameter("action");
+        if ("edit".equals(action)) {
+            String id = request.getParameter("id");
+            if (id != null) {
+                request.setAttribute("showtimeEdit", showtimeService.getShowtimeById(id.trim()));
+            }
+        }
+
+        request.setAttribute("listMovie", movieService.getAll());
         // Lấy danh sách suất chiếu từ Service và gửi sang file JSP
         request.setAttribute("listShowtime", showtimeService.getAllShowtimes());
 
@@ -38,6 +48,7 @@ public class ShowtimeController extends HttpServlet {
 
         // Đặt tiếng Việt có dấu cho dữ liệu gửi lên
         request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
 
         try {
             // Đọc dữ liệu từ các ô nhập (input) có thuộc tính name tương ứng trong file JSP
@@ -60,7 +71,12 @@ public class ShowtimeController extends HttpServlet {
             newShowtime.setGioKetThuc(gioKetThuc);
 
             // Gọi Service để xử lý kiểm tra trùng lịch và lưu vào DB
-            String message = showtimeService.saveShowtime(newShowtime);
+            String message;
+            if ("update".equals(action)) {
+                message = showtimeService.updateShowtime(newShowtime);
+            } else {
+                message = showtimeService.saveShowtime(newShowtime);
+            }
 
             // Gửi thông báo kết quả trả về ra màn hình giao diện
             request.setAttribute("message", message);
@@ -71,6 +87,7 @@ public class ShowtimeController extends HttpServlet {
         }
 
         // Sau khi xử lý xong, tải lại danh sách mới nhất và hiển thị lại trang jsp
+        request.setAttribute("listMovie", movieService.getAll());
         request.setAttribute("listShowtime", showtimeService.getAllShowtimes());
         request.getRequestDispatcher("/views/admin/showtime.jsp").forward(request, response);
     }

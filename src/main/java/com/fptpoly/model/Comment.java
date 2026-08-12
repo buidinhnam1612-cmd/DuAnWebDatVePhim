@@ -5,23 +5,23 @@ import java.sql.Timestamp;
 public class Comment {
 
     private String maBinhLuan;
-    private Integer soSao; // Dùng Integer để đồng bộ tốt với giá trị null hoặc int
+    private Integer soSao; // Đồng bộ kiểu Integer để tránh lỗi đỏ dòng ở Repository
     private String noiDung;
     private Timestamp ngayTao;
-    private String trangThai; // Giữ lại để xử lý bộ lọc ẩn/hiện bình luận trên giao diện
+    private String trangThai;
 
     private String maKhachHang;
     private String maPhim;
 
-    // Thông tin hiển thị mở rộng (Lấy từ câu lệnh INNER JOIN sang các bảng khác)
+    // Thông tin hiển thị mở rộng từ câu lệnh JOIN
     private String tenKhachHang;
     private String tenPhim;
 
-    // 1. Hàm khởi tạo không tham số (Bắt buộc cho JDBC)
+    // 1. Hàm khởi tạo không tham số
     public Comment() {
     }
 
-    // 2. Hàm khởi tạo đầy đủ tham số cốt lõi
+    // 2. Hàm khởi tạo đầy đủ tham số
     public Comment(String maBinhLuan, Integer soSao, String noiDung, Timestamp ngayTao, String maKhachHang, String maPhim) {
         this.maBinhLuan = maBinhLuan;
         this.soSao = soSao;

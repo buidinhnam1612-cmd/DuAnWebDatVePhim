@@ -1,20 +1,19 @@
 package com.fptpoly.model;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Booking {
 
     private String maDatVe;
-    private LocalDateTime thoiGianDat;
+    private LocalDateTime thoiGianDat; // Giữ nguyên để tương thích với Repository
     private double tongTien;
     private String trangThai;
     private String maKhachHang;
     private String maNhanVien;
     private String maVoucher;
 
-    // Thông tin hiển thị cho Admin (Lấy từ các câu lệnh JOIN)
+    // Thông tin hiển thị cho Admin
     private String tenKhachHang;
     private String tenPhim;
     private String tenRap;
@@ -30,11 +29,11 @@ public class Booking {
     private String soDienThoai;
     private String email;
 
-    // 1. Hàm khởi tạo không tham số (Bắt buộc phải giữ cho JDBC)
+    // 1. Hàm khởi tạo không tham số (Bắt buộc cho JDBC)
     public Booking() {
     }
 
-    // 2. Hàm khởi tạo đầy đủ tham số chính xác (Đã dọn dẹp lỗi viết đè lồng nhau)
+    // 2. Hàm khởi tạo đầy đủ tham số đã chuẩn hóa kiểu dữ liệu
     public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
                    String trangThai, String maKhachHang, String maNhanVien, String maVoucher,
                    String soDienThoai, String email) {

@@ -59,43 +59,69 @@
             <div class="card content-card mb-4">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-plus-circle text-success me-2"></i>Thêm Suất Chiếu Mới
+                        <c:choose>
+                            <c:when test="${not empty showtimeEdit}">
+                                <i class="bi bi-pencil-square text-warning me-2"></i>Cập Nhật Suất Chiếu
+                            </c:when>
+                            <c:otherwise>
+                                <i class="bi bi-plus-circle text-success me-2"></i>Thêm Suất Chiếu Mới
+                            </c:otherwise>
+                        </c:choose>
                     </h5>
                 </div>
                 <div class="card-body">
                     <form action="${pageContext.request.contextPath}/admin/showtime" method="post">
+                        <c:if test="${not empty showtimeEdit}">
+                            <input type="hidden" name="action" value="update">
+                        </c:if>
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="maSuatChieu" class="form-label fw-semibold">Mã Suất Chiếu</label>
                                 <input type="text" class="form-control" id="maSuatChieu" name="maSuatChieu"
-                                       placeholder="VD: SC001" required>
+                                       placeholder="VD: SC001" value="${showtimeEdit.maSuatChieu}" ${not empty showtimeEdit ? 'readonly' : ''} required>
                             </div>
                             <div class="col-md-4">
-                                <label for="maPhim" class="form-label fw-semibold">Mã Phim</label>
-                                <input type="text" class="form-control" id="maPhim" name="maPhim"
-                                       placeholder="VD: P001" required>
+                                <label for="maPhim" class="form-label fw-semibold">Phim</label>
+                                <select class="form-select" id="maPhim" name="maPhim" required>
+                                    <option value="">-- Chọn Phim --</option>
+                                    <c:forEach var="m" items="${listMovie}">
+                                        <option value="${m.maPhim}" ${m.maPhim == showtimeEdit.maPhim ? 'selected' : ''}>${m.maPhim} - ${m.tenPhim}</option>
+                                    </c:forEach>
+                                </select>
                             </div>
                             <div class="col-md-4">
                                 <label for="maPhong" class="form-label fw-semibold">Mã Phòng</label>
                                 <input type="text" class="form-control" id="maPhong" name="maPhong"
-                                       placeholder="VD: P01" required>
+                                       placeholder="VD: P01" value="${showtimeEdit.maPhong}" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="ngayChieu" class="form-label fw-semibold">Ngày Chiếu</label>
-                                <input type="date" class="form-control" id="ngayChieu" name="ngayChieu" required>
+                                <input type="date" class="form-control" id="ngayChieu" name="ngayChieu" value="${showtimeEdit.ngayChieu}" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="gioBatDau" class="form-label fw-semibold">Giờ Bắt Đầu</label>
-                                <input type="time" class="form-control" id="gioBatDau" name="gioBatDau" required>
+                                <input type="time" class="form-control" id="gioBatDau" name="gioBatDau" value="${showtimeEdit.gioBatDau}" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="gioKetThuc" class="form-label fw-semibold">Giờ Kết Thúc</label>
-                                <input type="time" class="form-control" id="gioKetThuc" name="gioKetThuc" required>
+                                <input type="time" class="form-control" id="gioKetThuc" name="gioKetThuc" value="${showtimeEdit.gioKetThuc}" required>
                             </div>
                             <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-plus-lg me-1"></i> Thêm Suất Chiếu
-                                </button>
+                                <c:choose>
+                                    <c:when test="${not empty showtimeEdit}">
+                                        <a href="${pageContext.request.contextPath}/admin/showtime" class="btn btn-secondary me-2">
+                                            <i class="bi bi-x-lg me-1"></i> Hủy
+                                        </a>
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="bi bi-check-lg me-1"></i> Cập Nhật
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-plus-lg me-1"></i> Thêm Suất Chiếu
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </form>
@@ -121,6 +147,7 @@
                                     <th>Ngày Chiếu</th>
                                     <th>Giờ Bắt Đầu</th>
                                     <th>Giờ Kết Thúc</th>
+                                    <th class="text-center">Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,7 +155,13 @@
                                     <tr>
                                         <td class="ps-4 fw-semibold">${stt.index + 1}</td>
                                         <td><span class="badge bg-secondary">${s.maSuatChieu}</span></td>
-                                        <td><span class="badge bg-info text-dark">${s.maPhim}</span></td>
+                                        <td><span class="badge bg-info text-dark">${s.maPhim}</span>
+                                            <br><small class="text-muted">
+                                                <c:forEach var="m" items="${listMovie}">
+                                                    <c:if test="${m.maPhim == s.maPhim}">${m.tenPhim}</c:if>
+                                                </c:forEach>
+                                            </small>
+                                        </td>
                                         <td><span class="badge bg-dark">${s.maPhong}</span></td>
                                         <td class="fw-semibold">${s.ngayChieu}</td>
                                         <td>
@@ -140,6 +173,12 @@
                                             <span class="badge bg-warning text-dark">
                                                 <i class="bi bi-clock-history me-1"></i>${s.gioKetThuc}
                                             </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="${pageContext.request.contextPath}/admin/showtime?action=edit&id=${s.maSuatChieu}"
+                                               class="btn btn-outline-warning btn-action">
+                                                <i class="bi bi-pencil"></i> Sửa
+                                            </a>
                                         </td>
                                     </tr>
                                 </c:forEach>

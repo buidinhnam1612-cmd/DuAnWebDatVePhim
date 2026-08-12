@@ -143,9 +143,16 @@ public class AuthorizationFilter implements Filter {
         if ("/genre".equals(path)) {
             return permissions.contains("Q06") || permissions.contains("MANAGE_GENRE");
         }
+        // ===================== CẤU HÌNH QUYỀN TRANG KIỂM DUYỆT BÌNH LUẬN =====================
+        if ("/admin/comment".equals(path)) {
+            // Cho phép qua nếu tài khoản có mã quyền VIEW_COMMENT, MODERATE_COMMENT hoặc mã quyền tổng Q13, Q14, Q15
+            return permissions.contains("VIEW_COMMENT") || permissions.contains("MODERATE_COMMENT")
+                    || permissions.contains("Q13") || permissions.contains("Q14") || permissions.contains("Q15");
+        }
 
-        return false;
+        return false; // Dòng return false gốc ở cuối file của bạn
     }
+
 
     @Override
     public void destroy() {
