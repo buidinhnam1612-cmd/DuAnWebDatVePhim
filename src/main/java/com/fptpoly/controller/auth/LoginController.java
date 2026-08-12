@@ -98,12 +98,20 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG (Đã sửa lỗi biến loginInput ở đây)
+        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG
         User user = userService.login(loginInput.trim(), password);
 
         if (user != null) {
 
-            // Kiểm tra trạng thái tài khoản
+            // === PHẦN THÊM MỚI CHÍNH XÁC: Kiểm tra chặn trạng thái Chờ duyệt đăng nhập ===
+            if ("Chờ duyệt".equalsIgnoreCase(user.getTrangThai())) {
+                request.setAttribute("error", "Tài khoản đang chờ Admin phê duyệt!");
+                request.setAttribute("oldLoginInput", loginInput); // Gửi lại dữ liệu cũ để hiển thị trên ô nhập của form login.jsp
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra trạng thái tài khoản bị khóa
             if ("Khóa".equals(user.getTrangThai())) {
                 request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
                 request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
@@ -122,8 +130,9 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // Đăng nhập thất bại
+        // Đăng nhập thất bại hoàn toàn (Sai thông tin đăng nhập hoặc mật khẩu)
         request.setAttribute("error", "Email/Tên đăng nhập hoặc mật khẩu không đúng!");
+        request.setAttribute("oldLoginInput", loginInput); // Đồng bộ giữ lại chữ trên form khi gõ sai tài khoản
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 }

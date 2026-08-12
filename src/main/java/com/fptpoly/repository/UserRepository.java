@@ -186,13 +186,13 @@ public class UserRepository {
     }
 
     /**
-     * Thêm mới khách hàng
+     * Thêm mới khách hàng (Đã bỏ cột TrangThai để SQL tự nhảy DEFAULT 'Chờ duyệt')
      */
     public boolean add(User user) {
         String sql = """
                 INSERT INTO KHACH_HANG
-                (MaKhachHang, TenDangNhap, MatKhau, HoTen, Email, SoDienThoai, NgaySinh, GioiTinh, DiemTichLuy, TrangThai, MaVaiTro)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (MaKhachHang, TenDangNhap, MatKhau, HoTen, Email, SoDienThoai, NgaySinh, GioiTinh, DiemTichLuy, MaVaiTro)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         try (
                 Connection con = DBConnection.getConnection();
@@ -210,8 +210,7 @@ public class UserRepository {
             ps.setDate(7, user.getNgaySinh());
             ps.setString(8, user.getGioiTinh());
             ps.setInt(9, user.getDiemTichLuy());
-            ps.setString(10, user.getTrangThai());
-            ps.setString(11, user.getMaVaiTro());
+            ps.setString(10, user.getMaVaiTro()); // Đẩy lùi từ vị trí 11 về vị trí 10
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -219,6 +218,7 @@ public class UserRepository {
         }
         return false;
     }
+
 
     /**
      * Tìm khách hàng theo email
@@ -315,4 +315,29 @@ public class UserRepository {
         }
         return false;
     }
+    /**
+     * PHẦN THÊM MỚI: Xác thực thông tin đăng nhập khách hàng bằng Tên đăng nhập hoặc Email
+     * Giúp tầng Service tìm được tài khoản 'Chờ duyệt' qua cả username để xử lý chặn đăng nhập
+     */
+    public User findByUsernameAndPassword(String usernameOrEmail, String password) {
+        String sql = "SELECT * FROM KHACH_HANG WHERE (TenDangNhap = ? OR Email = ?) AND MatKhau = ?";
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+            ps.setString(1, usernameOrEmail.trim());
+            ps.setString(2, usernameOrEmail.trim());
+            ps.setString(3, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs); // Sử dụng hàm mapResultSet đã có sẵn trong UserRepository của bạn
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

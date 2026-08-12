@@ -77,9 +77,13 @@ public class UserService {
 
         // Thiết lập giá trị mặc định
         user.setMaKhachHang(userRepository.generateUserId());
+
+        // SỬA LỖI CÚ PHÁP: Bổ sung index [0] sau khi split để lấy chính xác phần tên trước ký tự @ làm tên đăng nhập
         user.setTenDangNhap(user.getEmail().split("@")[0]);
         user.setDiemTichLuy(0);
-        user.setTrangThai("Hoạt động");
+
+        // === ĐÃ ĐỒNG BỘ: Thay "Hoạt động" thành "Chờ duyệt" để tự động đưa vào danh sách phê duyệt của Admin ===
+        user.setTrangThai("Chờ duyệt");
         user.setMaVaiTro("VT03"); // Vai trò khách hàng
 
         return userRepository.add(user);
@@ -88,11 +92,12 @@ public class UserService {
     /**
      * Xác thực thông tin đăng nhập của khách hàng
      */
-    public User login(String email, String password) {
-        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+    public User login(String loginInput, String password) {
+        if (loginInput == null || loginInput.isBlank() || password == null || password.isBlank()) {
             return null;
         }
-        return userRepository.findByEmailAndPassword(email.trim(), password);
+        // === ĐÃ ĐỒNG BỘ: Gọi findByUsernameAndPassword để đăng nhập được bằng cả Tên đăng nhập và Email ===
+        return userRepository.findByUsernameAndPassword(loginInput.trim(), password);
     }
 
     /**

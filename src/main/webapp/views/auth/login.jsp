@@ -92,13 +92,13 @@
 
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-envelope-fill me-2"></i>
-                                Email
+                                Email <span style="color: #e11d48;">*</span>
                             </label>
 
                         <input type="text"
                                class="form-control"
                                name="loginInput"
-                               value="${param.loginInput}"
+                               value="${oldLoginInput}"
                                placeholder="Nhập tên đăng nhập hoặc email"
                                required>
 
@@ -109,7 +109,7 @@
 
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-lock-fill me-2"></i>
-                                Mật khẩu
+                                Mật khẩu <span style="color: #e11d48;">*</span>
                             </label>
 
                             <input type="password"

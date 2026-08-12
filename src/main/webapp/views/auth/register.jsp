@@ -90,7 +90,7 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-person-fill me-2"></i>
-                                Họ và tên
+                                Họ và tên <span style="color: #e11d48;">*</span>
 
                             </label>
 
@@ -110,7 +110,7 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-envelope-fill me-2"></i>
-                                Email
+                                Email <span style="color: #e11d48;">*</span>
 
                             </label>
 
@@ -130,15 +130,19 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-telephone-fill me-2"></i>
-                                Số điện thoại
+                                Số điện thoại <span style="color: #e11d48;">*</span>
 
                             </label>
 
+                            <%-- CẬP NHẬT: Thêm pattern="0[0-9]{9}" bắt đầu bằng 0, gồm 10 số, maxlength="10" giới hạn độ dài và title để hiện thông báo hướng dẫn --%>
                             <input type="text"
                                    class="form-control"
                                    name="phone"
                                    value="${param.phone}"
-                                   placeholder="Nhập số điện thoại"
+                                   pattern="0[0-9]{9}"
+                                   maxlength="10"
+                                   title="Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng số 0"
+                                   placeholder="Nhập số điện thoại (10 số, bắt đầu bằng số 0)"
                                    required>
 
                         </div>
@@ -150,14 +154,14 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-lock-fill me-2"></i>
-                                Mật khẩu
+                                Mật khẩu <span style="color: #e11d48;">*</span>
 
                             </label>
 
                             <input type="password"
                                    class="form-control"
                                    name="password"
-                                   placeholder="Nhập mật khẩu"
+                                   placeholder="Nhập mật khẩu (Có ít nhất 1 ký tự đặc biệt)"
                                    required>
 
                         </div>
@@ -169,7 +173,7 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-shield-lock-fill me-2"></i>
-                                Xác nhận mật khẩu
+                                Xác nhận mật khẩu <span style="color: #e11d48;">*</span>
 
                             </label>
 

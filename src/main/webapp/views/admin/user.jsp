@@ -112,8 +112,11 @@ if (userList != null && !userList.isEmpty()) {
                                     <td><%= u.getNgaySinh() %></td>
                                     <td class="text-center text-warning fw-bold"><i class="bi bi-star-fill me-1"></i><%= u.getDiemTichLuy() %></td>
                                     <td class="text-center">
+                                        <%-- SỬA LẠI TẠI ĐÂY: Thêm nhánh hiển thị nhãn màu vàng rực rỡ cho 'Chờ duyệt' --%>
                                         <% if ("Hoạt động".equals(u.getTrangThai())) { %>
                                             <span class="badge bg-success">Hoạt động</span>
+                                        <% } else if ("Chờ duyệt".equals(u.getTrangThai())) { %>
+                                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
                                         <% } else { %>
                                             <span class="badge bg-danger">Khóa</span>
                                         <% } %>
@@ -124,6 +127,8 @@ if (userList != null && !userList.isEmpty()) {
                                             <input type="hidden" name="maKhachHang" value="<%= u.getMaKhachHang() %>">
                                             <select name="trangThai" class="form-select form-select-sm" style="width: 110px;">
                                                 <option value="Hoạt động" <%= "Hoạt động".equals(u.getTrangThai()) ? "selected" : "" %>>Hoạt động</option>
+                                                <%-- THÊM MỚI TẠI ĐÂY: Bổ sung thẻ option 'Chờ duyệt' vào ô thả xuống để tránh bị ép cứng dữ liệu sai --%>
+                                                <option value="Chờ duyệt" <%= "Chờ duyệt".equals(u.getTrangThai()) ? "selected" : "" %>>Chờ duyệt</option>
                                                 <option value="Khóa" <%= "Khóa".equals(u.getTrangThai()) ? "selected" : "" %>>Khóa</option>
                                             </select>
                                             <button type="submit" class="btn btn-sm btn-success btn-action"><i class="bi bi-check2"></i></button>
@@ -136,8 +141,7 @@ if (userList != null && !userList.isEmpty()) {
 %>
                                 <tr>
                                     <td colspan="10" class="text-center text-muted py-4">
-                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                        Không có dữ liệu người dùng.
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i> Không tìm thấy người dùng nào!
                                     </td>
                                 </tr>
 <%
@@ -148,11 +152,11 @@ if (userList != null && !userList.isEmpty()) {
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<%@ include file="../common/footer.jsp" %>
+<%@ include file="../common/script.jsp" %>
 </body>
 </html>
