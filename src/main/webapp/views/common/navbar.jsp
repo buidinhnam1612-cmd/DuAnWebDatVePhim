@@ -55,14 +55,14 @@
 
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="#">
+                       href="${pageContext.request.contextPath}/promotion">
                         Khuyến mãi
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="#">
+                       href="${pageContext.request.contextPath}/contact">
                         Liên hệ
                     </a>
                 </li>

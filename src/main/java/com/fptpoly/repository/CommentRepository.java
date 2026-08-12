@@ -227,6 +227,7 @@ public class CommentRepository {
                 INNER JOIN KHACH_HANG kh
                     ON bl.MaKhachHang = kh.MaKhachHang
                 WHERE bl.MaPhim = ?
+                    AND bl.TrangThai = N'Đã duyệt'
                 ORDER BY bl.NgayTao DESC
                 """;
         try (
