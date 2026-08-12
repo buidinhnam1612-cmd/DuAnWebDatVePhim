@@ -291,8 +291,10 @@
 <body>
 
 <%
-    request.setAttribute("currentPage", "confirm-booking");
+    // Sửa chữ "confirm-booking" thành "food" để đồng bộ chuẩn nhận diện active cho menu đồ ăn
+    request.setAttribute("currentPage", "food");
 %>
+
 
 <div class="container-fluid">
 
@@ -306,19 +308,6 @@
 
 
         <div class="col-md-9 col-lg-10 px-md-4 py-4">
-
-            <div class="page-header">
-
-                <div class="page-title">
-                    <i class="bi bi-ticket-perforated me-2"></i>
-                    Xác nhận trạng thái vé
-                </div>
-
-                <p class="page-description">
-                    Tra cứu mã đặt vé để kiểm tra và xác nhận khách đã sử dụng vé.
-                </p>
-
-            </div>
 
 
             <c:if test="${not empty sessionScope.success}">
@@ -349,342 +338,181 @@
                 <c:remove var="error" scope="session"/>
 
             </c:if>
-
-
-            <div class="card content-card mb-4">
-
-                <div class="card-body p-4">
-
-                    <div class="card-title">
-
-                        <i class="bi bi-search me-2"></i>
-
-                        Tra cứu vé
-
-                    </div>
-
-
-                    <form
-                        method="get"
-                        action="${pageContext.request.contextPath}/admin/confirm-booking"
-                        class="search-form">
-
-                        <input
-                            type="text"
-                            name="maDatVe"
-                            class="form-control search-input"
-                            placeholder="Nhập mã vé, ví dụ: DV01"
-                            value="${param.maDatVe}"
-                            autocomplete="off"
-                            required>
-
-
-                        <button
-                            type="submit"
-                            class="btn-search">
-
-                            <i class="bi bi-search me-1"></i>
-
-                            Tra cứu vé
-
-                        </button>
-
-                    </form>
-
-
-                    <div class="note">
-
-                        <i class="bi bi-info-circle me-2"></i>
-
-                        Nhập chính xác mã đặt vé được hiển thị trên vé.
-                        Hệ thống sẽ kiểm tra trạng thái trước khi cho phép xác nhận.
-
-                    </div>
-
+            <!-- ===================== TIÊU ĐỀ TRANG ĐỒ ĂN CHUẨN CỦA BẠN ===================== -->
+            <div class="page-header">
+                <div class="page-title">
+                    <i class="bi bi-cup-straw me-2"></i>
+                    Quản lý Đồ ăn & Thức uống
                 </div>
-
+                <p class="page-description">
+                    Cấu hình danh mục sản phẩm, cập nhật số lượng nhập kho và đơn giá bán đồ ăn tại quầy rạp phim.
+                </p>
             </div>
 
-
-            <c:if test="${not empty booking}">
-
-                <div class="card content-card">
-
-                    <div class="card-body p-4">
-
-                        <div class="card-title">
-
-                            <i class="bi bi-ticket-detailed me-2"></i>
-
-                            Thông tin đặt vé
-
-                        </div>
-
-
-                        <div class="booking-info">
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Mã đặt vé
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.maDatVe}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Khách hàng
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.tenKhachHang}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Số điện thoại
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.soDienThoai}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Email
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.email}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Phim
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.tenPhim}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Ngày chiếu
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.ngayChieu}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Giờ bắt đầu
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.gioBatDau}
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Tổng tiền
-                                </span>
-
-                                <span class="info-value">
-                                    ${booking.tongTien} VNĐ
-                                </span>
-
-                            </div>
-
-
-                            <div class="info-row">
-
-                                <span class="info-label">
-                                    Trạng thái
-                                </span>
-
-                                <span class="info-value">
-
-                                    <c:choose>
-
-                                        <c:when test="${booking.trangThai == 'Đã thanh toán'}">
-                                            <span class="status status-payment">
-                                                Đã thanh toán
-                                            </span>
-                                        </c:when>
-
-                                        <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
-                                            <span class="status status-waiting">
-                                                Chờ thanh toán
-                                            </span>
-                                        </c:when>
-
-                                        <c:when test="${booking.trangThai == 'Đã sử dụng'}">
-                                            <span class="status status-used">
-                                                Đã sử dụng
-                                            </span>
-                                        </c:when>
-
-                                        <c:when test="${booking.trangThai == 'Đã hủy'}">
-                                            <span class="status status-cancelled">
-                                                Đã hủy
-                                            </span>
-                                        </c:when>
-
-                                        <c:otherwise>
-                                            <span class="status status-default">
-                                                ${booking.trangThai}
-                                            </span>
-                                        </c:otherwise>
-
-                                    </c:choose>
-
-                                </span>
-
-                            </div>
-
-
-                            <c:choose>
-
-                                <c:when test="${booking.trangThai == 'Đã thanh toán'}">
-
-                                    <form
-                                        method="post"
-                                        action="${pageContext.request.contextPath}/admin/confirm-booking"
-                                        class="confirm-form">
-
-                                        <input
-                                            type="hidden"
-                                            name="maDatVe"
-                                            value="${booking.maDatVe}">
-
-                                        <button
-                                            type="submit"
-                                            class="btn-confirm">
-
-                                            <i class="bi bi-check-circle-fill me-2"></i>
-
-                                            Xác nhận khách đã sử dụng vé
-
-                                        </button>
-
-                                    </form>
-
-                                </c:when>
-
-
-                                <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
-
-                                    <div class="status-box warning">
-
-                                        <i class="bi bi-clock-history me-2"></i>
-
-                                        Vé này đang chờ thanh toán.
-
-                                        <br>
-
-                                        Khách hàng cần thanh toán trước
-                                        khi có thể sử dụng vé.
-
-                                    </div>
-
-                                </c:when>
-
-
-                                <c:when test="${booking.trangThai == 'Đã sử dụng'}">
-
-                                    <div class="status-box success">
-
-                                        <i class="bi bi-check-circle-fill me-2"></i>
-
-                                        Vé này đã được sử dụng.
-
-                                        <br>
-
-                                        Không thể xác nhận lại vé này.
-
-                                    </div>
-
-                                </c:when>
-
-
-                                <c:when test="${booking.trangThai == 'Đã hủy'}">
-
-                                    <div class="status-box danger">
-
-                                        <i class="bi bi-x-circle-fill me-2"></i>
-
-                                        Vé này đã bị hủy.
-
-                                        <br>
-
-                                        Không thể xác nhận vé đã hủy.
-
-                                    </div>
-
-                                </c:when>
-
-
-                                <c:otherwise>
-
-                                    <div class="status-box danger">
-
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-                                        Trạng thái vé không hợp lệ,
-                                        không thể xác nhận.
-
-                                    </div>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </div>
-
+            <!-- ===================== BỘ LỌC TÌM KIẾM & NÚT THÊM MÓN MỚI ===================== -->
+            <div class="card content-card mb-4">
+                <div class="card-body p-4">
+                    <div class="card-title" style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 20px;">
+                        <i class="bi bi-search me-2"></i>
+                        Bộ lọc sản phẩm tại quầy
                     </div>
 
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <form method="get" action="${pageContext.request.contextPath}/admin/food" class="search-form" style="flex: 1; max-width: 500px; display: flex; gap: 10px;">
+                            <input type="hidden" name="action" value="search">
+                            <input
+                                type="text"
+                                name="keyword"
+                                class="form-control search-input"
+                                style="height: 45px; border: 1px solid #d1d5db; border-radius: 7px; padding: 0 14px; font-size: 14px;"
+                                placeholder="Nhập tên bỏng ngô, nước uống hoặc combo..."
+                                value="${param.keyword}"
+                                autocomplete="off">
+
+                            <button type="submit" class="btn-search" style="height: 45px; padding: 0 22px; border: none; border-radius: 7px; background-color: #2563eb; color: white; font-weight: 600; cursor: pointer;">
+                                <i class="bi bi-search me-1"></i>
+                                Tìm kiếm
+                            </button>
+                        </form>
+
+                        <button type="button" class="btn btn-success px-4 fw-bold" style="height: 45px; background-color: #16a34a; border: none; border-radius: 7px;" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+                            <i class="bi bi-plus-circle me-1"></i> Thêm món mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+                <!-- ===================== BẢNG DANH SÁCH ĐỒ ĂN CỦA BẠN ===================== -->
+                <div class="card content-card">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 14px;">
+                                <thead class="table-light" style="color: #4b5563;">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Mã Món</th>
+                                        <th>Tên Món Ăn / Combo</th>
+                                        <th>Phân Loại</th>
+                                        <th style="width: 150px;">Số Lượng Kho</th>
+                                        <th style="width: 160px;">Đơn Giá (VNĐ)</th>
+                                        <th style="width: 150px;">Trạng Thái</th>
+                                        <th>Hệ Thống</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:choose>
+                                        <c:when test="${not empty foodList}">
+                                            <c:forEach var="food" items="${foodList}" varStatus="status">
+                                                <tr>
+                                                    <td>${status.index + 1}</td>
+                                                    <td><span class="badge bg-light text-dark border px-2 py-1">${food.maDoAn}</span></td>
+                                                    <td><span class="fw-semibold text-dark">${food.tenDoAn}</span></td>
+                                                    <td>${food.loai}</td>
+                                                    <td>
+                                                        <!-- Form cập nhật số lượng nhập kho -->
+                                                        <form action="${pageContext.request.contextPath}/admin/food" method="post" class="d-flex align-items-center gap-1">
+                                                            <input type="hidden" name="action" value="updateQuantity">
+                                                            <input type="hidden" name="maDoAn" value="${food.maDoAn}">
+                                                            <input type="number" name="soLuong" class="form-control form-control-sm text-center" value="${food.soLuong}" style="width: 65px; height: 32px;">
+                                                            <button type="submit" class="btn btn-sm btn-outline-secondary" style="height: 32px;"><i class="bi bi-save"></i></button>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <!-- Form cập nhật đơn giá bán sản phẩm -->
+                                                        <form action="${pageContext.request.contextPath}/admin/food" method="post" class="d-flex align-items-center gap-1">
+                                                            <input type="hidden" name="action" value="updatePrice">
+                                                            <input type="hidden" name="maDoAn" value="${food.maDoAn}">
+                                                            <input type="number" name="gia" class="form-control form-control-sm text-danger fw-bold" value="${food.gia}" style="width: 90px; height: 32px;">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" style="height: 32px;"><i class="bi bi-save"></i></button>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <!-- Form thay đổi trạng thái Còn/Hết hàng nhanh -->
+                                                        <form action="${pageContext.request.contextPath}/admin/food" method="post">
+                                                            <input type="hidden" name="action" value="updateStatus">
+                                                            <input type="hidden" name="maDoAn" value="${food.maDoAn}">
+                                                            <select name="trangThai" class="form-select form-select-sm" style="font-size: 13px;" onchange="this.form.submit()">
+                                                                <option value="Còn hàng" ${food.trangThai == 'Còn hàng' ? 'selected' : ''}>Còn hàng</option>
+                                                                <option value="Hết hàng" ${food.trangThai == 'Hết hàng' ? 'selected' : ''}>Hết hàng</option>
+                                                            </select>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <span class="text-muted" style="font-size: 13px;"><i class="bi bi-shield-check me-1"></i>Hệ thống quầy</span>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted py-5">
+                                                    <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i> Chưa có dữ liệu đồ ăn nào. Vui lòng bấm thêm món mới!
+                                                </td>
+                                            </tr>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
-            </c:if>
+            </div> <!-- Đóng col-md-9 -->
+        </div> <!-- Đóng row -->
+    </div> <!-- Đóng container-fluid -->
 
+    <!-- ===================== MODAL THÊM ĐỒ ĂN MỚI TẠI QUẦY (CỦA BẠN) ===================== -->
+    <div class="modal fade" id="addFoodModal" tabindex="-1" aria-labelledby="addFoodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border: none; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                <form action="${pageContext.request.contextPath}/admin/food" method="post">
+                    <input type="hidden" name="action" value="create">
+
+                    <div class="modal-header border-0 pt-4 px-4">
+                        <h5 class="modal-title fw-bold text-dark" id="addFoodModalLabel">
+                            <i class="bi bi-plus-circle-fill text-success me-2"></i>Thêm Món Ăn / Combo Mới
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body px-4 pb-4">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-semibold" style="font-size: 13px;">Mã Đồ Ăn / Mã Combo</label>
+                            <input type="text" name="maDoAn" class="form-control" style="height: 42px;" placeholder="Ví dụ: DA01, CB02" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-semibold" style="font-size: 13px;">Tên Món Ăn / Tên Combo</label>
+                            <input type="text" name="tenDoAn" class="form-control" style="height: 42px;" placeholder="Nhập tên bỏng ngô, nước uống..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-semibold" style="font-size: 13px;">Phân Loại Danh Mục</label>
+                            <select name="loai" class="form-select" style="height: 42px;">
+                                <option value="Đồ ăn">Đồ ăn (Bỏng ngô, Snack)</option>
+                                <option value="Nước uống">Nước uống (Pepsi, Coca, Nước suối)</option>
+                                <option value="Combo">Combo Trọn Gói (Bỏng + Nước)</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label text-secondary fw-semibold" style="font-size: 13px;">Giá Bán (VNĐ)</label>
+                                <input type="number" name="gia" class="form-control" style="height: 42px;" placeholder="Nhập đơn giá..." required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary fw-semibold" style="font-size: 13px;">Số Lượng Nhập Kho</label>
+                                <input type="number" name="soLuong" class="form-control" style="height: 42px;" placeholder="Số lượng..." required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 bg-light p-3" style="border-radius: 0 0 14px 14px;">
+                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-weight: 600;">Đóng</button>
+                        <button type="submit" class="btn btn-success px-4" style="background-color: #16a34a; border: none; border-radius: 6px; font-weight: 600;">
+                            <i class="bi bi-save me-1"></i> Lưu món ăn
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-
     </div>
-
-</div>
-
 </body>
 
 </html>

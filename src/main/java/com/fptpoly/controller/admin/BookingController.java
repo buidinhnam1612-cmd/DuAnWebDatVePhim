@@ -32,16 +32,13 @@ public class BookingController extends HttpServlet {
         }
 
         switch (action) {
-
             case "search":
                 searchBooking(request, response);
                 break;
-
             default:
                 loadBooking(request, response);
                 break;
         }
-
     }
 
     @Override
@@ -52,15 +49,16 @@ public class BookingController extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("updateStatus".equals(action)) {
-
             updateStatus(request, response);
-
         }
-
+        // ===================== XỬ LÝ SOÁT VÉ CỦA THÀNH VIÊN =====================
+        else if ("confirm".equals(action)) {
+            confirmBooking(request, response);
+        }
     }
 
     /**
-     * Hiển thị danh sách đặt vé
+     * Hiển thị danh sách đặt vé (Bao gồm cả vé bán tại quầy và online)
      */
     private void loadBooking(HttpServletRequest request,
                              HttpServletResponse response)
@@ -72,11 +70,10 @@ public class BookingController extends HttpServlet {
 
         request.getRequestDispatcher("/views/admin/booking.jsp")
                 .forward(request, response);
-
     }
 
     /**
-     * Tìm kiếm
+     * Tìm kiếm đa năng
      */
     private void searchBooking(HttpServletRequest request,
                                HttpServletResponse response)
@@ -90,24 +87,36 @@ public class BookingController extends HttpServlet {
 
         request.getRequestDispatcher("/views/admin/booking.jsp")
                 .forward(request, response);
-
     }
 
     /**
-     * Cập nhật trạng thái
+     * Cập nhật trạng thái tổng quát
      */
     private void updateStatus(HttpServletRequest request,
                               HttpServletResponse response)
             throws IOException {
 
         String maDatVe = request.getParameter("maDatVe");
-
         String trangThai = request.getParameter("trangThai");
 
         bookingService.updateStatus(maDatVe, trangThai);
 
         response.sendRedirect(request.getContextPath() + "/admin/booking");
-
     }
 
+    /**
+     * Nghiệp vụ của thành viên: Xác nhận soát vé (Đã thanh toán -> Đã sử dụng)
+     */
+    private void confirmBooking(HttpServletRequest request,
+                                HttpServletResponse response)
+            throws IOException {
+
+        String maDatVe = request.getParameter("maDatVe");
+
+        if (maDatVe != null && !maDatVe.isBlank()) {
+            bookingService.confirmBooking(maDatVe);
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/booking");
+    }
 }

@@ -257,7 +257,7 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                             </form>
 
                                             <% if (!"VT01".equals(e.getMaVaiTro())) { %>
-                                            <a href="${pageContext.request.contextPath}/admin/employee?editPermission=<%=e.getMaNhanVien()%>"
+                                            <a href="${pageContext.request.contextPath}/admin/employee/permission?maNhanVien=<%=e.getMaNhanVien()%>"
                                                class="btn btn-sm btn-outline-warning btn-action" title="Phân quyền">
                                                 <i class="bi bi-key"></i> Phân quyền
                                             </a>

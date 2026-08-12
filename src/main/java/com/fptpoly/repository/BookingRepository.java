@@ -11,98 +11,29 @@ import java.util.List;
 public class BookingRepository {
 
     // ===================== LẤY TOÀN BỘ DANH SÁCH ĐẶT VÉ =====================
-
     public List<Booking> getAll() {
-
         List<Booking> list = new ArrayList<>();
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-
-                v.TenVoucher,
-
-                nv.HoTen AS TenNhanVien
-
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
-
-            INNER JOIN KHACH_HANG kh
-                ON dv.MaKhachHang = kh.MaKhachHang
-
-            INNER JOIN CHI_TIET_DAT_VE ct
-                ON dv.MaDatVe = ct.MaDatVe
-
-            INNER JOIN GHE g
-                ON ct.MaGhe = g.MaGhe
-
-            INNER JOIN SUAT_CHIEU sc
-                ON ct.MaSuatChieu = sc.MaSuatChieu
-
-            INNER JOIN PHIM p
-                ON sc.MaPhim = p.MaPhim
-
-            INNER JOIN PHONG_CHIEU pc
-                ON sc.MaPhong = pc.MaPhong
-
-            INNER JOIN RAP r
-                ON pc.MaRap = r.MaRap
-
-            LEFT JOIN VOUCHER v
-                ON dv.MaVoucher = v.MaVoucher
-
-            LEFT JOIN NHAN_VIEN nv
-                ON dv.MaNhanVien = nv.MaNhanVien
-
+            INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
+            INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
+            INNER JOIN GHE g ON ct.MaGhe = g.MaGhe
+            INNER JOIN SUAT_CHIEU sc ON ct.MaSuatChieu = sc.MaSuatChieu
+            INNER JOIN PHIM p ON sc.MaPhim = p.MaPhim
+            INNER JOIN PHONG_CHIEU pc ON sc.MaPhong = pc.MaPhong
+            INNER JOIN RAP r ON pc.MaRap = r.MaRap
+            LEFT JOIN VOUCHER v ON dv.MaVoucher = v.MaVoucher
+            LEFT JOIN NHAN_VIEN nv ON dv.MaNhanVien = nv.MaNhanVien
             GROUP BY
-
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen,
-                kh.SoDienThoai,
-                kh.Email,
-
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
-                v.TenVoucher,
-
-                nv.HoTen
-
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen, kh.SoDienThoai, kh.Email, p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
+                v.TenVoucher, nv.HoTen
             ORDER BY dv.ThoiGianDat DESC
             """;
 
@@ -111,274 +42,85 @@ public class BookingRepository {
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {
-
             while (rs.next()) {
-
                 list.add(mapBooking(rs));
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
 
-    // ===================== MAP RESULTSET -> BOOKING =====================
-
-    private Booking mapBooking(ResultSet rs) throws Exception {
-
-        Booking booking = new Booking();
-
-        // Thông tin đặt vé
-        booking.setMaDatVe(rs.getString("MaDatVe"));
-        booking.setThoiGianDat(rs.getTimestamp("ThoiGianDat").toLocalDateTime());
-        booking.setTongTien(rs.getDouble("TongTien"));
-        booking.setTrangThai(rs.getString("TrangThai"));
-
-        booking.setMaKhachHang(rs.getString("MaKhachHang"));
-        booking.setMaNhanVien(rs.getString("MaNhanVien"));
-        booking.setMaVoucher(rs.getString("MaVoucher"));
-
-        // Thông tin hiển thị
-        booking.setTenKhachHang(rs.getString("TenKhachHang"));
-        booking.setSoDienThoai(rs.getString("SoDienThoai"));
-        booking.setEmail(rs.getString("Email"));
-        booking.setTenPhim(rs.getString("TenPhim"));
-        booking.setTenRap(rs.getString("TenRap"));
-        booking.setTenPhong(rs.getString("TenPhong"));
-
-        booking.setNgayChieu(rs.getDate("NgayChieu"));
-        booking.setGioBatDau(rs.getTime("GioBatDau"));
-
-        booking.setDanhSachGhe(rs.getString("DanhSachGhe"));
-        booking.setTenVoucher(rs.getString("TenVoucher"));
-        booking.setTenNhanVien(rs.getString("TenNhanVien"));
-
-        // Xác định hình thức đặt
-        if (booking.getMaNhanVien() == null) {
-            booking.setHinhThucDat("Online");
-        } else {
-            booking.setHinhThucDat("Tại quầy");
-        }
-
-        return booking;
-    }
-
     // ===================== LẤY ĐẶT VÉ THEO MÃ =====================
-
     public Booking getById(String maDatVe) {
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-
-                v.TenVoucher,
-
-                nv.HoTen AS TenNhanVien
-
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
-
-            INNER JOIN KHACH_HANG kh
-                ON dv.MaKhachHang = kh.MaKhachHang
-
-            INNER JOIN CHI_TIET_DAT_VE ct
-                ON dv.MaDatVe = ct.MaDatVe
-
-            INNER JOIN GHE g
-                ON ct.MaGhe = g.MaGhe
-
-            INNER JOIN SUAT_CHIEU sc
-                ON ct.MaSuatChieu = sc.MaSuatChieu
-
-            INNER JOIN PHIM p
-                ON sc.MaPhim = p.MaPhim
-
-            INNER JOIN PHONG_CHIEU pc
-                ON sc.MaPhong = pc.MaPhong
-
-            INNER JOIN RAP r
-                ON pc.MaRap = r.MaRap
-
-            LEFT JOIN VOUCHER v
-                ON dv.MaVoucher = v.MaVoucher
-
-            LEFT JOIN NHAN_VIEN nv
-                ON dv.MaNhanVien = nv.MaNhanVien
-
+            INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
+            INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
+            INNER JOIN GHE g ON ct.MaGhe = g.MaGhe
+            INNER JOIN SUAT_CHIEU sc ON ct.MaSuatChieu = sc.MaSuatChieu
+            INNER JOIN PHIM p ON sc.MaPhim = p.MaPhim
+            INNER JOIN PHONG_CHIEU pc ON sc.MaPhong = pc.MaPhong
+            INNER JOIN RAP r ON pc.MaRap = r.MaRap
+            LEFT JOIN VOUCHER v ON dv.MaVoucher = v.MaVoucher
+            LEFT JOIN NHAN_VIEN nv ON dv.MaNhanVien = nv.MaNhanVien
             WHERE dv.MaDatVe = ?
-
             GROUP BY
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen,
-                kh.SoDienThoai,
-                kh.Email,
-
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
-                v.TenVoucher,
-
-                nv.HoTen
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen, kh.SoDienThoai, kh.Email, p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
+                v.TenVoucher, nv.HoTen
             """;
 
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             ps.setString(1, maDatVe);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return mapBooking(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapBooking(rs);
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
-
-    // ===================== TÌM KIẾM =====================
-
+    // ===================== TÌM KIẾM ĐƠN ĐẶT VÉ =====================
     public List<Booking> search(String keyword) {
-
         List<Booking> list = new ArrayList<>();
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen AS TenKhachHang,
-                kh.SoDienThoai,
-                kh.Email,
-                
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-
-                v.TenVoucher,
-
-                nv.HoTen AS TenNhanVien
-
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
-
-            INNER JOIN KHACH_HANG kh
-                ON dv.MaKhachHang = kh.MaKhachHang
-
-            INNER JOIN CHI_TIET_DAT_VE ct
-                ON dv.MaDatVe = ct.MaDatVe
-
-            INNER JOIN GHE g
-                ON ct.MaGhe = g.MaGhe
-
-            INNER JOIN SUAT_CHIEU sc
-                ON ct.MaSuatChieu = sc.MaSuatChieu
-
-            INNER JOIN PHIM p
-                ON sc.MaPhim = p.MaPhim
-
-            INNER JOIN PHONG_CHIEU pc
-                ON sc.MaPhong = pc.MaPhong
-
-            INNER JOIN RAP r
-                ON pc.MaRap = r.MaRap
-
-            LEFT JOIN VOUCHER v
-                ON dv.MaVoucher = v.MaVoucher
-
-            LEFT JOIN NHAN_VIEN nv
-                ON dv.MaNhanVien = nv.MaNhanVien
-
-            WHERE
-                dv.MaDatVe LIKE ?
-                OR kh.HoTen LIKE ?
-                OR p.TenPhim LIKE ?
-                OR r.TenRap LIKE ?
-                OR dv.TrangThai LIKE ?
-
+            INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
+            INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
+            INNER JOIN GHE g ON ct.MaGhe = g.MaGhe
+            INNER JOIN SUAT_CHIEU sc ON ct.MaSuatChieu = sc.MaSuatChieu
+            INNER JOIN PHIM p ON sc.MaPhim = p.MaPhim
+            INNER JOIN PHONG_CHIEU pc ON sc.MaPhong = pc.MaPhong
+            INNER JOIN RAP r ON pc.MaRap = r.MaRap
+            LEFT JOIN VOUCHER v ON dv.MaVoucher = v.MaVoucher
+            LEFT JOIN NHAN_VIEN nv ON dv.MaNhanVien = nv.MaNhanVien
+            WHERE dv.MaDatVe LIKE ? 
+               OR kh.HoTen LIKE ? 
+               OR kh.SoDienThoai LIKE ? 
+               OR p.TenPhim LIKE ?
             GROUP BY
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-
-                kh.HoTen,
-                kh.SoDienThoai,
-                kh.Email,
-
-                p.TenPhim,
-
-                r.TenRap,
-
-                pc.TenPhong,
-
-                sc.NgayChieu,
-
-                sc.GioBatDau,
-
-                v.TenVoucher,
-
-                nv.HoTen
-
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen, kh.SoDienThoai, kh.Email, p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
+                v.TenVoucher, nv.HoTen
             ORDER BY dv.ThoiGianDat DESC
             """;
 
@@ -386,143 +128,99 @@ public class BookingRepository {
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             String value = "%" + keyword + "%";
-
             ps.setString(1, value);
             ps.setString(2, value);
             ps.setString(3, value);
             ps.setString(4, value);
-            ps.setString(5, value);
 
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                list.add(mapBooking(rs));
-
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapBooking(rs));
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
-    // ===================== CẬP NHẬT TRẠNG THÁI =====================
-
+    // ===================== CẬP NHẬT TRẠNG THÁI TỔNG QUÁT =====================
     public boolean updateStatus(String maDatVe, String trangThai) {
-
-        String sql = """
-            UPDATE DAT_VE
-            SET TrangThai = ?
-            WHERE MaDatVe = ?
-            """;
-
+        String sql = "UPDATE DAT_VE SET TrangThai = ? WHERE MaDatVe = ?";
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             ps.setString(1, trangThai);
             ps.setString(2, maDatVe);
-
             return ps.executeUpdate() > 0;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
-    // ===================== ĐẾM TỔNG ĐƠN =====================
 
+    // ===================== ĐẾM TỔNG SỐ ĐƠN ĐẶT VÉ =====================
     public int countBooking() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM DAT_VE
-            """;
-
+        String sql = "SELECT COUNT(*) FROM DAT_VE";
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {
-
             if (rs.next()) {
                 return rs.getInt(1);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
-    // ===================== ĐẾM THEO TRẠNG THÁI =====================
 
+    // ===================== ĐẾM SỐ ĐƠN THEO TRẠNG THÁI =====================
     public int countByStatus(String trangThai) {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM DAT_VE
-            WHERE TrangThai = ?
-            """;
-
+        String sql = "SELECT COUNT(*) FROM DAT_VE WHERE TrangThai = ?";
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             ps.setString(1, trangThai);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
-    // ===================== TỔNG DOANH THU =====================
 
+    // ===================== TÍNH TỔNG DOANH THU ĐÃ THANH TOÁN =====================
     public double getTotalRevenue() {
-
-        String sql = """
-            SELECT ISNULL(SUM(TongTien),0)
-            FROM DAT_VE
-            WHERE TrangThai = N'Đã thanh toán'
-            """;
-
+        String sql = "SELECT SUM(TongTien) FROM DAT_VE WHERE TrangThai = N'Đã thanh toán'";
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {
-
             if (rs.next()) {
                 return rs.getDouble(1);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return 0;
+        return 0.0;
     }
-    // xác nhận thanh toán
+
+    // ===================== XÁC NHẬN KHÁCH ĐÃ SỬ DỤNG VÉ (SOÁT VÉ ONLINE) =====================
     public boolean confirmBooking(String maDatVe) {
         String sql = """
-        UPDATE DAT_VE
-        SET TrangThai = N'Đã sử dụng'
-        WHERE MaDatVe = ?
-        AND TrangThai = N'Đã thanh toán'
-        """;
+            UPDATE DAT_VE
+            SET TrangThai = N'Đã sử dụng'
+            WHERE MaDatVe = ?
+            AND TrangThai = N'Đã thanh toán'
+            """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -535,7 +233,7 @@ public class BookingRepository {
         }
         return false;
     }
-
+    // ===================== TỰ ĐỘNG SINH MÃ ĐẶT VÉ (BÁN VÉ TẠI QUẦY) =====================
     public String generateBookingId() {
         String sql = """
                 SELECT COALESCE(MAX(CAST(SUBSTRING(MaDatVe, 3, LEN(MaDatVe)) AS INT)), 0) AS MaxNum
@@ -554,42 +252,24 @@ public class BookingRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return "DV01";
     }
 
-    public boolean insertBooking(Booking booking) {
-
+    // ===================== THÊM MỚI ĐƠN ĐẶT VÉ (BÁN VÉ TẠI QUẦY) =====================
+    public boolean insert(Booking booking) {
         String sql = """
-                INSERT INTO DAT_VE
-                (
-                    MaDatVe,
-                    ThoiGianDat,
-                    TongTien,
-                    TrangThai,
-                    MaKhachHang,
-                    MaNhanVien,
-                    MaVoucher
-                )
-                VALUES
-                (?,?,?,?,?,?,?)
-                """;
-
+            INSERT INTO DAT_VE (MaDatVe, ThoiGianDat, TongTien, TrangThai, MaKhachHang, MaNhanVien, MaVoucher)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             if (booking.getMaDatVe() == null || booking.getMaDatVe().isBlank()) {
-
                 booking.setMaDatVe(generateBookingId());
-
             }
-
             if (booking.getThoiGianDat() == null) {
-
                 booking.setThoiGianDat(LocalDateTime.now());
-
             }
 
             ps.setString(1, booking.getMaDatVe());
@@ -611,152 +291,37 @@ public class BookingRepository {
             }
 
             return ps.executeUpdate() > 0;
-
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
-
         return false;
     }
 
-    public boolean insertBooking(Connection con, Booking booking) {
-
-        String sql = """
-                INSERT INTO DAT_VE
-                (
-                    MaDatVe,
-                    ThoiGianDat,
-                    TongTien,
-                    TrangThai,
-                    MaKhachHang,
-                    MaNhanVien,
-                    MaVoucher
-                )
-                VALUES
-                (?,?,?,?,?,?,?)
-                """;
-
-        try (
-
-                PreparedStatement ps = con.prepareStatement(sql)
-
-        ) {
-
-            ps.setString(1, booking.getMaDatVe());
-            ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
-            ps.setDouble(3, booking.getTongTien());
-            ps.setString(4, booking.getTrangThai());
-            ps.setString(5, booking.getMaKhachHang());
-
-            if (booking.getMaNhanVien() == null || booking.getMaNhanVien().isBlank()) {
-                ps.setNull(6, Types.VARCHAR);
-            } else {
-                ps.setString(6, booking.getMaNhanVien());
-            }
-
-            if (booking.getMaVoucher() == null || booking.getMaVoucher().isBlank()) {
-                ps.setNull(7, Types.VARCHAR);
-            } else {
-                ps.setString(7, booking.getMaVoucher());
-            }
-
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-
-        return false;
-    }
-    public boolean deleteBooking(String maDatVe) {
-
-        String sql = "DELETE FROM DAT_VE WHERE MaDatVe=?";
-
-        try (
-
-                Connection con = DBConnection.getConnection();
-
-                PreparedStatement ps = con.prepareStatement(sql)
-
-        ) {
-
-            ps.setString(1, maDatVe);
-
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            e.printStackTrace();
-
-        }
-
-        return false;
-    }
-
-    // ===================== LẤY DANH SÁCH ĐẶT VÉ CỦA KHÁCH HÀNG =====================
+    // ===================== LẤY LỊCH SỬ ĐẶT VÉ CỦA MỘT KHÁCH HÀNG =====================
     public List<Booking> getByKhachHang(String maKhachHang) {
-
         List<Booking> list = new ArrayList<>();
-
         String sql = """
             SELECT
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen AS TenKhachHang,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen AS TenKhachHang, kh.SoDienThoai, kh.Email,
+                p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
                 STRING_AGG(g.HangGhe + CAST(g.SoGhe AS VARCHAR(10)), ', ') AS DanhSachGhe,
-                v.TenVoucher,
-                nv.HoTen AS TenNhanVien
+                v.TenVoucher, nv.HoTen AS TenNhanVien
             FROM DAT_VE dv
-            INNER JOIN KHACH_HANG kh
-                ON dv.MaKhachHang = kh.MaKhachHang
-            INNER JOIN CHI_TIET_DAT_VE ct
-                ON dv.MaDatVe = ct.MaDatVe
-            INNER JOIN GHE g
-                ON ct.MaGhe = g.MaGhe
-            INNER JOIN SUAT_CHIEU sc
-                ON ct.MaSuatChieu = sc.MaSuatChieu
-            INNER JOIN PHIM p
-                ON sc.MaPhim = p.MaPhim
-            INNER JOIN PHONG_CHIEU pc
-                ON sc.MaPhong = pc.MaPhong
-            INNER JOIN RAP r
-                ON pc.MaRap = r.MaRap
-            LEFT JOIN VOUCHER v
-                ON dv.MaVoucher = v.MaVoucher
-            LEFT JOIN NHAN_VIEN nv
-                ON dv.MaNhanVien = nv.MaNhanVien
+            INNER JOIN KHACH_HANG kh ON dv.MaKhachHang = kh.MaKhachHang
+            INNER JOIN CHI_TIET_DAT_VE ct ON dv.MaDatVe = ct.MaDatVe
+            INNER JOIN GHE g ON ct.MaGhe = g.MaGhe
+            INNER JOIN SUAT_CHIEU sc ON ct.MaSuatChieu = sc.MaSuatChieu
+            INNER JOIN PHIM p ON sc.MaPhim = p.MaPhim
+            INNER JOIN PHONG_CHIEU pc ON sc.MaPhong = pc.MaPhong
+            INNER JOIN RAP r ON pc.MaRap = r.MaRap
+            LEFT JOIN VOUCHER v ON dv.MaVoucher = v.MaVoucher
+            LEFT JOIN NHAN_VIEN nv ON dv.MaNhanVien = nv.MaNhanVien
             WHERE dv.MaKhachHang = ?
             GROUP BY
-                dv.MaDatVe,
-                dv.ThoiGianDat,
-                dv.TongTien,
-                dv.TrangThai,
-                dv.MaKhachHang,
-                dv.MaNhanVien,
-                dv.MaVoucher,
-                kh.HoTen,
-                p.TenPhim,
-                r.TenRap,
-                pc.TenPhong,
-                sc.NgayChieu,
-                sc.GioBatDau,
-                v.TenVoucher,
-                nv.HoTen
+                dv.MaDatVe, dv.ThoiGianDat, dv.TongTien, dv.TrangThai, dv.MaKhachHang, dv.MaNhanVien, dv.MaVoucher,
+                kh.HoTen, kh.SoDienThoai, kh.Email, p.TenPhim, r.TenRap, pc.TenPhong, sc.NgayChieu, sc.GioBatDau,
+                v.TenVoucher, nv.HoTen
             ORDER BY dv.ThoiGianDat DESC
             """;
 
@@ -764,19 +329,53 @@ public class BookingRepository {
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
-
             ps.setString(1, maKhachHang);
-
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(mapBooking(rs));
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
+    }
+
+    // ===================== HÀM MAP DỮ LIỆU TỪ RESULTSET SANG MODEL =====================
+    private Booking mapBooking(ResultSet rs) throws SQLException {
+        Booking booking = new Booking();
+
+        booking.setMaDatVe(rs.getString("MaDatVe"));
+
+        Timestamp timestamp = rs.getTimestamp("ThoiGianDat");
+        if (timestamp != null) {
+            booking.setThoiGianDat(timestamp.toLocalDateTime());
+        }
+
+        booking.setTongTien(rs.getDouble("TongTien"));
+        booking.setTrangThai(rs.getString("TrangThai"));
+        booking.setMaKhachHang(rs.getString("MaKhachHang"));
+        booking.setMaNhanVien(rs.getString("MaNhanVien"));
+        booking.setMaVoucher(rs.getString("MaVoucher"));
+
+        booking.setTenKhachHang(rs.getString("TenKhachHang"));
+        booking.setSoDienThoai(rs.getString("SoDienThoai"));
+        booking.setEmail(rs.getString("Email"));
+        booking.setTenPhim(rs.getString("TenPhim"));
+        booking.setTenRap(rs.getString("TenRap"));
+        booking.setTenPhong(rs.getString("TenPhong"));
+        booking.setNgayChieu(rs.getDate("NgayChieu"));
+        booking.setGioBatDau(rs.getTime("GioBatDau"));
+        booking.setDanhSachGhe(rs.getString("DanhSachGhe"));
+        booking.setTenVoucher(rs.getString("TenVoucher"));
+        booking.setTenNhanVien(rs.getString("TenNhanVien"));
+
+        if (booking.getMaNhanVien() == null) {
+            booking.setHinhThucDat("Online");
+        } else {
+            booking.setHinhThucDat("Tại quầy");
+        }
+
+        return booking;
     }
 }

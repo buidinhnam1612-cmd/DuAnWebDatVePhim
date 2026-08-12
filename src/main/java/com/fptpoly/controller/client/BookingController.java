@@ -1,33 +1,29 @@
 package com.fptpoly.controller.client;
 
 import com.fptpoly.model.Booking;
-import com.fptpoly.model.BookingDetail;
 import com.fptpoly.model.Movie;
 import com.fptpoly.model.Seat;
 import com.fptpoly.model.Showtime;
-import com.fptpoly.model.User;
 import com.fptpoly.model.Food;
 import com.fptpoly.repository.BookingDetailRepository;
 import com.fptpoly.repository.BookingRepository;
 import com.fptpoly.repository.ShowtimeRepository;
-import com.fptpoly.repository.UserRepository;
 import com.fptpoly.service.MovieService;
 import com.fptpoly.service.SeatService;
-import com.fptpoly.service.UserService;
 import com.fptpoly.service.CustomerFoodService;
-import com.fptpoly.utils.EmailUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Types;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +35,7 @@ public class BookingController extends HttpServlet {
     private final MovieService movieService = new MovieService();
     private final SeatService seatService = new SeatService();
     private final BookingDetailRepository bookingDetailRepository = new BookingDetailRepository();
-    private final UserService userService = new UserService();
     private final BookingRepository bookingRepository = new BookingRepository();
-    private final UserRepository userRepository = new UserRepository();
-    private final com.fptpoly.service.VoucherService voucherService = new com.fptpoly.service.VoucherService();
     private final CustomerFoodService customerFoodService = new CustomerFoodService();
 
     @Override
@@ -125,175 +118,106 @@ public class BookingController extends HttpServlet {
         }
         tongTien += tongTienDoAn;
 
-        // Kiểm tra và áp dụng Promo Code
-        com.fptpoly.model.Voucher voucher = null;
-        if (maVoucher != null && !maVoucher.trim().isEmpty()) {
-            voucher = voucherService.validatePromoCode(maVoucher);
-            if (voucher != null) {
-                tongTien = voucherService.applyDiscount(tongTien, voucher.getPhanTramGiam());
-            }
-        }
+        // Tạo đối tượng Booking
+        Booking booking = new Booking();
+        String maDatVe = bookingRepository.generateBookingId();
+        booking.setMaDatVe(maDatVe);
+        booking.setThoiGianDat(LocalDateTime.now());
+        booking.setTongTien(tongTien);
+        booking.setTrangThai("Chờ thanh toán"); // Đã xóa chữ N lỗi ở đây
+        booking.setMaKhachHang(maKhachHang != null && !maKhachHang.trim().isEmpty() ? maKhachHang : "KH01");
+        booking.setMaNhanVien(null);
+        booking.setMaVoucher(maVoucher != null && !maVoucher.trim().isEmpty() ? maVoucher : null);
 
         String[] seatIds = seatIdsStr.split(",");
 
         // 1. Kiểm tra xem các ghế đã bị đặt chưa (Tránh đặt trùng)
         for (String seatId : seatIds) {
             if (bookingDetailRepository.checkSeatBooked(maSuatChieu, seatId.trim())) {
-                request.setAttribute("error", "Một hoặc nhiều ghế bạn chọn đã có người đặt trước. Vui lòng chọn ghế khác.");
+                request.setAttribute("error", "Một hoặc nhiều ghế bạn chọn đã có người đặt trước.");
                 doGet(request, response);
                 return;
             }
         }
 
-        // 2. Tạo đối tượng Booking
-        Booking booking = new Booking();
-        String maDatVe = bookingRepository.generateBookingId();
-        booking.setMaDatVe(maDatVe);
-        booking.setThoiGianDat(LocalDateTime.now());
-        booking.setTongTien(tongTien);
-        booking.setTrangThai("Chờ thanh toán"); // Trạng thái mặc định khi đặt online
-        booking.setMaKhachHang(maKhachHang != null && !maKhachHang.trim().isEmpty() ? maKhachHang : "KH01");
-        booking.setMaNhanVien(null); // Đặt online thì không có nhân viên
-        booking.setMaVoucher(voucher != null ? voucher.getMaVoucher() : null);
-
-        // Thực hiện giao dịch (Transaction) dùng Connection chung để an toàn
-        boolean success = false;
+        // 2. Chạy Transaction luồng dữ liệu an toàn kết nối SQL
+        boolean transactionSuccess = false;
         try (Connection con = com.fptpoly.config.DBConnection.getConnection()) {
             con.setAutoCommit(false);
+
             try {
-                // Lưu Booking
-                boolean insertBookingOk = bookingRepository.insertBooking(con, booking);
-                if (!insertBookingOk) {
-                    throw new Exception("Lỗi khi thêm thông tin đặt vé.");
+                // Thêm hóa đơn Booking tổng
+                String sqlBooking = "INSERT INTO DAT_VE (MaDatVe, ThoiGianDat, TongTien, TrangThai, MaKhachHang, MaNhanVien, MaVoucher) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement ps = con.prepareStatement(sqlBooking)) {
+                    ps.setString(1, booking.getMaDatVe());
+                    ps.setTimestamp(2, Timestamp.valueOf(booking.getThoiGianDat()));
+                    ps.setDouble(3, booking.getTongTien());
+                    ps.setString(4, booking.getTrangThai());
+                    ps.setString(5, booking.getMaKhachHang());
+                    ps.setNull(6, Types.VARCHAR);
+                    if (booking.getMaVoucher() == null) {
+                        ps.setNull(7, Types.VARCHAR);
+                    } else {
+                        ps.setString(7, booking.getMaVoucher());
+                    }
+                    ps.executeUpdate();
                 }
 
-                // Lưu từng BookingDetail
+                // Thêm chi tiết từng ghế ngồi xem phim
+                String sqlDetail = "INSERT INTO CHI_TIET_DAT_VE (MaChiTietDatVe, MaDatVe, MaGhe, MaSuatChieu, TrangThai, ThoiGianGiuGhe, GiaVe) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 int detailIndex = 1;
+                List<Seat> seats = seatService.getSeatsByRoom(maPhong);
+
                 for (String seatId : seatIds) {
-                    BookingDetail detail = new BookingDetail();
-
-                    // Tạo mã chi tiết đặt vé duy nhất: CTDV + MaDatVe + Index
-                    String maChiTietDatVe = "CT" + maDatVe + "_" + detailIndex++;
-                    detail.setMaChiTietDatVe(maChiTietDatVe);
-                    detail.setMaDatVe(maDatVe);
-                    detail.setMaGhe(seatId.trim());
-                    detail.setMaSuatChieu(maSuatChieu);
-                    detail.setTrangThai("Giữ ghế"); // trạng thái ghế
-                    detail.setThoiGianGiuGhe(LocalDateTime.now().plusMinutes(15)); // Giữ ghế trong 15p
-
-                    // Xác định giá vé cho mỗi ghế
-                    double giaVe = 75000; // mặc định
-                    List<Seat> seats = seatService.getSeatsByRoom(maPhong);
+                    double giaVe = 75000; // Giá vé mặc định
                     for (Seat s : seats) {
-                        if (s.getMaGhe().equalsIgnoreCase(seatId.trim())) {
-                            if ("VIP".equalsIgnoreCase(s.getLoaiGhe())) {
-                                giaVe = 90000;
-                            } else if ("Sweetbox".equalsIgnoreCase(s.getLoaiGhe())) {
-                                giaVe = 120000;
-                            }
+                        if (s.getMaGhe().equals(seatId.trim()) && "VIP".equalsIgnoreCase(s.getLoaiGhe())) {
+                            giaVe = 110000; // Tăng giá nếu là ghế VIP
                             break;
                         }
                     }
-                    detail.setGiaVe(giaVe);
 
-                    boolean insertDetailOk = bookingDetailRepository.insertBookingDetail(con, detail);
-                    if (!insertDetailOk) {
-                        throw new Exception("Lỗi khi thêm chi tiết đặt vé: " + seatId);
+                    try (PreparedStatement ps = con.prepareStatement(sqlDetail)) {
+                        ps.setString(1, "CT" + maDatVe + "_" + detailIndex++);
+                        ps.setString(2, maDatVe);
+                        ps.setString(3, seatId.trim());
+                        ps.setString(4, maSuatChieu);
+                        ps.setString(5, "Giữ ghế"); // Đã xóa chữ N lỗi ở đây
+                        ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)));
+                        ps.setDouble(7, giaVe);
+                        ps.executeUpdate();
                     }
                 }
 
-                // Lưu chi tiết đồ ăn được đặt
+                // Thêm chi tiết đồ ăn nước uống (Bảng CHI_TIET_DAT_DO_AN)
+                String sqlFood = "INSERT INTO CHI_TIET_DAT_DO_AN (MaChiTietDatDoAn, MaDatVe, MaDoAnUong, SoLuong, GiaBanLucDat) VALUES (?, ?, ?, ?, ?)";
+                int foodIndex = 1;
                 for (Map.Entry<Food, Integer> entry : selectedFoods.entrySet()) {
-                    Food food = entry.getKey();
-                    int qty = entry.getValue();
-                    boolean insertFoodOk = customerFoodService.insertOrderDetail(con, maDatVe, food.getMaDoAn(), qty, food.getGia());
-                    if (!insertFoodOk) {
-                        throw new Exception("Lỗi khi thêm chi tiết đồ ăn đặt: " + food.getMaDoAn());
+                    try (PreparedStatement ps = con.prepareStatement(sqlFood)) {
+                        ps.setString(1, "CTDA" + maDatVe + "_" + foodIndex++);
+                        ps.setString(2, maDatVe);
+                        ps.setString(3, entry.getKey().getMaDoAn());
+                        ps.setInt(4, entry.getValue());
+                        ps.setDouble(5, entry.getKey().getGia());
+                        ps.executeUpdate();
                     }
                 }
 
-                con.commit();
-                success = true;
-
-                // Giảm số lượng voucher trong database
-                if (voucher != null) {
-                    voucherService.useVoucher(voucher.getMaVoucher());
-                }
-
-                // Cộng điểm tích lũy cho khách hàng thành viên
-                if (maKhachHang != null && !maKhachHang.trim().isEmpty() && !"KH01".equals(maKhachHang)) {
-                    User currentUser = userService.getUserById(maKhachHang);
-                    if (currentUser != null) {
-                        int diemCong = (int) (booking.getTongTien() / 10000);
-                        if (diemCong > 0) {
-                            int diemMoi = currentUser.getDiemTichLuy() + diemCong;
-                            userRepository.updatePoints(maKhachHang, diemMoi);
-                            currentUser.setDiemTichLuy(diemMoi);
-                            HttpSession session = request.getSession(false);
-                            if (session != null) {
-                                session.setAttribute("user", currentUser);
-                            }
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                con.rollback();
-                e.printStackTrace();
+                con.commit(); // Thành công thực tế lưu toàn bộ dữ liệu
+                transactionSuccess = true;
+            } catch (Exception ex) {
+                con.rollback(); // Gặp lỗi ở bất cứ đâu thì hủy toàn bộ đơn hàng
+                ex.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (success) {
-            // 3. Gửi email xác nhận nếu khách hàng có email hợp lệ
-            try {
-                User user = userService.getUserById(booking.getMaKhachHang());
-                Showtime showtime = showtimeRepository.getById(maSuatChieu);
-                Movie movie = movieService.getByID(showtime.getMaPhim());
-
-                String emailTo = (user != null) ? user.getEmail() : null;
-                String hoTen = (user != null) ? user.getHoTen() : "Khách hàng";
-                String tenPhim = (movie != null) ? movie.getTenPhim() : "--";
-                String ngayChieuStr = (showtime != null) ? showtime.getNgayChieu().toString() : "--";
-                String gioChieuStr = (showtime != null) ? showtime.getGioBatDau().toString() : "--";
-
-                // Lấy tên các ghế để đưa vào email
-                List<Seat> roomSeats = seatService.getSeatsByRoom(maPhong);
-                List<String> selectedSeatNames = new ArrayList<>();
-                for (String seatId : seatIds) {
-                    for (Seat s : roomSeats) {
-                        if (s.getMaGhe().equalsIgnoreCase(seatId.trim())) {
-                            selectedSeatNames.add(s.getTenGhe());
-                            break;
-                        }
-                    }
-                }
-                String danhSachGhe = String.join(", ", selectedSeatNames);
-
-                if (emailTo != null && !emailTo.trim().isEmpty()) {
-                    new Thread(() -> {
-                        EmailUtil.sendBookingConfirmation(
-                                emailTo,
-                                hoTen,
-                                maDatVe,
-                                tenPhim,
-                                danhSachGhe,
-                                ngayChieuStr,
-                                gioChieuStr,
-                                booking.getTongTien()
-                        );
-                    }).start();
-                }
-            } catch (Exception e) {
-                System.out.println("⚠️ Lỗi gửi email xác nhận đặt vé: " + e.getMessage());
-            }
-
-            // Redirect sang trang thành công và truyền kèm mã đặt vé để hiển thị trên web
-            response.sendRedirect(request.getContextPath() + "/views/client/booking-success.jsp?maDatVe=" + maDatVe);
+        if (transactionSuccess) {
+            // Điều hướng sang trang hiển thị hóa đơn thành công
+            response.sendRedirect(request.getContextPath() + "/invoice?maDatVe=" + maDatVe);
         } else {
-            request.setAttribute("error", "Đã xảy ra lỗi trong quá trình đặt vé. Vui lòng thử lại!");
-            doGet(request, response);
-        }
+            request.setAttribute("error", "Hệ thống bận, đặt vé thất bại. Vui lòng thử lại.");
+            doGet(request, response);}
     }
 }

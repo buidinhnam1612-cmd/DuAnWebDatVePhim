@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 public class Comment {
 
     private String maBinhLuan;
-    private Integer soSao;
+    private Integer soSao; // Đồng bộ kiểu Integer để tránh lỗi đỏ dòng ở Repository
     private String noiDung;
     private Timestamp ngayTao;
     private String trangThai;
@@ -13,15 +13,16 @@ public class Comment {
     private String maKhachHang;
     private String maPhim;
 
-    // Thông tin hiển thị
+    // Thông tin hiển thị mở rộng từ câu lệnh JOIN
     private String tenKhachHang;
     private String tenPhim;
 
+    // 1. Hàm khởi tạo không tham số
     public Comment() {
     }
 
-    public Comment(String maBinhLuan, int soSao, String noiDung,
-                   Timestamp ngayTao, String maKhachHang, String maPhim) {
+    // 2. Hàm khởi tạo đầy đủ tham số
+    public Comment(String maBinhLuan, Integer soSao, String noiDung, Timestamp ngayTao, String maKhachHang, String maPhim) {
         this.maBinhLuan = maBinhLuan;
         this.soSao = soSao;
         this.noiDung = noiDung;
@@ -29,6 +30,8 @@ public class Comment {
         this.maKhachHang = maKhachHang;
         this.maPhim = maPhim;
     }
+
+    // ===================== TOÀN BỘ GETTER & SETTER CHUẨN HÓA =====================
 
     public String getMaBinhLuan() {
         return maBinhLuan;

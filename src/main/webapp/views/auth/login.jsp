@@ -95,12 +95,12 @@
                                 Email
                             </label>
 
-                            <input type="email"
-                                   class="form-control"
-                                   name="email"
-                                   value="${param.email}"
-                                   placeholder="Nhập email"
-                                   required>
+                        <input type="text"
+                               class="form-control"
+                               name="loginInput"
+                               value="${param.loginInput}"
+                               placeholder="Nhập tên đăng nhập hoặc email"
+                               required>
 
                         </div>
 

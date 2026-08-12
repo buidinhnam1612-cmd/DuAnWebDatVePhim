@@ -71,26 +71,40 @@ public class EmployeeRepository {
     // Đăng nhập nhân viên theo Tên đăng nhập hoặc Email và Mật khẩu
     public Employee findByLoginInputAndPassword(String loginInput, String password) {
         String sql = """
-                SELECT nv.*, vt.TenVaiTro
-                FROM NHAN_VIEN nv
-                INNER JOIN VAI_TRO vt
+            SELECT nv.*, vt.TenVaiTro
+            FROM NHAN_VIEN nv
+            INNER JOIN VAI_TRO vt
                 ON nv.MaVaiTro = vt.MaVaiTro
-                WHERE (nv.TenDangNhap = ? OR nv.Email = ?)
-                  AND nv.MatKhau = ?
-                """;
+            WHERE (nv.TenDangNhap = ? OR nv.Email = ?)
+              AND nv.MatKhau = ?
+            """;
 
-        try (
-                Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, loginInput);
             ps.setString(2, loginInput);
             ps.setString(3, password);
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Employee employee = new Employee();
 
-            if (rs.next()) {
-                return mapEmployee(rs);
+                    employee.setMaNhanVien(rs.getString("MaNhanVien"));
+                    employee.setMaVaiTro(rs.getString("MaVaiTro"));
+                    employee.setTenDangNhap(rs.getString("TenDangNhap"));
+                    employee.setMatKhau(rs.getString("MatKhau"));
+                    employee.setHoTen(rs.getString("HoTen"));
+                    employee.setEmail(rs.getString("Email"));
+                    employee.setSoDienThoai(rs.getString("SoDienThoai"));
+                    employee.setNgaySinh(rs.getDate("NgaySinh"));
+                    employee.setGioiTinh(rs.getString("GioiTinh"));
+                    employee.setChucVu(rs.getString("ChucVu"));
+                    employee.setNgayVaoLam(rs.getDate("NgayVaoLam"));
+                    employee.setTrangThai(rs.getString("TrangThai"));
+
+                    return employee;
+                }
             }
 
         } catch (Exception e) {

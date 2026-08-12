@@ -36,6 +36,12 @@ public class Permission {
     public Permission() {
     }
 
+    public Permission(String maQuyen, String tenQuyen, String moTa) {
+        this.maQuyen = maQuyen;
+        this.tenQuyen = tenQuyen;
+        this.moTa = moTa;
+    }
+
     public Permission(String maQuyen, String tenQuyen, String moTa, String nhomQuyen) {
         this.maQuyen = maQuyen;
         this.tenQuyen = tenQuyen;

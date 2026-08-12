@@ -1,6 +1,5 @@
 package com.fptpoly.model;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -30,13 +29,14 @@ public class Booking {
     private String soDienThoai;
     private String email;
 
-    // 1. Hàm khởi tạo rỗng (Bắt buộc phải có)
+    // 1. Hàm khởi tạo không tham số (Bắt buộc cho JDBC)
     public Booking() {
     }
 
-    // 2. Hàm khởi tạo đầy đủ tham số (Đã sửa lỗi cú pháp lồng nhau)
+    // 2. Hàm khởi tạo đầy đủ tham số đã chuẩn hóa kiểu dữ liệu
     public Booking(String maDatVe, LocalDateTime thoiGianDat, double tongTien,
-                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher) {
+                   String trangThai, String maKhachHang, String maNhanVien, String maVoucher,
+                   String soDienThoai, String email) {
         this.maDatVe = maDatVe;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
@@ -44,9 +44,11 @@ public class Booking {
         this.maKhachHang = maKhachHang;
         this.maNhanVien = maNhanVien;
         this.maVoucher = maVoucher;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
     }
 
-    // --- Bắt đầu phần Getter và Setter để Repository gọi ---
+    // ===================== TOÀN BỘ GETTER & SETTER CHUẨN HÓA =====================
 
     public String getMaDatVe() {
         return maDatVe;
@@ -63,7 +65,6 @@ public class Booking {
     public void setThoiGianDat(LocalDateTime thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
     }
-
 
     public double getTongTien() {
         return tongTien;
