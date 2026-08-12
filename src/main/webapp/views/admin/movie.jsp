@@ -204,9 +204,9 @@
                                                 <i class="bi bi-pencil"></i> Sửa
                                             </a>
                                             <a href="${pageContext.request.contextPath}/admin/movie?action=hide&id=${m.maPhim}"
-                                               class="btn btn-outline-danger btn-action"
+                                               class="btn ${m.trangThai == 'Ẩn' ? 'btn-outline-success' : 'btn-outline-danger'} btn-action"
                                                onclick="return confirm('Bạn có chắc muốn ẩn/hiện phim này?');">
-                                                <i class="bi bi-eye-slash"></i> Ẩn
+                                                <i class="bi ${m.trangThai == 'Ẩn' ? 'bi-eye' : 'bi-eye-slash'}"></i> ${m.trangThai == 'Ẩn' ? 'Hiện' : 'Ẩn'}
                                             </a>
                                         </td>
                                     </tr>

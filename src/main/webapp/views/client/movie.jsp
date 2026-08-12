@@ -116,30 +116,32 @@
             <c:otherwise>
                 <div class="row g-4">
                     <c:forEach var="m" items="${listPhim}">
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="movie-grid-card shadow">
-                                <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}">
-                                    <img src="<c:choose>
-                                         <c:when test="${not empty m.poster}">${m.poster}</c:when>
-                                         <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=300</c:when>
-                                         <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=300</c:when>
-                                         <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300</c:otherwise>
-                                     </c:choose>" 
-                                     class="movie-grid-img" 
-                                     alt="${m.tenPhim}">
-                                </a>
-                                <div class="movie-grid-body">
-                                    <h5 class="movie-grid-title">${m.tenPhim}</h5>
-                                    <p class="movie-grid-meta">${m.doTuoiGiaiTri} • ${m.thoiLuong} phút</p>
-                                    <div>
-                                        <span class="movie-grid-badge">Đang chiếu</span>
-                                    </div>
-                                    <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}" class="movie-grid-btn">
-                                        Chi tiết & Đặt vé
+                        <c:if test="${m.trangThai != 'Ẩn'}">
+                            <div class="col-lg-3 col-md-6 col-sm-12">
+                                <div class="movie-grid-card shadow">
+                                    <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}">
+                                        <img src="<c:choose>
+                                             <c:when test="${not empty m.poster}">${m.poster}</c:when>
+                                             <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=300</c:when>
+                                             <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=300</c:when>
+                                             <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300</c:otherwise>
+                                         </c:choose>" 
+                                         class="movie-grid-img" 
+                                         alt="${m.tenPhim}">
                                     </a>
+                                    <div class="movie-grid-body">
+                                        <h5 class="movie-grid-title">${m.tenPhim}</h5>
+                                        <p class="movie-grid-meta">${m.doTuoiGiaiTri} • ${m.thoiLuong} phút</p>
+                                        <div>
+                                            <span class="movie-grid-badge">Đang chiếu</span>
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}" class="movie-grid-btn">
+                                            Chi tiết & Đặt vé
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </c:if>
                     </c:forEach>
                 </div>
             </c:otherwise>

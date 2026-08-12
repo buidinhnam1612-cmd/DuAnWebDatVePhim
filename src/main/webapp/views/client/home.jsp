@@ -234,29 +234,31 @@
 
     <div class="mockup-movie-grid">
         <c:forEach var="m" items="${listPhim}">
-            <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}" class="mockup-movie-card">
-                <div class="mockup-poster-wrapper">
-                    <img src="<c:choose>
-                         <c:when test="${not empty m.poster}">${m.poster}</c:when>
-                         <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=400</c:when>
-                         <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400</c:when>
-                         <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400</c:otherwise>
-                     </c:choose>" 
-                     class="mockup-poster-img" 
-                     alt="${m.tenPhim}">
-                    <div class="mockup-rating-badge">
-                        <c:choose>
-                            <c:when test="${m.maPhim == 'M01'}">⭐ 9.2</c:when>
-                            <c:when test="${m.maPhim == 'M02'}">⭐ 8.8</c:when>
-                            <c:otherwise>⭐ 9.0</c:otherwise>
-                        </c:choose>
+            <c:if test="${m.trangThai != 'Ẩn'}">
+                <a href="${pageContext.request.contextPath}/movies?action=detail&id=${m.maPhim}" class="mockup-movie-card">
+                    <div class="mockup-poster-wrapper">
+                        <img src="<c:choose>
+                             <c:when test="${not empty m.poster}">${m.poster}</c:when>
+                             <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=400</c:when>
+                             <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400</c:when>
+                             <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400</c:otherwise>
+                         </c:choose>" 
+                         class="mockup-poster-img" 
+                         alt="${m.tenPhim}">
+                        <div class="mockup-rating-badge">
+                            <c:choose>
+                                <c:when test="${m.maPhim == 'M01'}">⭐ 9.2</c:when>
+                                <c:when test="${m.maPhim == 'M02'}">⭐ 8.8</c:when>
+                                <c:otherwise>⭐ 9.0</c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
-                </div>
-                <div class="mockup-movie-info">
-                    <div class="mockup-movie-title">${m.tenPhim}</div>
-                    <div class="mockup-movie-meta">${m.doTuoiGiaiTri} • ${m.thoiLuong} phút</div>
-                </div>
-            </a>
+                    <div class="mockup-movie-info">
+                        <div class="mockup-movie-title">${m.tenPhim}</div>
+                        <div class="mockup-movie-meta">${m.doTuoiGiaiTri} • ${m.thoiLuong} phút</div>
+                    </div>
+                </a>
+            </c:if>
         </c:forEach>
     </div>
 
