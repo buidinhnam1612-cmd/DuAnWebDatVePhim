@@ -65,9 +65,10 @@
                     </h2>
 
 
+                    <%-- Khối lỗi hệ thống dùng chung (Chờ duyệt, Bị khóa) --%>
                     <% if(request.getAttribute("error") != null){ %>
 
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger" style="background-color: #fff1f2; color: #e11d48; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 600; border: 1px solid #ffe4e6;">
                         <%=request.getAttribute("error")%>
                     </div>
 
@@ -88,6 +89,7 @@
                           autocomplete="off">
 
 
+                        <%-- Ô NHẬP TÀI KHOẢN HOẶC EMAIL --%>
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold">
@@ -95,16 +97,24 @@
                                 Email <span style="color: #e11d48;">*</span>
                             </label>
 
-                        <input type="text"
-                               class="form-control"
-                               name="loginInput"
-                               value="${oldLoginInput}"
-                               placeholder="Nhập tên đăng nhập hoặc email"
-                               required>
+                            <input type="text"
+                                   class="form-control"
+                                   name="loginInput"
+                                   value="${oldLoginInput}"
+                                   placeholder="Nhập tên đăng nhập hoặc email"
+                                   required>
+
+                            <%-- Dòng báo lỗi riêng cho Tài khoản không tồn tại --%>
+                            <% if(request.getAttribute("emailError") != null){ %>
+                                <div style="color: #e11d48; font-size: 13px; margin-top: 6px; font-weight: 500;">
+                                    ⚠ <%=request.getAttribute("emailError")%>
+                                </div>
+                            <% } %>
 
                         </div>
 
 
+                        <%-- Ô NHẬP MẬT KHẨU (ĐÃ SỬA: Chỉ giữ lại duy nhất 1 ô này) --%>
                         <div class="mb-4">
 
                             <label class="form-label fw-semibold">
@@ -117,6 +127,13 @@
                                    name="password"
                                    placeholder="Nhập mật khẩu"
                                    required>
+
+                            <%-- Dòng báo lỗi riêng cho Sai Mật Khẩu --%>
+                            <% if(request.getAttribute("passwordError") != null){ %>
+                                <div style="color: #e11d48; font-size: 13px; margin-top: 6px; font-weight: 500;">
+                                    ⚠ <%=request.getAttribute("passwordError")%>
+                                </div>
+                            <% } %>
 
                         </div>
 
