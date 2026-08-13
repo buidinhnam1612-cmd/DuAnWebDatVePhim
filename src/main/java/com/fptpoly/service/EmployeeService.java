@@ -2,18 +2,16 @@ package com.fptpoly.service;
 
 import com.fptpoly.model.Employee;
 import com.fptpoly.repository.EmployeeRepository;
-import com.fptpoly.service.PermissionService;
 
 import java.util.List;
 
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final PermissionService permissionService;
 
     public EmployeeService() {
         employeeRepository = new EmployeeRepository();
-        permissionService = new PermissionService();
+        // Loại bỏ kết nối tới permissionService cũ do không dùng cơ chế bật/tắt quyền riêng lẻ nữa
     }
 
     /**
@@ -27,11 +25,9 @@ public class EmployeeService {
      * Lấy nhân viên theo mã
      */
     public Employee getEmployeeById(String maNhanVien) {
-
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             return null;
         }
-
         return employeeRepository.getById(maNhanVien);
     }
 
@@ -39,11 +35,9 @@ public class EmployeeService {
      * Tìm kiếm nhân viên
      */
     public List<Employee> searchEmployees(String keyword) {
-
         if (keyword == null) {
             keyword = "";
         }
-
         return employeeRepository.search(keyword.trim());
     }
 
@@ -51,57 +45,47 @@ public class EmployeeService {
      * Đăng nhập Nhân viên / Admin
      */
     public Employee login(String loginInput, String password) {
-
         if (loginInput == null || password == null) {
             return null;
         }
 
         String input = loginInput.trim();
-
-        Employee emp =
-                employeeRepository.findByLoginInputAndPassword(
-                        input,
-                        password
-                );
+        Employee emp = employeeRepository.findByLoginInputAndPassword(input, password);
 
         if (emp != null) {
             return emp;
         }
 
-        // Tài khoản Demo Admin
-        if (("admin@gmail.com".equalsIgnoreCase(input)
-                || "admin".equalsIgnoreCase(input))
+        // Tài khoản Gốc Test Hệ thống - Admin mẫu
+        if (("admin@gmail.com".equalsIgnoreCase(input) || "admin".equalsIgnoreCase(input))
                 && "123456".equals(password)) {
 
             Employee admin = new Employee();
-
-            admin.setMaNhanVien("NV001");
-            admin.setTenDangNhap("admin");
-            admin.setHoTen("Quản Trị Viên (Admin)");
-            admin.setEmail("admin@gmail.com");
+            admin.setMaNhanVien("NV01"); // Đổi về mã trùng khớp dữ liệu gốc của bạn
+            admin.setTenDangNhap("admin01");
+            admin.setHoTen("Nguyễn Văn Toàn");
+            admin.setEmail("toannv@cinema.com");
             admin.setMaVaiTro("VT01");
-            admin.setChucVu("Admin");
-            admin.setTenVaiTro("Quản lý");
-            admin.setTrangThai("Hoạt động");
+            admin.setChucVu("Quản lý rạp");
+            admin.setTenVaiTro("Quản trị viên"); // Tên hiển thị đồng bộ giao diện
+            admin.setTrangThai("Đang làm việc");
 
             return admin;
         }
 
-        // Tài khoản Demo Nhân viên
-        if (("nhanvien@gmail.com".equalsIgnoreCase(input)
-                || "nv01".equalsIgnoreCase(input))
+        // Tài khoản Gốc Test Hệ thống - Nhân viên mẫu
+        if (("nhanvien@gmail.com".equalsIgnoreCase(input) || "nv01".equalsIgnoreCase(input))
                 && "123456".equals(password)) {
 
             Employee staff = new Employee();
-
-            staff.setMaNhanVien("NV002");
-            staff.setTenDangNhap("nv01");
-            staff.setHoTen("Nhân Viên Bán Vé");
-            staff.setEmail("nhanvien@gmail.com");
+            staff.setMaNhanVien("NV02");
+            staff.setTenDangNhap("nhanvien01");
+            staff.setHoTen("Trần Thị Thảo");
+            staff.setEmail("thaott@cinema.com");
             staff.setMaVaiTro("VT02");
-            staff.setChucVu("Nhân viên");
-            staff.setTenVaiTro("Nhân viên");
-            staff.setTrangThai("Hoạt động");
+            staff.setChucVu("Thu ngân bán vé");
+            staff.setTenVaiTro("Nhân viên bán vé"); // Tên hiển thị đồng bộ giao diện
+            staff.setTrangThai("Đang làm việc");
 
             return staff;
         }
@@ -113,15 +97,12 @@ public class EmployeeService {
      * Cập nhật vai trò
      */
     public boolean updateRole(String maNhanVien, String maVaiTro) {
-
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             return false;
         }
-
         if (maVaiTro == null || maVaiTro.trim().isEmpty()) {
             return false;
         }
-
         return employeeRepository.updateRole(maNhanVien, maVaiTro);
     }
 
@@ -129,47 +110,29 @@ public class EmployeeService {
      * Khóa / Mở khóa tài khoản
      */
     public boolean updateStatus(String maNhanVien, String trangThai) {
-
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             return false;
         }
-
         if (trangThai == null || trangThai.trim().isEmpty()) {
             return false;
         }
-
-        return employeeRepository.updateStatus(
-                maNhanVien,
-                trangThai
-        );
+        return employeeRepository.updateStatus(maNhanVien, trangThai);
     }
 
     /**
-     * Thêm tài khoản mới
-     * Sau khi tạo thành công, tự động cấp quyền mặc định
-     * theo vai trò của nhân viên.
+     * Thêm tài khoản mới chuẩn RBAC
+     * Quyền lợi sẽ tự động áp dụng dựa theo mã vai trò khi nhân viên đăng nhập,
+     * không cần tạo dữ liệu mảng quyền phụ thủ công nữa.
      */
     public boolean createEmployee(Employee e) {
-
-        if (e == null
-                || e.getMaNhanVien() == null
-                || e.getMaNhanVien().trim().isEmpty()) {
+        if (e == null || e.getMaNhanVien() == null || e.getMaNhanVien().trim().isEmpty()) {
             return false;
         }
 
-        boolean created = employeeRepository.insert(e);
-
-        if (!created) {
-            return false;
-        }
-
-        permissionService.initializeDefaultPermissions(
-                e.getMaNhanVien(),
-                e.getMaVaiTro()
-        );
-
-        return true;
+        // Chỉ chạy lệnh thêm tài khoản vào cơ sở dữ liệu gốc
+        return employeeRepository.insert(e);
     }
+
     /**
      * Kiểm tra trùng mã nhân viên
      */
@@ -177,7 +140,6 @@ public class EmployeeService {
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             return false;
         }
-
         return employeeRepository.existsById(maNhanVien);
     }
 }

@@ -242,8 +242,8 @@
                              <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=400</c:when>
                              <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400</c:when>
                              <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400</c:otherwise>
-                         </c:choose>" 
-                         class="mockup-poster-img" 
+                         </c:choose>"
+                         class="mockup-poster-img"
                          alt="${m.tenPhim}">
                         <div class="mockup-rating-badge">
                             <c:choose>
@@ -279,7 +279,7 @@
         <p class="text-center text-muted mb-5" style="max-width: 600px; margin: 0 auto 40px;">
             Hệ thống giá tiền đồ ăn thức uống được cập nhật mới nhất. Khách hàng có thể dễ dàng đặt mua kèm vé xem phim để nhận chiết khấu!
         </p>
-        
+
         <c:choose>
             <c:when test="${empty listFoods}">
                 <p class="text-center text-muted">Hiện tại chưa có menu đồ ăn uống.</p>

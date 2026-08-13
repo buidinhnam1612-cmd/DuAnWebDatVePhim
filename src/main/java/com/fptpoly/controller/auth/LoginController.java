@@ -3,7 +3,6 @@ package com.fptpoly.controller.auth;
 import com.fptpoly.model.Employee;
 import com.fptpoly.model.User;
 import com.fptpoly.service.EmployeeService;
-import com.fptpoly.service.PermissionService;
 import com.fptpoly.service.UserService;
 
 import jakarta.servlet.ServletException;
@@ -21,14 +20,13 @@ import java.util.List;
 public class LoginController extends HttpServlet {
 
     private EmployeeService employeeService;
-    private PermissionService permissionService;
     private UserService userService;
 
     @Override
     public void init() {
         employeeService = new EmployeeService();
-        permissionService = new PermissionService();
         userService = new UserService();
+        // Loại bỏ permissionService cũ do không sử dụng bảng bật/tắt thủ công nữa
     }
 
     @Override
@@ -55,66 +53,90 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // 1. Kiểm tra đăng nhập Nhân viên / Admin từ bảng NHAN_VIEN
-        Employee employee = employeeService.login(loginInput.trim(), password);
+        String inputClean = loginInput.trim();
+
+        // 🌟 1. SỬA LOGIC: KIỂM TRA ĐĂNG NHẬP NHÂN VIÊN / ADMIN CHÍNH XÁC THEO TÊN HOẶC EMAIL
+        List<Employee> allEmployees = employeeService.getAllEmployees();
+        Employee employee = null;
+
+        // Vòng lặp quét toàn bộ danh sách nhân sự để tìm người khớp Tên đăng nhập hoặc Email
+        if (allEmployees != null && !allEmployees.isEmpty()) {
+            for (Employee emp : allEmployees) {
+                if (inputClean.equalsIgnoreCase(emp.getTenDangNhap()) || inputClean.equalsIgnoreCase(emp.getEmail())) {
+                    // Nếu tìm thấy tài khoản trùng khớp chức danh, đối chiếu tiếp mật khẩu gõ vào
+                    if (password.equals(emp.getMatKhau())) {
+                        employee = emp;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Nếu là tài khoản Demo cứng hệ thống (Bọc kiểm tra dự phòng khi DB trống dữ liệu)
+        if (employee == null) {
+            employee = employeeService.login(inputClean, password);
+        }
 
         if (employee != null) {
-
-            // Kiểm tra trạng thái tài khoản
-            if ("Khóa".equals(employee.getTrangThai())) {
-                request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên.");
+            // Kiểm tra trạng thái tài khoản làm việc
+            if ("Khóa".equals(employee.getTrangThai()) || "Ngừng làm việc".equals(employee.getTrangThai())) {
+                request.setAttribute("error", "Tài khoản của bạn đã bị khóa hoặc ngừng làm việc!");
                 request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
                 return;
             }
 
             HttpSession session = request.getSession();
-
             session.setAttribute("employee", employee);
             session.setAttribute("userName", employee.getHoTen());
             session.setAttribute("email", employee.getEmail());
             session.setAttribute("maNhanVien", employee.getMaNhanVien());
 
-            // Xác định vai trò và nạp quyền vào Session
+            // Xác định vai trò nhóm và nạp quyền cố định vào Session chuẩn RBAC khớp 100% dữ liệu SQL
             String maVaiTro = employee.getMaVaiTro();
+            List<String> permissions = new ArrayList<>();
 
             if ("VT01".equals(maVaiTro)) {
-                // ADMIN - Toàn quyền (Nạp danh sách rỗng thay vì null để Filter không bị crash)
                 session.setAttribute("role", "ADMIN");
-                List<String> adminPermissions = new ArrayList<>();
-                // Tự động add full quyền thử nghiệm cho admin nếu Filter check bằng mã Q
-                for (int i = 1; i <= 15; i++) {
-                    adminPermissions.add(String.format("Q%02d", i));
-                }
-                session.setAttribute("userPermissions", adminPermissions);
-            } else {
-                // NHÂN VIÊN - Lấy danh sách quyền được kích hoạt (TrangThai = 1) từ database
+                // Admin sở hữu toàn bộ các quyền từ Q01 đến Q15
+                permissions.add("Q01"); permissions.add("Q02"); permissions.add("Q03");
+                permissions.add("Q04"); permissions.add("Q05"); permissions.add("Q06");
+                permissions.add("Q07"); permissions.add("Q08"); permissions.add("Q09");
+                permissions.add("Q10"); permissions.add("Q11"); permissions.add("Q12");
+                permissions.add("Q13"); permissions.add("Q14"); permissions.add("Q15");
+            }
+            else if ("VT02".equals(maVaiTro)) {
                 session.setAttribute("role", "EMPLOYEE");
-                List<String> permissions = permissionService.getPermissionsByEmployee(employee.getMaNhanVien());
-                session.setAttribute("userPermissions", permissions);
+                // Bổ sung đầy đủ quyền nghiệp vụ cho Nhân viên bán vé (Phan Minh Tuấn)
+                permissions.add("Q01"); // Xem Dashboard ca trực
+                permissions.add("Q02"); // Quản lý danh sách đặt vé
+                permissions.add("Q03"); // Bán vé trực tiếp / Xác nhận trạng thái vé (Check-in)
+                permissions.add("Q07"); // Tra cứu lịch chiếu / Suất chiếu
+                permissions.add("Q12"); // Áp dụng mã voucher tại quầy
+            }
+            else if ("VT04".equals(maVaiTro)) {
+                session.setAttribute("role", "EMPLOYEE");
+                permissions.add("Q01"); // Xem Dashboard ca trực F&B
+                permissions.add("Q11"); // Quản lý danh mục đồ ăn đồ uống
             }
 
-            // Điều hướng vào trang quản trị
+            session.setAttribute("userPermissions", permissions);
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
 
-        // 2. PHẦN KIỂM TRA ĐĂNG NHẬP KHÁCH HÀNG (Tách lỗi rõ ràng từng dòng theo yêu cầu)
-
-        // Tìm kiếm xem trong DB có tồn tại khách hàng nào trùng khớp với thông tin nhập vào hay không
-        List<User> matchedUsers = userService.searchUsers(loginInput.trim());
+        // 2. PHẦN KIỂM TRA ĐĂNG NHẬP KHÁCH HÀNG (Giữ nguyên logic hoạt động gốc rất tốt của bạn)
+        List<User> matchedUsers = userService.searchUsers(inputClean);
         User userInDb = null;
 
-        // Lọc chính xác xem có ông nào khớp hoàn toàn TenDangNhap hoặc Email không
         if (matchedUsers != null && !matchedUsers.isEmpty()) {
             for (User u : matchedUsers) {
-                if (loginInput.trim().equalsIgnoreCase(u.getTenDangNhap()) || loginInput.trim().equalsIgnoreCase(u.getEmail())) {
+                if (inputClean.equalsIgnoreCase(u.getTenDangNhap()) || inputClean.equalsIgnoreCase(u.getEmail())) {
                     userInDb = u;
                     break;
                 }
             }
         }
 
-        // Bước 2.1: Nếu KHÔNG tìm thấy bất kỳ tài khoản nào trùng khớp thông tin nhập vào
         if (userInDb == null) {
             request.setAttribute("emailError", "Tên đăng nhập hoặc Email này không tồn tại!");
             request.setAttribute("oldLoginInput", loginInput);
@@ -122,17 +144,13 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // Bước 2.2: Nếu CÓ tài khoản tồn tại -> Tiến hành kiểm tra mật khẩu gõ vào
         if (!userInDb.getMatKhau().equals(password)) {
             request.setAttribute("passwordError", "Mật khẩu nhập vào không chính xác!");
-            request.setAttribute("oldLoginInput", loginInput); // Giữ lại chữ ở ô trên để không phải gõ lại
+            request.setAttribute("oldLoginInput", loginInput);
             request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
             return;
         }
 
-        // Bước 2.3: Nếu đúng cả tài khoản và pass -> Tiến hành kiểm tra các trạng thái hệ thống
-
-        // Kiểm tra chặn trạng thái Chờ duyệt đăng nhập
         if ("Chờ duyệt".equalsIgnoreCase(userInDb.getTrangThai())) {
             request.setAttribute("error", "Tài khoản đang chờ Admin phê duyệt!");
             request.setAttribute("oldLoginInput", loginInput);
@@ -140,7 +158,6 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra trạng thái tài khoản bị khóa
         if ("Khóa".equals(userInDb.getTrangThai())) {
             request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
             request.setAttribute("oldLoginInput", loginInput);
@@ -148,7 +165,6 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // Đăng nhập thành công hoàn toàn -> Cấp session và điều hướng về trang chủ công khai
         HttpSession session = request.getSession();
         session.setAttribute("user", userInDb);
         session.setAttribute("userName", userInDb.getHoTen());

@@ -8,8 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/admin/confirm-booking")
 public class ConfirmBookingController extends HttpServlet {
@@ -23,12 +25,6 @@ public class ConfirmBookingController extends HttpServlet {
 
     /**
      * Hiển thị trang xác nhận vé
-     *
-     * GET:
-     * /admin/confirm-booking
-     *
-     * GET tìm kiếm:
-     * /admin/confirm-booking?maDatVe=DV01
      */
     @Override
     protected void doGet(HttpServletRequest request,
@@ -38,62 +34,55 @@ public class ConfirmBookingController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
+        // 🌟 BẢO MẬT TẦNG HIỂN THỊ: Kiểm tra quyền Xác nhận trạng thái vé (Q03) từ Session
+        HttpSession session = request.getSession();
+        List<String> permissions = (List<String>) session.getAttribute("userPermissions");
+
+        // Nếu chưa đăng nhập hoặc danh sách quyền hạn không chứa mã Q03, chặn đứng lập tức
+        if (permissions == null || !permissions.contains("Q03")) {
+            session.setAttribute("error", "Bạn không có quyền truy cập chức năng Xác nhận trạng thái vé này!");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            return;
+        }
+
         String maDatVe = request.getParameter("maDatVe");
 
         /*
-         * Đặt currentPage để sidebar biết
-         * đang ở trang xác nhận vé.
+         * 🌟 ĐỒNG BỘ: Sửa lại tên currentPage thành "confirmBooking"
+         * trùng khớp với hàm check hasAnyPerm trong file admin-sidebar.jsp của bạn
          */
-        request.setAttribute(
-                "currentPage",
-                "confirm-booking"
-        );
+        request.setAttribute("currentPage", "confirmBooking");
 
         /*
-         * Nếu chưa nhập mã vé
-         * thì chỉ hiển thị trang.
+         * Nếu nhập mã vé thì tiến hành tra cứu
          */
         if (maDatVe != null && !maDatVe.trim().isEmpty()) {
 
             maDatVe = maDatVe.trim();
-
-            Booking booking =
-                    bookingService.getBookingById(maDatVe);
+            Booking booking = bookingService.getBookingById(maDatVe);
 
             /*
              * Không tìm thấy vé
              */
             if (booking == null) {
-
-                request.setAttribute(
-                        "error",
-                        "Không tìm thấy vé với mã: " + maDatVe
-                );
-
+                request.setAttribute("error", "Không tìm thấy đơn đặt vé nào với mã: " + maDatVe);
             } else {
-
                 /*
-                 * Tìm thấy vé
-                 * → đưa thông tin sang JSP
+                 * Tìm thấy vé → đưa thông tin sang JSP
                  */
-                request.setAttribute(
-                        "booking",
-                        booking
-                );
+                request.setAttribute("booking", booking);
             }
         }
 
         /*
          * Hiển thị JSP
          */
-        request.getRequestDispatcher(
-                "/views/admin/confirm-booking.jsp"
-        ).forward(request, response);
+        request.getRequestDispatcher("/views/admin/confirm-booking.jsp").forward(request, response);
     }
 
 
     /**
-     * Xử lý xác nhận khách đã sử dụng vé
+     * Xử lý xác nhận khách đã sử dụng vé (Soát vé vào phòng chiếu)
      */
     @Override
     protected void doPost(HttpServletRequest request,
@@ -103,24 +92,24 @@ public class ConfirmBookingController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        String maDatVe =
-                request.getParameter("maDatVe");
+        // 🌟 BẢO MẬT TẦNG THAO TÁC: Ngăn chặn nhân viên quầy đồ ăn can thiệp lén lút lệnh POST dữ liệu
+        HttpSession session = request.getSession();
+        List<String> permissions = (List<String>) session.getAttribute("userPermissions");
+
+        if (permissions == null || !permissions.contains("Q03")) {
+            session.setAttribute("error", "Bảo mật hệ thống: Bạn không có quyền soát vé hay in vé!");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            return;
+        }
+
+        String maDatVe = request.getParameter("maDatVe");
 
         /*
          * Kiểm tra mã vé rỗng
          */
         if (maDatVe == null || maDatVe.trim().isEmpty()) {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Vui lòng nhập mã vé."
-            );
-
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/admin/confirm-booking"
-            );
-
+            request.getSession().setAttribute("error", "Vui lòng nhập mã vé.");
+            response.sendRedirect(request.getContextPath() + "/admin/confirm-booking");
             return;
         }
 
@@ -129,125 +118,66 @@ public class ConfirmBookingController extends HttpServlet {
         /*
          * Tìm vé trong database
          */
-        Booking booking =
-                bookingService.getBookingById(maDatVe);
+        Booking booking = bookingService.getBookingById(maDatVe);
 
         /*
          * Không tìm thấy vé
          */
         if (booking == null) {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Không tìm thấy vé với mã: " + maDatVe
-            );
-
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/admin/confirm-booking"
-            );
-
+            request.getSession().setAttribute("error", "Không tìm thấy vé với mã: " + maDatVe);
+            response.sendRedirect(request.getContextPath() + "/admin/confirm-booking");
             return;
         }
 
         /*
          * Lấy trạng thái hiện tại
          */
-        String trangThai =
-                booking.getTrangThai();
-
+        String trangThai = booking.getTrangThai();
 
         /*
-         * TRƯỜNG HỢP 1:
-         * Vé đang chờ thanh toán
+         * TRƯỜNG HỢP 1: Vé đang chờ thanh toán
          */
         if ("Chờ thanh toán".equalsIgnoreCase(trangThai)) {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Vé này đang chờ thanh toán, không thể xác nhận."
-            );
-
+            request.getSession().setAttribute("error", "Vé này đang chờ thanh toán, không thể xác nhận.");
         }
 
-
         /*
-         * TRƯỜNG HỢP 2:
-         * Vé đã sử dụng
+         * TRƯỜNG HỢP 2: Vé đã sử dụng
          */
         else if ("Đã sử dụng".equalsIgnoreCase(trangThai)) {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Bạn đã sử dụng vé này rồi."
-            );
-
+            request.getSession().setAttribute("error", "Hệ thống cảnh báo: Vé này đã được soát và sử dụng trước đó rồi.");
         }
 
-
         /*
-         * TRƯỜNG HỢP 3:
-         * Vé đã hủy
+         * TRƯỜNG HỢP 3: Vé đã hủy
          */
         else if ("Đã hủy".equalsIgnoreCase(trangThai)) {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Vé này đã bị hủy, không thể xác nhận."
-            );
-
+            request.getSession().setAttribute("error", "Vé này đã bị hủy trên hệ thống, không thể xác nhận.");
         }
 
-
         /*
-         * TRƯỜNG HỢP 4:
-         * Vé đã thanh toán
-         *
-         * Đây là trạng thái duy nhất
-         * được phép xác nhận.
+         * TRƯỜNG HỢP 4: Vé đã thanh toán (Được phép soát vé vào cổng)
          */
         else if ("Đã thanh toán".equalsIgnoreCase(trangThai)) {
-
-            boolean success =
-                    bookingService.confirmBooking(maDatVe);
+            boolean success = bookingService.confirmBooking(maDatVe);
 
             if (success) {
-
-                request.getSession().setAttribute(
-                        "success",
-                        "Xác nhận vé thành công."
-                );
-
+                request.getSession().setAttribute("success", "Xác nhận trạng thái vé sang [Đã sử dụng] thành công.");
             } else {
-
-                request.getSession().setAttribute(
-                        "error",
-                        "Xác nhận vé thất bại."
-                );
+                request.getSession().setAttribute("error", "Xác nhận soát vé thất bại.");
             }
-
         }
-
 
         /*
-         * TRƯỜNG HỢP 5:
-         * Trạng thái không hợp lệ
+         * TRƯỜNG HỢP 5: Trạng thái không hợp lệ
          */
         else {
-
-            request.getSession().setAttribute(
-                    "error",
-                    "Trạng thái vé không hợp lệ, không thể xác nhận."
-            );
+            request.getSession().setAttribute("error", "Trạng thái vé không hợp lệ, không thể xác nhận.");
         }
-
 
         /*
          * Quay lại trang xác nhận vé
          */
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/admin/confirm-booking"
-        );
+        response.sendRedirect(request.getContextPath() + "/admin/confirm-booking");
     }
 }

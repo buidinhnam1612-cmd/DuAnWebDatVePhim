@@ -88,18 +88,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-<%
-if (bookingList != null && !bookingList.isEmpty()) {
-    for (Booking b : bookingList) {
-        String statusClass = "";
-        if ("Đã thanh toán".equals(b.getTrangThai())) {
-            statusClass = "status-paid";
-        } else if ("Chờ thanh toán".equals(b.getTrangThai())) {
-            statusClass = "status-wait";
-        } else {
-            statusClass = "status-cancel";
-        }
-%>
+                                <%
+                                if (bookingList != null && !bookingList.isEmpty()) {
+                                    for (Booking b : bookingList) {
+                                        String statusClass = "";
+                                        if ("Đã thanh toán".equals(b.getTrangThai())) {
+                                            statusClass = "status-paid";
+                                        } else if ("Chờ thanh toán".equals(b.getTrangThai())) {
+                                            statusClass = "status-wait";
+                                        } else {
+                                            statusClass = "status-cancel";
+                                        }
+                                %>
                                 <tr>
                                     <td class="ps-4 fw-semibold"><span class="badge bg-secondary"><%= b.getMaDatVe() %></span></td>
                                     <td class="fw-semibold text-primary"><%= b.getTenKhachHang() %></td>
