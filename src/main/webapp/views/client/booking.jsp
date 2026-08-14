@@ -512,16 +512,20 @@
 </style>
 
 <script>
+    // ===== Kích thước phòng chiếu =====
+    const soHang = ${room != null ? room.soHang : 0};
+    const soCot = ${room != null ? room.soCot : 0};
+
     // ===== Dữ liệu ghế từ Database =====
-    const seatData = [];
+    const seatMapData = {};
     <c:forEach var="seat" items="${seatList}">
-        seatData.push({
+        seatMapData['${seat.hangGhe}_${seat.soGhe}'] = {
             maGhe: '${seat.maGhe}',
             hangGhe: '${seat.hangGhe}',
             soGhe: ${seat.soGhe},
             loaiGhe: '${seat.loaiGhe}',
             tenGhe: '${seat.tenGhe}'
-        });
+        };
     </c:forEach>
 
     // ===== Danh sách ghế đã đặt =====
@@ -578,6 +582,29 @@
     }
 
     function renderSeats() {
+        if (soHang === 0 || soCot === 0) {
+            seatMapEl.innerHTML = '<p style="color:white;">Không thể tải cấu trúc sơ đồ ghế phòng chiếu.</p>';
+            return;
+        }
+
+        let html = '';
+        
+        for (let i = 0; i < soHang; i++) {
+            const rowLabel = String.fromCharCode(65 + i); // 'A', 'B', 'C', ...
+            
+            html += '<div style="display:flex; align-items:center; justify-content:center; gap:8px;">';
+            html += '<div class="seat-row-label">' + rowLabel + '</div>';
+
+            for (let j = 1; j <= soCot; j++) {
+                const key = rowLabel + '_' + j;
+                const seat = seatMapData[key];
+
+                if (seat) {
+                    html += createSeat(seat);
+                } else {
+                    // Vẽ lối đi / Khoảng trống
+                    html += '<div style="width:36px; height:36px; margin:0; pointer-events:none;"></div>';
+                }
         rowMap = {};
         seatData.forEach(seat => {
             if (!rowMap[seat.hangGhe]) {
@@ -606,11 +633,10 @@
             for (let i = halfCount; i < seats.length; i++) {
                 html += createSeat(seats[i]);
             }
-            html += '</div>';
 
-            html += '<div class="seat-row-label">' + row + '</div>';
+            html += '<div class="seat-row-label">' + rowLabel + '</div>';
             html += '</div>';
-        });
+        }
 
         seatMapEl.innerHTML = html;
     }

@@ -33,10 +33,39 @@ public class RoomRepository {
         return list;
     }
 
+    public Room findById(String maPhong) {
+        String sql = "SELECT * FROM PHONG_CHIEU WHERE MaPhong = ?";
+        try (Connection conn = new DBConnection().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, maPhong);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int soHang = 10;
+                    int soCot = 12;
+                    try {
+                        soHang = rs.getInt("SoHang");
+                        soCot = rs.getInt("SoCot");
+                    } catch (Exception ignored) { } // If old DB without these columns
+                    return new Room(
+                            rs.getString("maPhong"),
+                            rs.getNString("tenPhong"),
+                            rs.getInt("tongSoGhe"),
+                            rs.getString("maRap"),
+                            soHang,
+                            soCot
+                    );
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Thực hiện lưu đồng thời Phòng chiếu và cấu hình ma trận Ghế (Dùng Transaction)
-    public boolean saveRoomAndSeats(Room p, int soHang, int soCot, String loaiGhe) {
-        String sqlPhong = "INSERT INTO PHONG_CHIEU (MaPhong, TenPhong, TongSoGhe, MaRap) VALUES(?,?,?,?)";
-        String sqlGhe = "INSERT INTO GHE (MaGhe, MaPhong, SoHang, SoCot, TenGhe, LoaiGhe) VALUES(?,?,?,?,?,?)";
+    public boolean saveRoomAndSeats(Room p, List<com.fptpoly.model.Seat> seats) {
+        String sqlPhong = "INSERT INTO PHONG_CHIEU (MaPhong, TenPhong, TongSoGhe, MaRap, SoHang, SoCot) VALUES(?,?,?,?,?,?)";
+        String sqlGhe = "INSERT INTO GHE (MaGhe, MaPhong, HangGhe, SoGhe, LoaiGhe) VALUES(?,?,?,?,?)";
 
         try (Connection conn = new DBConnection().getConnection()) {
             conn.setAutoCommit(false); // Bật transaction để bảo toàn dữ liệu nếu lỗi
@@ -46,24 +75,19 @@ public class RoomRepository {
                 psP.setNString(2, p.getTenPhong());
                 psP.setInt(3, p.getTongSoGhe());
                 psP.setString(4, p.getMaRap());
+                psP.setInt(5, p.getSoHang());
+                psP.setInt(6, p.getSoCot());
                 psP.executeUpdate();
             }
 
             try (PreparedStatement psG = conn.prepareStatement(sqlGhe)) {
-                for (int i = 1; i <= soHang; i++) {
-                    char hangChu = (char) ('A' + (i - 1)); // Quy đổi hàng 1 -> A, hàng 2 -> B...
-                    for (int j = 1; j <= soCot; j++) {
-                        String maGhe = p.getMaPhong() + "_" + hangChu + j;
-                        String tenGhe = String.valueOf(hangChu) + j;
-
-                        psG.setString(1, maGhe);
-                        psG.setString(2, p.getMaPhong());
-                        psG.setInt(3, i);
-                        psG.setInt(4, j);
-                        psG.setString(5, tenGhe);
-                        psG.setNString(6, loaiGhe);
-                        psG.addBatch();
-                    }
+                for (com.fptpoly.model.Seat seat : seats) {
+                    psG.setString(1, seat.getMaGhe());
+                    psG.setString(2, seat.getMaPhong());
+                    psG.setString(3, seat.getHangGhe());
+                    psG.setInt(4, seat.getSoGhe());
+                    psG.setNString(5, seat.getLoaiGhe());
+                    psG.addBatch();
                 }
                 psG.executeBatch();
             }
