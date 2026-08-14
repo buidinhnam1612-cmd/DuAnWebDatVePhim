@@ -98,7 +98,7 @@
                     </c:choose>
                 </h1>
             </div>
-            
+
             <form action="${pageContext.request.contextPath}/movies" method="get" class="d-flex" style="max-width: 400px; width: 100%;">
                 <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Nhập tên phim cần tìm..." style="background: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 8px 0 0 8px;">
                 <button type="submit" class="btn btn-danger" style="border-radius: 0 8px 8px 0; background: #e11d48; border: none;">Tìm</button>
@@ -125,8 +125,8 @@
                                              <c:when test="${m.maPhim == 'M01'}">https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=300</c:when>
                                              <c:when test="${m.maPhim == 'M02'}">https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=300</c:when>
                                              <c:otherwise>https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300</c:otherwise>
-                                         </c:choose>" 
-                                         class="movie-grid-img" 
+                                         </c:choose>"
+                                         class="movie-grid-img"
                                          alt="${m.tenPhim}">
                                     </a>
                                     <div class="movie-grid-body">

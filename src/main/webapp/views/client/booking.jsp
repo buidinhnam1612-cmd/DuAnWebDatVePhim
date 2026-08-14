@@ -16,6 +16,12 @@
 
             <div class="col-lg-8">
 
+                <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                    <a href="${pageContext.request.contextPath}/booking<c:if test="${not empty movie}">?maPhim=${movie.maPhim}</c:if>" class="btn btn-outline-light btn-sm" style="border-radius: 8px; font-size: 13px;">
+                        <i class="bi bi-arrow-left me-1"></i>Đổi phim / Suất chiếu
+                    </a>
+                </div>
+
                 <h1 class="booking-step-title mb-2" style="font-size: 32px;">
                     <i class="bi bi-ticket-perforated text-warning me-2"></i>
                     <c:choose>

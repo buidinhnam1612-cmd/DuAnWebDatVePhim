@@ -48,13 +48,22 @@ public class BookingController extends HttpServlet {
 
         String maSuatChieu = request.getParameter("maSuatChieu");
         if (maSuatChieu == null || maSuatChieu.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/home");
+            // Bước 1: Cho khách hàng chọn Phim & Suất Chiếu (Lotte Cinema style)
+            String maPhim = request.getParameter("maPhim");
+            List<Movie> listPhim = movieService.getAll();
+            List<Showtime> listSuatChieu = showtimeRepository.getAll();
+
+            request.setAttribute("listPhim", listPhim);
+            request.setAttribute("listSuatChieu", listSuatChieu);
+            request.setAttribute("selectedMovieId", maPhim);
+
+            request.getRequestDispatcher("/views/client/select-showtime.jsp").forward(request, response);
             return;
         }
 
         Showtime showtime = showtimeRepository.getById(maSuatChieu);
         if (showtime == null) {
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/booking");
             return;
         }
 
