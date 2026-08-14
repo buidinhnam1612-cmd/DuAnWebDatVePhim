@@ -242,10 +242,22 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <form action="${pageContext.request.contextPath}/admin/employee" method="post" class="d-flex align-items-center gap-1 mb-0">
                                                 <input type="hidden" name="maNhanVien" value="<%=e.getMaNhanVien()%>">
-                                                <select name="maVaiTro" class="form-select form-select-sm" style="width: 140px;" <%= isSelf ? "disabled" : "" %>>
-                                                    <option value="VT01" <%= "VT01".equals(e.getMaVaiTro()) ? "selected" : "" %>>Admin</option>
-                                                    <option value="VT04" <%= "VT04".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên quầy</option>
-                                                    <option value="VT02" <%= "VT02".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên rạp</option>
+                                                <select name="maVaiTro"
+                                                        class="form-select form-select-sm"
+                                                        style="width: 140px;"
+                                                        <%= isSelf ? "disabled" : "" %>>
+
+                                                    <%-- Không cho Admin cấp VT01 cho nhân viên --%>
+
+                                                    <option value="VT04"
+                                                        <%= "VT04".equals(e.getMaVaiTro()) ? "selected" : "" %>>
+                                                        Nhân viên quầy
+                                                    </option>
+
+                                                    <option value="VT02"
+                                                        <%= "VT02".equals(e.getMaVaiTro()) ? "selected" : "" %>>
+                                                        Nhân viên rạp
+                                                    </option>
                                                 </select>
                                                 <button type="submit" name="action" value="updateRole" class="btn btn-sm btn-outline-primary btn-action" title="Lưu" <%= isSelf ? "disabled" : "" %>><i class="bi bi-person-gear"></i> Lưu</button>
                                             </form>

@@ -10,7 +10,13 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/admin/revenue-report")
+@WebServlet(
+        name = "ReportController",
+        urlPatterns = {
+                "/admin/report",
+                "/admin/revenue-report"
+        }
+)
 public class ReportController extends HttpServlet {
 
     private ReportService reportService;
@@ -29,18 +35,54 @@ public class ReportController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        // 🌟 BẢO MẬT: Kiểm tra quyền Báo cáo doanh thu rạp (Q13) từ Session chống bị đá ra ngoài
         HttpSession session = request.getSession();
-        List<String> permissions = (List<String>) session.getAttribute("userPermissions");
 
-        if (permissions == null || !permissions.contains("Q13")) {
-            session.setAttribute("error", "Tài khoản của bạn không có quyền xem Báo cáo doanh thu!");
-            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        /*
+         * =========================================================
+         * KIỂM TRA QUYỀN BÁO CÁO
+         * =========================================================
+         *
+         * Q1/Admin: được phép truy cập tất cả chức năng.
+         * Nhân viên: phải có Q13 mới được xem báo cáo doanh thu.
+         */
+
+        String role = (String) session.getAttribute("role");
+
+        List<String> permissions =
+                (List<String>) session.getAttribute("userPermissions");
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+
+        boolean hasReportPermission =
+                permissions != null && permissions.contains("Q13");
+
+        if (!isAdmin && !hasReportPermission) {
+
+            session.setAttribute(
+                    "error",
+                    "Bạn không có quyền truy cập chức năng Báo cáo doanh thu!"
+            );
+
+            response.sendRedirect(
+                    request.getContextPath() + "/admin/dashboard"
+            );
+
             return;
         }
 
-        // 🌟 ĐỒNG BỘ SIDEBAR: Giúp menu Báo cáo doanh thu thắp sáng gạch đỏ khi đang xem
+        /*
+         * =========================================================
+         * SIDEBAR
+         * =========================================================
+         */
+
         request.setAttribute("currentPage", "report");
+
+        /*
+         * =========================================================
+         * DỮ LIỆU BÁO CÁO
+         * =========================================================
+         */
 
         // Tổng doanh thu
         double doanhThu = reportService.getTotalRevenue();
@@ -52,30 +94,43 @@ public class ReportController extends HttpServlet {
         int tongVe = reportService.getTotalTicket();
 
         // Top phim
-        List<Report> reports = reportService.getTopMovie();
+        List<Report> reports =
+                reportService.getTopMovie();
 
         // Doanh thu theo ngày
-        List<Report> revenueByDate = reportService.getRevenueByDate();
+        List<Report> revenueByDate =
+                reportService.getRevenueByDate();
 
         // Top rạp
-        List<Report> topCinema = reportService.getTopCinema();
+        List<Report> topCinema =
+                reportService.getTopCinema();
 
         // Doanh thu theo tháng
-        List<Report> revenueByMonth = reportService.getRevenueByMonth();
+        List<Report> revenueByMonth =
+                reportService.getRevenueByMonth();
 
-        // Doanh thu theo năm (bổ sung)
-        List<Report> revenueByYear = reportService.getRevenueByYear();
+        // Doanh thu theo năm
+        List<Report> revenueByYear =
+                reportService.getRevenueByYear();
 
-        // Trạng thái vé (bổ sung)
-        List<Report> bookingStatus = reportService.getBookingStatusReport();
+        // Trạng thái vé
+        List<Report> bookingStatus =
+                reportService.getBookingStatusReport();
 
-        // Tỷ lệ lấp đầy ghế (bổ sung)
-        List<Report> seatOccupancy = reportService.getSeatOccupancy();
+        // Tỷ lệ lấp đầy ghế
+        List<Report> seatOccupancy =
+                reportService.getSeatOccupancy();
 
-        // Nạp tất cả dữ liệu báo cáo sang trang JSP hiển thị
+        /*
+         * =========================================================
+         * TRUYỀN DỮ LIỆU SANG JSP
+         * =========================================================
+         */
+
         request.setAttribute("doanhThu", doanhThu);
         request.setAttribute("doanhThuHomNay", doanhThuHomNay);
         request.setAttribute("tongVe", tongVe);
+
         request.setAttribute("reports", reports);
         request.setAttribute("revenueByDate", revenueByDate);
         request.setAttribute("topCinema", topCinema);
@@ -84,7 +139,14 @@ public class ReportController extends HttpServlet {
         request.setAttribute("bookingStatus", bookingStatus);
         request.setAttribute("seatOccupancy", seatOccupancy);
 
-        // Hiển thị giao diện báo cáo doanh thu độc lập
-        request.getRequestDispatcher("/views/admin/report.jsp").forward(request, response);
+        /*
+         * =========================================================
+         * HIỂN THỊ TRANG BÁO CÁO
+         * =========================================================
+         */
+
+        request.getRequestDispatcher(
+                "/views/admin/report.jsp"
+        ).forward(request, response);
     }
 }

@@ -1,7 +1,10 @@
 package com.fptpoly.controller.admin;
 
 import com.fptpoly.model.Employee;
+import com.fptpoly.model.EmployeePermission;
+import com.fptpoly.model.Permission;
 import com.fptpoly.service.EmployeeService;
+import com.fptpoly.service.PermissionService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,149 +13,534 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "EmployeeController", urlPatterns = {"/admin/employee"})
+@WebServlet(
+        name = "EmployeeController",
+        urlPatterns = {
+                "/admin/employee",
+                "/admin/employee/permission"
+        }
+)
 public class EmployeeController extends HttpServlet {
 
     private EmployeeService employeeService;
+    private PermissionService permissionService;
 
     @Override
     public void init() {
         employeeService = new EmployeeService();
-        // Loại bỏ hoàn toàn permissionService thừa để tránh lỗi gạch đỏ biên dịch
+        permissionService = new PermissionService();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        // CHẶN QUYỀN TRUY CẬP: Chỉ cho tài khoản có quyền Quản lý nhân viên (Q14) đi tiếp
         HttpSession session = request.getSession();
-        List<String> permissions = (List<String>) session.getAttribute("userPermissions");
-        if (permissions == null || !permissions.contains("Q14")) {
-            session.setAttribute("error", "Bạn không có quyền truy cập vào chức năng Quản lý nhân viên!");
-            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+
+        List<String> permissions =
+                (List<String>) session.getAttribute("userPermissions");
+
+        String uri = request.getRequestURI();
+
+        /*
+         * ==========================================
+         * PHÂN QUYỀN NHÂN VIÊN
+         * Q15 = Phân quyền nhân viên
+         * ==========================================
+         */
+        if (uri != null && uri.endsWith("/permission")) {
+
+            if (permissions == null || !permissions.contains("Q15")) {
+                session.setAttribute(
+                        "error",
+                        "Bạn không có quyền truy cập chức năng phân quyền nhân viên!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/dashboard"
+                );
+                return;
+            }
+
+            String maNhanVien =
+                    request.getParameter("maNhanVien");
+
+            if (maNhanVien == null
+                    || maNhanVien.trim().isEmpty()) {
+
+                maNhanVien =
+                        request.getParameter("selectedMaNhanVien");
+            }
+
+            if (maNhanVien == null
+                    || maNhanVien.trim().isEmpty()) {
+
+                maNhanVien =
+                        request.getParameter("editPermission");
+            }
+
+            if (maNhanVien == null
+                    || maNhanVien.trim().isEmpty()) {
+
+                session.setAttribute(
+                        "error",
+                        "Vui lòng chọn nhân viên cần phân quyền!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/employee"
+                );
+                return;
+            }
+
+            maNhanVien = maNhanVien.trim();
+
+            Employee employee =
+                    employeeService.getEmployeeById(maNhanVien);
+
+            if (employee == null) {
+
+                session.setAttribute(
+                        "error",
+                        "Nhân viên không tồn tại!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/employee"
+                );
+                return;
+            }
+
+            List<EmployeePermission> employeePermissions =
+                    permissionService.getEmployeePermissions(
+                            maNhanVien
+                    );
+
+            request.setAttribute(
+                    "employee",
+                    employee
+            );
+
+            request.setAttribute(
+                    "employeePermissions",
+                    employeePermissions
+            );
+
+            request.getRequestDispatcher(
+                    "/views/admin/employee-permission.jsp"
+            ).forward(request, response);
+
             return;
         }
 
-        // Xử lý hiển thị danh sách nhân viên thông thường
-        String action = request.getParameter("action");
+        /*
+         * ==========================================
+         * QUẢN LÝ NHÂN VIÊN
+         * Q14 = Quản lý nhân viên
+         * ==========================================
+         */
+        if (permissions == null
+                || !permissions.contains("Q14")) {
+
+            session.setAttribute(
+                    "error",
+                    "Bạn không có quyền truy cập chức năng Quản lý nhân viên!"
+            );
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/admin/dashboard"
+            );
+            return;
+        }
+
+        String action =
+                request.getParameter("action");
+
         List<Employee> employeeList;
 
         if ("search".equals(action)) {
-            String keyword = request.getParameter("keyword");
-            employeeList = employeeService.searchEmployees(keyword);
+
+            String keyword =
+                    request.getParameter("keyword");
+
+            employeeList =
+                    employeeService.searchEmployees(keyword);
+
         } else {
-            employeeList = employeeService.getAllEmployees();
+
+            employeeList =
+                    employeeService.getAllEmployees();
         }
 
-        request.setAttribute("employeeList", employeeList);
+        request.setAttribute(
+                "employeeList",
+                employeeList
+        );
 
-        // Chuyển hướng dữ liệu tĩnh sang trang hiển thị nhân sự
-        request.getRequestDispatcher("/views/admin/employee.jsp").forward(request, response);
+        List<Permission> allPermissions =
+                permissionService.getAllPermissions();
+
+        request.setAttribute(
+                "allPermissions",
+                allPermissions
+        );
+
+        request.getRequestDispatcher(
+                "/views/admin/employee.jsp"
+        ).forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession();
 
-        // Lấy ID của chính Admin đang thao tác click chuột từ Session ra để đối chiếu
-        String adminDangDangNhap = (String) session.getAttribute("maNhanVien");
-        List<String> permissions = (List<String>) session.getAttribute("userPermissions");
+        HttpSession session =
+                request.getSession();
 
-        // Kiểm tra lại quyền hệ thống Q14 trước khi thực thi xử lý POST dữ liệu
-        if (permissions == null || !permissions.contains("Q14")) {
-            session.setAttribute("error", "Hành động bị từ chối! Bạn không có quyền quản trị.");
-            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        List<String> permissions =
+                (List<String>) session.getAttribute("userPermissions");
+
+        String uri =
+                request.getRequestURI();
+
+        String action =
+                request.getParameter("action");
+
+        /*
+         * ==========================================
+         * BẬT / TẮT QUYỀN
+         * ==========================================
+         */
+        if ((uri != null && uri.endsWith("/permission"))
+                || "togglePermission".equals(action)
+                || request.getParameter("permissionToggle") != null) {
+
+            if (permissions == null
+                    || !permissions.contains("Q15")) {
+
+                session.setAttribute(
+                        "error",
+                        "Bạn không có quyền phân quyền nhân viên!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/dashboard"
+                );
+                return;
+            }
+
+            String maNhanVien =
+                    request.getParameter("maNhanVien");
+
+            String maQuyen =
+                    request.getParameter("maQuyen");
+
+            String trangThaiStr =
+                    request.getParameter("trangThai");
+
+            if (maNhanVien == null
+                    || maNhanVien.trim().isEmpty()
+                    || maQuyen == null
+                    || maQuyen.trim().isEmpty()) {
+
+                session.setAttribute(
+                        "error",
+                        "Dữ liệu phân quyền không hợp lệ!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/employee"
+                );
+                return;
+            }
+
+            int trangThai;
+
+            try {
+                trangThai =
+                        Integer.parseInt(trangThaiStr);
+
+            } catch (Exception e) {
+
+                session.setAttribute(
+                        "error",
+                        "Trạng thái quyền không hợp lệ!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/employee/permission?maNhanVien="
+                                + maNhanVien
+                );
+
+                return;
+            }
+
+            boolean result =
+                    permissionService.togglePermission(
+                            maNhanVien.trim(),
+                            maQuyen.trim(),
+                            trangThai
+                    );
+
+            if (result) {
+
+                String statusText =
+                        trangThai == 1
+                                ? "BẬT"
+                                : "TẮT";
+
+                session.setAttribute(
+                        "success",
+                        "Cập nhật quyền "
+                                + maQuyen
+                                + " sang ["
+                                + statusText
+                                + "] thành công!"
+                );
+
+            } else {
+
+                session.setAttribute(
+                        "error",
+                        "Cập nhật quyền thất bại!"
+                );
+            }
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/admin/employee/permission?maNhanVien="
+                            + maNhanVien.trim()
+            );
+
             return;
         }
 
-        String action = request.getParameter("action");
+        /*
+         * ==========================================
+         * CÁC CHỨC NĂNG QUẢN LÝ NHÂN VIÊN
+         * ==========================================
+         */
+        if (permissions == null
+                || !permissions.contains("Q14")) {
 
-        // 🌟 XỬ LÝ THÊM MỚI NHÂN VIÊN (ĐÃ BỎ Ô NHẬP MÃ - backend TỰ ĐỘNG TĂNG)
+            session.setAttribute(
+                    "error",
+                    "Bạn không có quyền quản lý nhân viên!"
+            );
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/admin/dashboard"
+            );
+            return;
+        }
+
+        /*
+         * ==========================================
+         * THÔNG TIN ADMIN HIỆN TẠI
+         * ==========================================
+         */
+        String adminDangDangNhap =
+                (String) session.getAttribute("maNhanVien");
+
+        /*
+         * ==========================================
+         * THÊM NHÂN VIÊN
+         * ==========================================
+         */
         if ("create".equals(action)) {
-            String maVaiTro = request.getParameter("maVaiTro");
-            String tenDangNhap = request.getParameter("tenDangNhap");
-            String matKhau = request.getParameter("matKhau");
-            String hoTen = request.getParameter("hoTen");
-            String email = request.getParameter("email");
-            String soDienThoai = request.getParameter("soDienThoai");
-            String gioiTinh = request.getParameter("gioiTinh");
 
-            // 🔥 BẢO MẬT: Không cho phép tạo tài khoản có quyền Admin cấp tối cao (VT01) bừa bãi
+            String maNhanVien =
+                    request.getParameter("maNhanVien");
+
+            String maVaiTro =
+                    request.getParameter("maVaiTro");
+
+            String tenDangNhap =
+                    request.getParameter("tenDangNhap");
+
+            String matKhau =
+                    request.getParameter("matKhau");
+
+            String hoTen =
+                    request.getParameter("hoTen");
+
+            String email =
+                    request.getParameter("email");
+
+            String soDienThoai =
+                    request.getParameter("soDienThoai");
+
+            String gioiTinh =
+                    request.getParameter("gioiTinh");
+
+            /*
+             * Không cho tạo thêm Admin
+             */
             if ("VT01".equals(maVaiTro)) {
-                session.setAttribute("error", "Bảo mật hệ thống: Bạn không được phép tự tạo thêm tài khoản Quản trị viên!");
-                response.sendRedirect(request.getContextPath() + "/admin/employee");
+
+                session.setAttribute(
+                        "error",
+                        "Bạn không được phép tạo thêm tài khoản Quản trị viên!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/employee"
+                );
+
                 return;
             }
 
-            // Tạo thực thể nhân viên (maNhanVien không cần gán vì EmployeeRepository sẽ tự tính đếm trong cơ sở dữ liệu)
-            Employee e = new Employee();
-            e.setMaVaiTro(maVaiTro);
-            e.setTenDangNhap(tenDangNhap);
-            e.setMatKhau(matKhau);
-            e.setHoTen(hoTen);
-            e.setEmail(email);
-            e.setSoDienThoai(soDienThoai);
-            e.setGioiTinh(gioiTinh);
-            e.setTrangThai("Đang làm việc"); // Đồng bộ chuỗi trạng thái hoạt động mới
+            Employee employee =
+                    new Employee();
 
-            boolean result = employeeService.createEmployee(e);
+            employee.setMaNhanVien(maNhanVien);
+            employee.setMaVaiTro(maVaiTro);
+            employee.setTenDangNhap(tenDangNhap);
+            employee.setMatKhau(matKhau);
+            employee.setHoTen(hoTen);
+            employee.setEmail(email);
+            employee.setSoDienThoai(soDienThoai);
+            employee.setGioiTinh(gioiTinh);
+            employee.setTrangThai("Đang làm việc");
+
+            boolean result =
+                    employeeService.createEmployee(employee);
 
             if (result) {
-                session.setAttribute("success", "Thêm tài khoản nhân viên mới thành công!");
+
+                session.setAttribute(
+                        "success",
+                        "Thêm tài khoản nhân viên thành công!"
+                );
+
             } else {
-                session.setAttribute("error", "Thêm tài khoản thất bại!");
+
+                session.setAttribute(
+                        "error",
+                        "Thêm tài khoản nhân viên thất bại!"
+                );
             }
         }
 
-        // Xử lý Cập nhật chức vụ/vai trò nhóm
+        /*
+         * ==========================================
+         * CẬP NHẬT VAI TRÒ
+         * ==========================================
+         */
         if ("updateRole".equals(action)) {
+
             String maNhanVien = request.getParameter("maNhanVien");
             String maVaiTro = request.getParameter("maVaiTro");
 
-            // 🔥 BẢO MẬT 1: Chặn Admin tự hạ cấp chức vụ của chính bản thân mình
-            if (adminDangDangNhap != null && adminDangDangNhap.equals(maNhanVien)) {
-                session.setAttribute("error", "Bảo mật hệ thống: Bạn không được phép tự hạ cấp chức vụ của chính mình!");
-                response.sendRedirect(request.getContextPath() + "/admin/employee");
+            // Không cho Admin tự thay đổi chính mình
+            String loggedInMaNhanVien =
+                    (String) request.getSession().getAttribute("maNhanVien");
+
+            if (loggedInMaNhanVien != null
+                    && loggedInMaNhanVien.equals(maNhanVien)) {
+
+                request.getSession().setAttribute(
+                        "error",
+                        "Bạn không được phép tự thay đổi vai trò của chính mình!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath() + "/admin/employee"
+                );
                 return;
             }
 
-            // 🔥 BẢO MẬT 2: Chặn Admin cấp dưới nâng cấp một nhân viên thông thường lên làm Admin tối cao
+            // Không cho cấp vai trò Admin VT01
             if ("VT01".equals(maVaiTro)) {
-                session.setAttribute("error", "Bảo mật hệ thống: Bạn không có quyền cấu hình nhân viên khác thành Quản trị viên!");
-                response.sendRedirect(request.getContextPath() + "/admin/employee");
+
+                request.getSession().setAttribute(
+                        "error",
+                        "Bạn không có quyền cấp vai trò Quản trị viên cho nhân viên!"
+                );
+
+                response.sendRedirect(
+                        request.getContextPath() + "/admin/employee"
+                );
                 return;
             }
 
             employeeService.updateRole(maNhanVien, maVaiTro);
-            session.setAttribute("success", "Cập nhật chức vụ thành công!");
+
+            request.getSession().setAttribute(
+                    "success",
+                    "Cập nhật vai trò thành công!"
+            );
         }
 
-        // Xử lý Cập nhật trạng thái khóa/mở hoạt động
+        /*
+         * ==========================================
+         * CẬP NHẬT TRẠNG THÁI
+         * ==========================================
+         */
         if ("updateStatus".equals(action)) {
-            String maNhanVien = request.getParameter("maNhanVien");
-            String trangThai = request.getParameter("trangThai");
 
-            // 🔥 BẢO MẬT: Chặn Admin tự khóa tài khoản hoặc tự chuyển mình thành "Khóa/Ngừng làm việc"
-            if (adminDangDangNhap != null && adminDangDangNhap.equals(maNhanVien)) {
-                // Đồng bộ từ khóa so sánh chuỗi theo đúng lựa chọn select option tĩnh ở giao diện JSP
-                if ("Khóa".equalsIgnoreCase(trangThai) || "Ngừng làm việc".equalsIgnoreCase(trangThai)) {
-                    session.setAttribute("error", "Bảo mật hệ thống: Bạn không được phép tự khóa tài khoản hoạt động của chính mình!");
-                    response.sendRedirect(request.getContextPath() + "/admin/employee");
+            String maNhanVien =
+                    request.getParameter("maNhanVien");
+
+            String trangThai =
+                    request.getParameter("trangThai");
+
+            /*
+             * Không cho tự khóa chính mình
+             */
+            if (adminDangDangNhap != null
+                    && adminDangDangNhap.equals(maNhanVien)) {
+
+                if ("Khóa".equalsIgnoreCase(trangThai)
+                        || "Ngừng làm việc"
+                        .equalsIgnoreCase(trangThai)) {
+
+                    session.setAttribute(
+                            "error",
+                            "Bạn không được phép tự khóa tài khoản của chính mình!"
+                    );
+
+                    response.sendRedirect(
+                            request.getContextPath()
+                                    + "/admin/employee"
+                    );
+
                     return;
                 }
             }
 
-            employeeService.updateStatus(maNhanVien, trangThai);
-            session.setAttribute("success", "Cập nhật trạng thái nhân sự thành công!");
+            employeeService.updateStatus(
+                    maNhanVien,
+                    trangThai
+            );
+
+            session.setAttribute(
+                    "success",
+                    "Cập nhật trạng thái nhân sự thành công!"
+            );
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/employee");
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/admin/employee"
+        );
     }
 }
