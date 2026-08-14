@@ -25,21 +25,15 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .seat-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            max-w-600px;
-            margin: 0 auto;
-        }
+        .seat-map-container { overflow-x: auto; padding: 20px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
+        .seat-row { display: flex; justify-content: center; margin-bottom: 10px; align-items: center; }
+        .row-label { width: 30px; font-weight: bold; color: #64748b; margin-right: 15px; }
 
-        .seat-box {
-            aspect-ratio: 1;
-            border-radius: 8px;
+        .seat-cell {
+            width: 35px; height: 35px; margin: 0 4px; border-radius: 8px 8px 4px 4px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700;
-            border: 1px solid rgba(0,0,0,0.1);
-            user-select: none;
+            font-size: 11px; font-weight: bold; color: white;
+            user-select: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .seat-empty { background-color: #e2e8f0; color: #334155; }
         .seat-booked { background-color: #ef4444; color: white; }
@@ -104,7 +98,7 @@
                     <div class="card-body p-4 text-center">
                         <div class="screen-banner">MÀN HÌNH CHIẾU (SCREEN)</div>
 
-                        <div class="seat-grid mb-4" style="grid-template-columns: repeat(${room.soCot}, 1fr);">
+                        <div class="seat-map-container mb-4">
                             <%
                                 com.fptpoly.model.Room currentRoom = (com.fptpoly.model.Room) request.getAttribute("room");
                                 java.util.Map<String, com.fptpoly.model.Seat> seatMap = (java.util.Map<String, com.fptpoly.model.Seat>) request.getAttribute("seatMap");
@@ -112,6 +106,10 @@
                                 if (currentRoom != null && seatMap != null) {
                                     for (int i = 0; i < currentRoom.getSoHang(); i++) {
                                         String rowLabel = String.valueOf((char) ('A' + i));
+                            %>
+                            <div class="seat-row">
+                                <div class="row-label"><%= rowLabel %></div>
+                            <%
                                         for (int j = 1; j <= currentRoom.getSoCot(); j++) {
                                             String key = rowLabel + "_" + j;
                                             com.fptpoly.model.Seat seat = seatMap.get(key);
@@ -134,11 +132,14 @@
                                                 style = "background-color: transparent; border: 1px dashed #cbd5e1;";
                                             }
                             %>
-                            <div class="seat-box <%= seatClass %>" style="<%= style %>" title="<%= (seat != null) ? "Ghế " + rowLabel + j + " (" + seat.getLoaiGhe() + ")" : "Trống" %>">
-                                <%= content %>
-                            </div>
+                                <div class="seat-cell <%= seatClass %>" style="<%= style %>" title="<%= (seat != null) ? "Ghế " + rowLabel + j + " (" + seat.getLoaiGhe() + ")" : "Trống" %>">
+                                    <%= content %>
+                                </div>
                             <%
                                         }
+                            %>
+                            </div>
+                            <%
                                     }
                                 }
                             %>

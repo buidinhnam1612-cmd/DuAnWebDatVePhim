@@ -424,16 +424,20 @@
 </style>
 
 <script>
+    // ===== Kích thước phòng chiếu =====
+    const soHang = ${room != null ? room.soHang : 0};
+    const soCot = ${room != null ? room.soCot : 0};
+
     // ===== Dữ liệu ghế từ Database =====
-    const seatData = [];
+    const seatMapData = {};
     <c:forEach var="seat" items="${seatList}">
-        seatData.push({
+        seatMapData['${seat.hangGhe}_${seat.soGhe}'] = {
             maGhe: '${seat.maGhe}',
             hangGhe: '${seat.hangGhe}',
             soGhe: ${seat.soGhe},
             loaiGhe: '${seat.loaiGhe}',
             tenGhe: '${seat.tenGhe}'
-        });
+        };
     </c:forEach>
 
     // ===== Danh sách ghế đã đặt =====
@@ -450,43 +454,34 @@
     let selectedSeats = [];
 
     function renderSeats() {
-        // Nhóm ghế theo hàng
-        const rowMap = {};
-        seatData.forEach(seat => {
-            if (!rowMap[seat.hangGhe]) {
-                rowMap[seat.hangGhe] = [];
-            }
-            rowMap[seat.hangGhe].push(seat);
-        });
-
-        // Sắp xếp các hàng theo thứ tự alphabet
-        const sortedRows = Object.keys(rowMap).sort();
+        if (soHang === 0 || soCot === 0) {
+            seatMapEl.innerHTML = '<p style="color:white;">Không thể tải cấu trúc sơ đồ ghế phòng chiếu.</p>';
+            return;
+        }
 
         let html = '';
-        sortedRows.forEach(row => {
-            const seats = rowMap[row].sort((a, b) => a.soGhe - b.soGhe);
-            const halfCount = Math.ceil(seats.length / 2);
+        
+        for (let i = 0; i < soHang; i++) {
+            const rowLabel = String.fromCharCode(65 + i); // 'A', 'B', 'C', ...
+            
+            html += '<div style="display:flex; align-items:center; justify-content:center; gap:8px;">';
+            html += '<div class="seat-row-label">' + rowLabel + '</div>';
 
-            html += '<div style="display:flex; align-items:center; gap:8px;">';
-            html += '<div class="seat-row-label">' + row + '</div>';
+            for (let j = 1; j <= soCot; j++) {
+                const key = rowLabel + '_' + j;
+                const seat = seatMapData[key];
 
-            // Nửa trái
-            html += '<div style="display:flex; gap:6px; margin-right:20px;">';
-            for (let i = 0; i < halfCount; i++) {
-                html += createSeat(seats[i]);
+                if (seat) {
+                    html += createSeat(seat);
+                } else {
+                    // Vẽ lối đi / Khoảng trống
+                    html += '<div style="width:36px; height:36px; margin:0; pointer-events:none;"></div>';
+                }
             }
-            html += '</div>';
 
-            // Nửa phải
-            html += '<div style="display:flex; gap:6px;">';
-            for (let i = halfCount; i < seats.length; i++) {
-                html += createSeat(seats[i]);
-            }
+            html += '<div class="seat-row-label">' + rowLabel + '</div>';
             html += '</div>';
-
-            html += '<div class="seat-row-label">' + row + '</div>';
-            html += '</div>';
-        });
+        }
 
         seatMapEl.innerHTML = html;
     }

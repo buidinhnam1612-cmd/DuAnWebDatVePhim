@@ -34,6 +34,7 @@ public class BookingController extends HttpServlet {
     private final ShowtimeRepository showtimeRepository = new ShowtimeRepository();
     private final MovieService movieService = new MovieService();
     private final SeatService seatService = new SeatService();
+    private final com.fptpoly.service.RoomService roomService = new com.fptpoly.service.RoomService();
     private final BookingDetailRepository bookingDetailRepository = new BookingDetailRepository();
     private final BookingRepository bookingRepository = new BookingRepository();
     private final CustomerFoodService customerFoodService = new CustomerFoodService();
@@ -60,11 +61,13 @@ public class BookingController extends HttpServlet {
         Movie movie = movieService.getByID(showtime.getMaPhim());
         List<Seat> seatList = seatService.getSeatsByRoom(showtime.getMaPhong());
         List<String> bookedSeat = bookingDetailRepository.findSeatBookedByShowtime(maSuatChieu);
+        com.fptpoly.model.Room room = roomService.getRoomById(showtime.getMaPhong());
 
         request.setAttribute("showtime", showtime);
         request.setAttribute("movie", movie);
         request.setAttribute("seatList", seatList);
         request.setAttribute("bookedSeat", bookedSeat);
+        request.setAttribute("room", room);
         request.setAttribute("maPhong", showtime.getMaPhong());
         request.setAttribute("maSuatChieu", maSuatChieu);
         request.setAttribute("listFoods", customerFoodService.getActiveFoods());
