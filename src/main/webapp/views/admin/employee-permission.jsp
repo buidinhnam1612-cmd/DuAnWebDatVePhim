@@ -21,6 +21,85 @@
         .table th { background-color: #f8fafc; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 700; }
         .table td { vertical-align: middle; font-size: 14px; }
         .btn-action { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+        /* ===== Fix layout lệch hàng khi toggle quyền ===== */
+        .table tbody tr {
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            min-height: 56px;
+            height: 56px;
+        }
+        .table tbody tr td {
+            box-sizing: border-box;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .table tbody tr td:nth-child(1) { flex: 0 0 130px; }
+        .table tbody tr td:nth-child(2) { flex: 0 0 230px; }
+        .table tbody tr td:nth-child(3) { flex: 1 1 auto; }
+        .table tbody tr td:nth-child(4) { flex: 0 0 140px; justify-content: center; }
+        .table tbody tr td:nth-child(5) { flex: 0 0 140px; justify-content: center; }
+
+        .table thead tr {
+            display: flex;
+            align-items: center;
+        }
+        .table thead tr th:nth-child(1) { flex: 0 0 130px; }
+        .table thead tr th:nth-child(2) { flex: 0 0 230px; }
+        .table thead tr th:nth-child(3) { flex: 1 1 auto; }
+        .table thead tr th:nth-child(4) { flex: 0 0 140px; justify-content: center; }
+        .table thead tr th:nth-child(5) { flex: 0 0 140px; justify-content: center; }
+
+        .table td .badge,
+        .table td .btn,
+        .table td form {
+            box-sizing: border-box;
+            line-height: 1;
+        }
+        .permission-form {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .permission-toggle {
+            position: relative;
+            width: 44px;
+            height: 22px;
+            padding: 0;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: 0.2s ease;
+        }
+
+        .permission-toggle-on {
+            background-color: #198754;
+        }
+
+        .permission-toggle-off {
+            background-color: #adb5bd;
+        }
+
+        .permission-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            transition: 0.2s ease;
+        }
+
+        .permission-toggle-on .permission-toggle-slider {
+            left: 25px;
+        }
     </style>
 </head>
 <body>
@@ -126,34 +205,45 @@
 <%
     if (employeePermissions != null && !employeePermissions.isEmpty()) {
         for (EmployeePermission ep : employeePermissions) {
+            if ("Q12".equals(ep.getMaQuyen())) continue;
             boolean isEnabled = (ep.getTrangThai() == 1);
+            String cleanTenQuyen = ep.getTenQuyen() != null ? ep.getTenQuyen().replaceAll("^\\d+\\.\\s*", "") : "";
 %>
                                 <tr>
                                     <td class="ps-4 fw-bold"><span class="badge bg-dark"><%= ep.getMaQuyen() %></span></td>
-                                    <td class="fw-semibold text-dark"><%= ep.getTenQuyen() %></td>
+                                    <td class="fw-semibold text-dark"><%= cleanTenQuyen %></td>
                                     <td class="text-muted"><%= ep.getMoTa() != null ? ep.getMoTa() : "" %></td>
                                     <td class="text-center">
                                         <% if (isEnabled) { %>
-                                            <span class="badge bg-success px-3 py-2">BẬT</span>
+                                            <span class="badge bg-success px-3 py-2 fw-bold">BẬT</span>
                                         <% } else { %>
-                                            <span class="badge bg-secondary px-3 py-2">TẮT</span>
+                                            <span class="badge bg-secondary px-3 py-2 fw-bold">TẮT</span>
                                         <% } %>
                                     </td>
                                     <td class="text-center">
-                                        <form method="post" action="${pageContext.request.contextPath}/admin/employee/permission" class="m-0">
-                                            <input type="hidden" name="maNhanVien" value="<%= employee.getMaNhanVien() %>">
-                                            <input type="hidden" name="maQuyen" value="<%= ep.getMaQuyen() %>">
-                                            <input type="hidden" name="trangThai" value="<%= isEnabled ? "0" : "1" %>">
-                                            
-                                            <% if (isEnabled) { %>
-                                                <button type="submit" class="btn btn-sm btn-danger px-3 fw-bold shadow-sm">
-                                                    <i class="bi bi-x-circle me-1"></i> TẮT
-                                                </button>
-                                            <% } else { %>
-                                                <button type="submit" class="btn btn-sm btn-success px-3 fw-bold shadow-sm">
-                                                    <i class="bi bi-check-circle me-1"></i> BẬT
-                                                </button>
-                                            <% } %>
+                                        <form method="post"
+                                              action="${pageContext.request.contextPath}/admin/employee/permission"
+                                              class="permission-form">
+
+                                            <input type="hidden"
+                                                   name="maNhanVien"
+                                                   value="<%= employee.getMaNhanVien() %>">
+
+                                            <input type="hidden"
+                                                   name="maQuyen"
+                                                   value="<%= ep.getMaQuyen() %>">
+
+                                            <input type="hidden"
+                                                   name="trangThai"
+                                                   value="<%= isEnabled ? "0" : "1" %>">
+
+                                            <button type="submit"
+                                                    name="permissionToggle"
+                                                    value="<%= isEnabled ? "0" : "1" %>"
+                                                    class="permission-toggle <%= isEnabled ? "permission-toggle-on" : "permission-toggle-off" %>"
+                                                    aria-label="<%= isEnabled ? "Tắt quyền" : "Bật quyền" %>">
+                                                <span class="permission-toggle-slider"></span>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>

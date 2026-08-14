@@ -61,15 +61,22 @@
 
 
                     <h2 class="text-center mb-4 fw-bold">
+
                         <i class="bi bi-person-plus-fill me-2"></i>
+
                         Đăng ký
+
                     </h2>
 
 
                     <% if(request.getAttribute("error") != null){ %>
+
                     <div class="alert alert-danger">
+
                         <%=request.getAttribute("error")%>
+
                     </div>
+
                     <% } %>
 
 
@@ -78,111 +85,127 @@
                           autocomplete="off">
 
 
-                        <%-- Ô HỌ VÀ TÊN --%>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                <i class="bi bi-person-fill me-2"></i>
-                                Họ và tên <span style="color: #e11d48;">*</span>
-                            </label>
+
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-fill me-2"></i>
+                                    Họ và tên <span class="text-danger">*</span>
+                                </label>
+
                             <input type="text"
                                    class="form-control"
                                    name="fullName"
-                                   value="${fullName}"
+                                   value="${param.fullName}"
                                    placeholder="Nhập họ và tên"
                                    required>
+
                         </div>
 
 
-                        <%-- Ô EMAIL --%>
+
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                <i class="bi bi-envelope-fill me-2"></i>
-                                Email <span style="color: #e11d48;">*</span>
-                            </label>
+
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-envelope-fill me-2"></i>
+                                    Email <span class="text-danger">*</span>
+                                </label>
+
                             <input type="email"
                                    class="form-control"
                                    name="email"
-                                   value="${email}"
+                                   value="${param.email}"
                                    placeholder="Nhập email"
                                    required>
 
-                            <%-- Dòng báo lỗi riêng cho trùng Email --%>
-                            <% if(request.getAttribute("emailError") != null){ %>
-                                <div style="color: #e11d48; font-size: 13px; margin-top: 6px; font-weight: 500;">
-                                    ⚠ <%=request.getAttribute("emailError")%>
-                                </div>
-                            <% } %>
                         </div>
 
 
-                        <%-- Ô SỐ ĐIỆN THOẠI --%>
+
                         <div class="mb-3">
+
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-telephone-fill me-2"></i>
-                                Số điện thoại <span style="color: #e11d48;">*</span>
+                                Số điện thoại <span class="text-danger">*</span>
                             </label>
-                            <input type="text"
+
+                            <input type="tel"
                                    class="form-control"
                                    name="phone"
-                                   value="${phone}"
-                                   pattern="0[0-9]{9}"
+                                   value="${param.phone}"
+                                   placeholder="Nhập 10 số điện thoại"
+                                   pattern="[0-9]{10}"
+                                   minlength="10"
                                    maxlength="10"
-                                   title="Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng số 0"
-                                   placeholder="Nhập số điện thoại (10 số, bắt đầu bằng số 0)"
+                                   inputmode="numeric"
                                    required>
+
                         </div>
 
 
-                        <%-- Ô MẬT KHẨU --%>
+
                         <div class="mb-3">
+
                             <label class="form-label fw-semibold">
+
                                 <i class="bi bi-lock-fill me-2"></i>
-                                Mật khẩu <span style="color: #e11d48;">*</span>
+                                Mật khẩu  <span class="text-danger">*</span>
+
                             </label>
+
                             <input type="password"
                                    class="form-control"
                                    name="password"
-                                   placeholder="Nhập mật khẩu (Có ít nhất 1 ký tự đặc biệt)"
+                                   placeholder="Nhập mật khẩu"
                                    required>
+
                         </div>
 
 
-                        <%-- Ô XÁC NHẬN MẬT KHẨU --%>
+
                         <div class="mb-4">
+
                             <label class="form-label fw-semibold">
+
                                 <i class="bi bi-shield-lock-fill me-2"></i>
-                                Xác nhận mật khẩu <span style="color: #e11d48;">*</span>
+                                Xác nhận mật khẩu <span class="text-danger">*</span>
+
                             </label>
+
                             <input type="password"
                                    class="form-control"
                                    name="confirmPassword"
                                    placeholder="Nhập lại mật khẩu"
                                    required>
 
-                            <%-- Dòng báo lỗi riêng cho Xác nhận mật khẩu sai --%>
-                            <% if(request.getAttribute("confirmPasswordError") != null){ %>
-                                <div style="color: #e11d48; font-size: 13px; margin-top: 6px; font-weight: 500;">
-                                    ⚠ <%=request.getAttribute("confirmPasswordError")%>
-                                </div>
-                            <% } %>
                         </div>
+
 
 
                         <button type="submit"
                                 class="btn btn-danger w-100">
+
                             <i class="bi bi-check-circle-fill me-2"></i>
+
                             Đăng ký
+
                         </button>
+
 
                     </form>
 
 
+
                     <div class="text-center mt-4">
+
                         Đã có tài khoản?
+
                         <a href="${pageContext.request.contextPath}/login"
                            class="text-danger fw-semibold text-decoration-none">
+
                             Đăng nhập
+
                         </a>
+
                     </div>
 
 
@@ -198,4 +221,5 @@
 
 
 <%@ include file="../common/footer.jsp" %>
+
 <%@ include file="../common/script.jsp" %>
