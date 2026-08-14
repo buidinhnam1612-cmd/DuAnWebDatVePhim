@@ -98,32 +98,64 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // 2. Kiểm tra đăng nhập Khách hàng từ bảng KHACH_HANG (Đã sửa lỗi biến loginInput ở đây)
-        User user = userService.login(loginInput.trim(), password);
+        // 2. PHẦN KIỂM TRA ĐĂNG NHẬP KHÁCH HÀNG (Tách lỗi rõ ràng từng dòng theo yêu cầu)
 
-        if (user != null) {
+        // Tìm kiếm xem trong DB có tồn tại khách hàng nào trùng khớp với thông tin nhập vào hay không
+        List<User> matchedUsers = userService.searchUsers(loginInput.trim());
+        User userInDb = null;
 
-            // Kiểm tra trạng thái tài khoản
-            if ("Khóa".equals(user.getTrangThai())) {
-                request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
-                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
-                return;
+        // Lọc chính xác xem có ông nào khớp hoàn toàn TenDangNhap hoặc Email không
+        if (matchedUsers != null && !matchedUsers.isEmpty()) {
+            for (User u : matchedUsers) {
+                if (loginInput.trim().equalsIgnoreCase(u.getTenDangNhap()) || loginInput.trim().equalsIgnoreCase(u.getEmail())) {
+                    userInDb = u;
+                    break;
+                }
             }
+        }
 
-            HttpSession session = request.getSession();
-
-            session.setAttribute("user", user);
-            session.setAttribute("userName", user.getHoTen());
-            session.setAttribute("email", user.getEmail());
-            session.setAttribute("maKhachHang", user.getMaKhachHang());
-            session.setAttribute("role", "CUSTOMER");
-
-            response.sendRedirect(request.getContextPath() + "/home");
+        // Bước 2.1: Nếu KHÔNG tìm thấy bất kỳ tài khoản nào trùng khớp thông tin nhập vào
+        if (userInDb == null) {
+            request.setAttribute("emailError", "Tên đăng nhập hoặc Email này không tồn tại!");
+            request.setAttribute("oldLoginInput", loginInput);
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
             return;
         }
 
-        // Đăng nhập thất bại
-        request.setAttribute("error", "Email/Tên đăng nhập hoặc mật khẩu không đúng!");
-        request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+        // Bước 2.2: Nếu CÓ tài khoản tồn tại -> Tiến hành kiểm tra mật khẩu gõ vào
+        if (!userInDb.getMatKhau().equals(password)) {
+            request.setAttribute("passwordError", "Mật khẩu nhập vào không chính xác!");
+            request.setAttribute("oldLoginInput", loginInput); // Giữ lại chữ ở ô trên để không phải gõ lại
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Bước 2.3: Nếu đúng cả tài khoản và pass -> Tiến hành kiểm tra các trạng thái hệ thống
+
+        // Kiểm tra chặn trạng thái Chờ duyệt đăng nhập
+        if ("Chờ duyệt".equalsIgnoreCase(userInDb.getTrangThai())) {
+            request.setAttribute("error", "Tài khoản đang chờ Admin phê duyệt!");
+            request.setAttribute("oldLoginInput", loginInput);
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra trạng thái tài khoản bị khóa
+        if ("Khóa".equals(userInDb.getTrangThai())) {
+            request.setAttribute("error", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ hỗ trợ.");
+            request.setAttribute("oldLoginInput", loginInput);
+            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Đăng nhập thành công hoàn toàn -> Cấp session và điều hướng về trang chủ công khai
+        HttpSession session = request.getSession();
+        session.setAttribute("user", userInDb);
+        session.setAttribute("userName", userInDb.getHoTen());
+        session.setAttribute("email", userInDb.getEmail());
+        session.setAttribute("maKhachHang", userInDb.getMaKhachHang());
+        session.setAttribute("role", "CUSTOMER");
+
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 }

@@ -28,7 +28,7 @@ public class RegisterController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                           HttpServletResponse response)
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
@@ -50,9 +50,18 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra mật khẩu
+        // === BƯỚC 1: SỬA TẠI ĐÂY - KIỂM TRA TRÙNG EMAIL TRƯỚC ===
+        // Nếu email đã tồn tại trong hệ thống, bắn lỗi riêng biệt xuống ngay dưới chân ô nhập Email
+        if (userService.getUserByEmail(email.trim()) != null) {
+            request.setAttribute("emailError", "Email đăng ký này đã tồn tại trong hệ thống!");
+            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+            return;
+        }
+
+        // === BƯỚC 2: SỬA TẠI ĐÂY - KIỂM TRA MẬT KHẨU XÁC NHẬN ===
+        // Nếu gõ lại pass bị sai, bắn lỗi riêng biệt xuống dưới ô nhập Xác nhận mật khẩu để người dùng biết gõ lại
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("error", "Mật khẩu xác nhận không khớp!");
+            request.setAttribute("confirmPasswordError", "Mật khẩu xác nhận không trùng khớp!");
             request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
             return;
         }
@@ -65,10 +74,11 @@ public class RegisterController extends HttpServlet {
 
         boolean success = userService.register(user);
         if (success) {
-            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
+            request.setAttribute("success", "Đăng ký thành công! Vui lòng chờ Admin phê duyệt.");
             request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
         } else {
-            request.setAttribute("error", "Email đăng ký đã tồn tại hoặc đăng ký thất bại!");
+            // Lỗi hệ thống bất ngờ (Ví dụ: mất kết nối cơ sở dữ liệu)
+            request.setAttribute("error", "Hệ thống gặp sự cố, đăng ký thất bại!");
             request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
         }
     }
