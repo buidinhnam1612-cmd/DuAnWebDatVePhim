@@ -21,6 +21,43 @@
         .table th { background-color: #f8fafc; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 700; }
         .table td { vertical-align: middle; font-size: 14px; }
         .btn-action { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+        /* ===== Fix layout lệch hàng khi toggle quyền ===== */
+        .table tbody tr {
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            min-height: 56px;
+            height: 56px;
+        }
+        .table tbody tr td {
+            box-sizing: border-box;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .table tbody tr td:nth-child(1) { flex: 0 0 130px; }
+        .table tbody tr td:nth-child(2) { flex: 0 0 230px; }
+        .table tbody tr td:nth-child(3) { flex: 1 1 auto; }
+        .table tbody tr td:nth-child(4) { flex: 0 0 140px; justify-content: center; }
+        .table tbody tr td:nth-child(5) { flex: 0 0 140px; justify-content: center; }
+
+        .table thead tr {
+            display: flex;
+            align-items: center;
+        }
+        .table thead tr th:nth-child(1) { flex: 0 0 130px; }
+        .table thead tr th:nth-child(2) { flex: 0 0 230px; }
+        .table thead tr th:nth-child(3) { flex: 1 1 auto; }
+        .table thead tr th:nth-child(4) { flex: 0 0 140px; justify-content: center; }
+        .table thead tr th:nth-child(5) { flex: 0 0 140px; justify-content: center; }
+
+        .table td .badge,
+        .table td .btn,
+        .table td form {
+            box-sizing: border-box;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +163,7 @@
 <%
     if (employeePermissions != null && !employeePermissions.isEmpty()) {
         for (EmployeePermission ep : employeePermissions) {
+            if ("Q12".equals(ep.getMaQuyen())) continue;
             boolean isEnabled = (ep.getTrangThai() == 1);
 %>
                                 <tr>

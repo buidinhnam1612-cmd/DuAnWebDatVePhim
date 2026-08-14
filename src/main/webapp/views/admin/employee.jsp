@@ -222,8 +222,10 @@
                             <tbody>
 <%
 List<Employee> employeeList = (List<Employee>)request.getAttribute("employeeList");
+String loggedInMaNV = (String) session.getAttribute("maNhanVien");
 if(employeeList!=null && !employeeList.isEmpty()){
     for(Employee e : employeeList){
+        boolean isSelf = e.getMaNhanVien().equals(loggedInMaNV);
 %>
                                 <tr>
                                     <td class="ps-4 fw-semibold"><span class="badge bg-secondary"><%=e.getMaNhanVien()%></span></td>
@@ -240,23 +242,23 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <form action="${pageContext.request.contextPath}/admin/employee" method="post" class="d-flex align-items-center gap-1 mb-0">
                                                 <input type="hidden" name="maNhanVien" value="<%=e.getMaNhanVien()%>">
-                                                <select name="maVaiTro" class="form-select form-select-sm" style="width: 100px;">
+                                                <select name="maVaiTro" class="form-select form-select-sm" style="width: 100px;" <%= isSelf ? "disabled" : "" %>>
                                                     <option value="VT01" <%= "VT01".equals(e.getMaVaiTro()) ? "selected" : "" %>>Admin</option>
                                                     <option value="VT02" <%= "VT02".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên</option>
                                                 </select>
-                                                <button type="submit" name="action" value="updateRole" class="btn btn-sm btn-outline-primary btn-action" title="Đổi quyền"><i class="bi bi-person-gear"></i></button>
+                                                <button type="submit" name="action" value="updateRole" class="btn btn-sm btn-outline-primary btn-action" title="Đổi quyền" <%= isSelf ? "disabled" : "" %>><i class="bi bi-person-gear"></i></button>
                                             </form>
 
                                             <form action="${pageContext.request.contextPath}/admin/employee" method="post" class="d-flex align-items-center gap-1 mb-0">
                                                 <input type="hidden" name="maNhanVien" value="<%=e.getMaNhanVien()%>">
-                                                <select name="trangThai" class="form-select form-select-sm" style="width: 105px;">
+                                                <select name="trangThai" class="form-select form-select-sm" style="width: 105px;" <%= isSelf ? "disabled" : "" %>>
                                                     <option value="Hoạt động" <%= "Hoạt động".equals(e.getTrangThai()) ? "selected" : "" %>>Hoạt động</option>
                                                     <option value="Khóa" <%= "Khóa".equals(e.getTrangThai()) ? "selected" : "" %>>Khóa</option>
                                                 </select>
-                                                <button type="submit" name="action" value="updateStatus" class="btn btn-sm btn-outline-success btn-action" title="Cập nhật TT"><i class="bi bi-check2-circle"></i></button>
+                                                <button type="submit" name="action" value="updateStatus" class="btn btn-sm btn-outline-success btn-action" title="Cập nhật TT" <%= isSelf ? "disabled" : "" %>><i class="bi bi-check2-circle"></i></button>
                                             </form>
 
-                                            <% if (!"VT01".equals(e.getMaVaiTro())) { %>
+                                            <% if (!"VT01".equals(e.getMaVaiTro()) && !isSelf) { %>
                                             <a href="${pageContext.request.contextPath}/admin/employee/permission?maNhanVien=<%=e.getMaNhanVien()%>"
                                                class="btn btn-sm btn-outline-warning btn-action" title="Phân quyền">
                                                 <i class="bi bi-key"></i> Phân quyền
@@ -310,6 +312,7 @@ if(employeeList!=null && !employeeList.isEmpty()){
                         <%
                             String currentGroup = "";
                             for (Permission p : allPermissions) {
+                                if ("Q12".equals(p.getMaQuyen())) continue;
                                 String group = p.getNhomQuyen() != null ? p.getNhomQuyen() : "Khác";
                                 if (!group.equals(currentGroup)) {
                                     currentGroup = group;
@@ -318,6 +321,17 @@ if(employeeList!=null && !employeeList.isEmpty()){
                         <%
                                 }
                                 boolean checked = (empPermissions != null && empPermissions.contains(p.getMaQuyen()));
+
+                                // Auto-check mặc định theo vai trò khi chưa có dữ liệu quyền riêng
+                                if (empPermissions == null || empPermissions.isEmpty()) {
+                                    String maVT = editEmployee.getMaVaiTro();
+                                    String maQ = p.getMaQuyen();
+                                    if ("VT02".equals(maVT) && ("Q01".equals(maQ) || "Q10".equals(maQ) || "Q11".equals(maQ))) {
+                                        checked = true;
+                                    } else if ("VT03".equals(maVT) && "Q10".equals(maQ)) {
+                                        checked = true;
+                                    }
+                                }
                         %>
                         <div class="perm-item">
                             <input type="checkbox" name="permissions" value="<%= p.getMaQuyen() %>"
