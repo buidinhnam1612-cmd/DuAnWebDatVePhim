@@ -51,7 +51,7 @@
         <li class="nav-item">
             <a class="nav-link<%= "theater".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/theater">
-                <i class="bi bi-building me-2"></i> 1. Quản lý rạp phim
+                <i class="bi bi-building me-2"></i> Quản lý rạp phim
             </a>
         </li>
         <% } %>
@@ -60,7 +60,7 @@
         <li class="nav-item">
             <a class="nav-link<%= "genre".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/genre">
-                <i class="bi bi-tags me-2"></i> 2. Quản lý thể loại phim
+                <i class="bi bi-tags me-2"></i> Quản lý thể loại phim
             </a>
         </li>
         <% } %>
@@ -69,7 +69,7 @@
         <li class="nav-item">
             <a class="nav-link<%= "room".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/room">
-                <i class="bi bi-door-open me-2"></i> 3. Quản lý phòng phim
+                <i class="bi bi-door-open me-2"></i> Quản lý phòng phim
             </a>
         </li>
         <% } %>
@@ -83,7 +83,7 @@
         <li class="nav-item">
             <a class="nav-link<%= "movie".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/movie">
-                <i class="bi bi-camera-reels me-2"></i> 4. Quản lý phim
+                <i class="bi bi-camera-reels me-2"></i> Quản lý phim
             </a>
         </li>
         <% } %>
@@ -93,7 +93,7 @@
         <li class="nav-item">
             <a class="nav-link<%= "showtime".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/showtime">
-                <i class="bi bi-calendar3 me-2"></i> 5. Quản lý suất chiếu
+                <i class="bi bi-calendar3 me-2"></i> Quản lý suất chiếu
             </a>
         </li>
         <% } %>
@@ -112,12 +112,12 @@
         <li class="nav-item">
             <a class="nav-link<%= "booking".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/booking">
-                <i class="bi bi-ticket-detailed me-2"></i> 6. Quản lý đặt vé
+                <i class="bi bi-ticket-detailed me-2"></i> Quản lý đặt vé
             </a>
         </li>
         <% } %>
 
-        <%-- ===================== 7. XÁC NHẬN TRẠNG THÁI VÉ ===================== --%>
+        <%-- ===================== XÁC NHẬN TRẠNG THÁI VÉ ===================== --%>
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q02", "Q03", "CHECKIN_BOOKING", "MANAGE_BOOKING")) {
             boolean isConfirmActive = "confirmBooking".equals(request.getAttribute("currentPage"))
                                    || request.getRequestURI().contains("confirm-booking");
@@ -127,7 +127,7 @@
                 <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
             <% } %>
             <a class="nav-link" href="${pageContext.request.contextPath}/admin/confirm-booking">
-                <i class="bi bi-check2-circle me-2"></i> 7. Xác nhận trạng thái vé
+                <i class="bi bi-check2-circle me-2"></i> Xác nhận trạng thái vé
             </a>
         </li>
         <% } %>
@@ -160,7 +160,7 @@
         </li>
         <% } %>
 
-        <%-- ===================== 8. QUẢN LÝ NGƯỜI DÙNG ===================== --%>
+        <%-- ===================== QUẢN LÝ NGƯỜI DÙNG ===================== --%>
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_USER")) {
             boolean isUserActive = "user".equals(request.getAttribute("currentPage"));
         %>
@@ -169,7 +169,7 @@
                 <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
             <% } %>
             <a class="nav-link<%= isUserActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/user">
-                <i class="bi bi-people me-2"></i> 8. Quản lý người dùng
+                <i class="bi bi-people me-2"></i> Quản lý người dùng
             </a>
         </li>
         <% } %>
@@ -181,7 +181,7 @@
         <div class="menu-header">Hệ thống & Báo cáo</div>
         <% } %>
 
-        <%-- ===================== 9. NHÂN VIÊN & PHÂN QUYỀN ===================== --%>
+        <%-- ===================== NHÂN VIÊN & PHÂN QUYỀN ===================== --%>
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "Q15", "MANAGE_EMPLOYEE")) {
             boolean isEmployeeActive = "employee".equals(request.getAttribute("currentPage"));
         %>
@@ -190,12 +190,12 @@
                 <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
             <% } %>
             <a class="nav-link<%= isEmployeeActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/employee">
-                <i class="bi bi-shield-lock me-2"></i> 9. Nhân viên & Phân quyền
+                <i class="bi bi-shield-lock me-2"></i> Nhân viên & Phân quyền
             </a>
         </li>
         <% } %>
 
-        <%-- ===================== 10. THỐNG KÊ & BÁO CÁO ===================== --%>
+        <%-- ===================== THỐNG KÊ & BÁO CÁO ===================== --%>
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q13", "VIEW_REPORT", "VIEW_SHIFT_REPORT")) {
             boolean isReportActive = "report".equals(request.getAttribute("currentPage"));
         %>
@@ -204,7 +204,7 @@
                 <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4d4d;"></div>
             <% } %>
             <a class="nav-link<%= isReportActive ? " active" : "" %>" href="${pageContext.request.contextPath}/admin/report">
-                <i class="bi bi-bar-chart-line me-2"></i> 10. Thống kê & Báo cáo
+                <i class="bi bi-bar-chart-line me-2"></i> Thống kê & Báo cáo
             </a>
         </li>
         <% } %>

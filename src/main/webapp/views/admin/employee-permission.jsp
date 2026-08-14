@@ -165,33 +165,31 @@
         for (EmployeePermission ep : employeePermissions) {
             if ("Q12".equals(ep.getMaQuyen())) continue;
             boolean isEnabled = (ep.getTrangThai() == 1);
+            String cleanTenQuyen = ep.getTenQuyen() != null ? ep.getTenQuyen().replaceAll("^\\d+\\.\\s*", "") : "";
 %>
                                 <tr>
                                     <td class="ps-4 fw-bold"><span class="badge bg-dark"><%= ep.getMaQuyen() %></span></td>
-                                    <td class="fw-semibold text-dark"><%= ep.getTenQuyen() %></td>
+                                    <td class="fw-semibold text-dark"><%= cleanTenQuyen %></td>
                                     <td class="text-muted"><%= ep.getMoTa() != null ? ep.getMoTa() : "" %></td>
                                     <td class="text-center">
                                         <% if (isEnabled) { %>
-                                            <span class="badge bg-success px-3 py-2">BẬT</span>
+                                            <span class="badge bg-success px-3 py-2 fw-bold">BẬT</span>
                                         <% } else { %>
-                                            <span class="badge bg-secondary px-3 py-2">TẮT</span>
+                                            <span class="badge bg-secondary px-3 py-2 fw-bold">TẮT</span>
                                         <% } %>
                                     </td>
                                     <td class="text-center">
-                                        <form method="post" action="${pageContext.request.contextPath}/admin/employee/permission" class="m-0">
+                                        <form method="post" action="${pageContext.request.contextPath}/admin/employee/permission" class="m-0 d-flex align-items-center justify-content-center gap-2">
                                             <input type="hidden" name="maNhanVien" value="<%= employee.getMaNhanVien() %>">
                                             <input type="hidden" name="maQuyen" value="<%= ep.getMaQuyen() %>">
                                             <input type="hidden" name="trangThai" value="<%= isEnabled ? "0" : "1" %>">
                                             
-                                            <% if (isEnabled) { %>
-                                                <button type="submit" class="btn btn-sm btn-danger px-3 fw-bold shadow-sm">
-                                                    <i class="bi bi-x-circle me-1"></i> TẮT
-                                                </button>
-                                            <% } else { %>
-                                                <button type="submit" class="btn btn-sm btn-success px-3 fw-bold shadow-sm">
-                                                    <i class="bi bi-check-circle me-1"></i> BẬT
-                                                </button>
-                                            <% } %>
+                                            <div class="form-check form-switch m-0 p-0 d-flex align-items-center justify-content-center" style="min-height: auto;">
+                                                <input class="form-check-input ms-0" type="checkbox" role="switch" id="switch_<%= ep.getMaQuyen() %>"
+                                                       <%= isEnabled ? "checked" : "" %>
+                                                       onchange="this.form.submit()"
+                                                       style="cursor: pointer; width: 44px; height: 22px;">
+                                            </div>
                                         </form>
                                     </td>
                                 </tr>

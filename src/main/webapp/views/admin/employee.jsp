@@ -172,8 +172,8 @@
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold">Vai trò</label>
                                 <select class="form-select" name="maVaiTro">
-                                    <option value="VT02">Nhân viên</option>
-                                    <option value="VT01">Admin</option>
+                                    <option value="VT04">Nhân viên quầy</option>
+                                    <option value="VT02">Nhân viên rạp</option>
                                 </select>
                             </div>
                             <div class="col-12 d-flex align-items-end justify-content-end mt-4">
@@ -225,7 +225,7 @@ List<Employee> employeeList = (List<Employee>)request.getAttribute("employeeList
 String loggedInMaNV = (String) session.getAttribute("maNhanVien");
 if(employeeList!=null && !employeeList.isEmpty()){
     for(Employee e : employeeList){
-        boolean isSelf = e.getMaNhanVien().equals(loggedInMaNV);
+        boolean isSelf = e.getMaNhanVien().equals(loggedInMaNV) || "NV01".equalsIgnoreCase(e.getMaNhanVien());
 %>
                                 <tr>
                                     <td class="ps-4 fw-semibold"><span class="badge bg-secondary"><%=e.getMaNhanVien()%></span></td>
@@ -233,29 +233,30 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                     <td><%=e.getEmail()%></td>
                                     <td><%=e.getSoDienThoai()%></td>
                                     <td class="text-center">
-                                        <span class="badge <%= "VT01".equals(e.getMaVaiTro()) ? "bg-danger" : "bg-info text-dark" %>"><%=e.getTenVaiTro()%></span>
+                                        <span class="badge <%= "VT01".equals(e.getMaVaiTro()) ? "bg-danger" : "bg-info text-dark" %>"><%=e.getTenVaiTro() != null ? e.getTenVaiTro() : ("VT04".equals(e.getMaVaiTro()) ? "Nhân viên quầy" : ("VT02".equals(e.getMaVaiTro()) ? "Nhân viên rạp" : "Admin"))%></span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge <%= "Hoạt động".equals(e.getTrangThai()) ? "bg-success" : "bg-danger" %>"><%=e.getTrangThai()%></span>
+                                        <span class="badge <%= ("Hoạt động".equals(e.getTrangThai()) || "Đang làm việc".equals(e.getTrangThai())) ? "bg-success" : "bg-danger" %>"><%= "Hoạt động".equals(e.getTrangThai()) ? "Đang làm việc" : e.getTrangThai() %></span>
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <form action="${pageContext.request.contextPath}/admin/employee" method="post" class="d-flex align-items-center gap-1 mb-0">
                                                 <input type="hidden" name="maNhanVien" value="<%=e.getMaNhanVien()%>">
-                                                <select name="maVaiTro" class="form-select form-select-sm" style="width: 100px;" <%= isSelf ? "disabled" : "" %>>
+                                                <select name="maVaiTro" class="form-select form-select-sm" style="width: 140px;" <%= isSelf ? "disabled" : "" %>>
                                                     <option value="VT01" <%= "VT01".equals(e.getMaVaiTro()) ? "selected" : "" %>>Admin</option>
-                                                    <option value="VT02" <%= "VT02".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên</option>
+                                                    <option value="VT04" <%= "VT04".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên quầy</option>
+                                                    <option value="VT02" <%= "VT02".equals(e.getMaVaiTro()) ? "selected" : "" %>>Nhân viên rạp</option>
                                                 </select>
-                                                <button type="submit" name="action" value="updateRole" class="btn btn-sm btn-outline-primary btn-action" title="Đổi quyền" <%= isSelf ? "disabled" : "" %>><i class="bi bi-person-gear"></i></button>
+                                                <button type="submit" name="action" value="updateRole" class="btn btn-sm btn-outline-primary btn-action" title="Lưu" <%= isSelf ? "disabled" : "" %>><i class="bi bi-person-gear"></i> Lưu</button>
                                             </form>
 
                                             <form action="${pageContext.request.contextPath}/admin/employee" method="post" class="d-flex align-items-center gap-1 mb-0">
                                                 <input type="hidden" name="maNhanVien" value="<%=e.getMaNhanVien()%>">
-                                                <select name="trangThai" class="form-select form-select-sm" style="width: 105px;" <%= isSelf ? "disabled" : "" %>>
-                                                    <option value="Hoạt động" <%= "Hoạt động".equals(e.getTrangThai()) ? "selected" : "" %>>Hoạt động</option>
+                                                <select name="trangThai" class="form-select form-select-sm" style="width: 130px;" <%= isSelf ? "disabled" : "" %>>
+                                                    <option value="Hoạt động" <%= ("Hoạt động".equals(e.getTrangThai()) || "Đang làm việc".equals(e.getTrangThai())) ? "selected" : "" %>>Đang làm việc</option>
                                                     <option value="Khóa" <%= "Khóa".equals(e.getTrangThai()) ? "selected" : "" %>>Khóa</option>
                                                 </select>
-                                                <button type="submit" name="action" value="updateStatus" class="btn btn-sm btn-outline-success btn-action" title="Cập nhật TT" <%= isSelf ? "disabled" : "" %>><i class="bi bi-check2-circle"></i></button>
+                                                <button type="submit" name="action" value="updateStatus" class="btn btn-sm btn-outline-success btn-action" title="Cập nhật TT" <%= isSelf ? "disabled" : "" %>><i class="bi bi-check2-circle"></i> Lưu</button>
                                             </form>
 
                                             <% if (!"VT01".equals(e.getMaVaiTro()) && !isSelf) { %>
@@ -326,19 +327,21 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                 if (empPermissions == null || empPermissions.isEmpty()) {
                                     String maVT = editEmployee.getMaVaiTro();
                                     String maQ = p.getMaQuyen();
-                                    if ("VT02".equals(maVT) && ("Q01".equals(maQ) || "Q10".equals(maQ) || "Q11".equals(maQ))) {
+                                    if ("VT04".equals(maVT) && ("Q01".equals(maQ) || "Q09".equals(maQ) || "Q10".equals(maQ) || "Q15".equals(maQ))) {
                                         checked = true;
-                                    } else if ("VT03".equals(maVT) && "Q10".equals(maQ)) {
+                                    } else if ("VT02".equals(maVT) && ("Q01".equals(maQ) || "Q09".equals(maQ))) {
                                         checked = true;
                                     }
                                 }
+
+                                String cleanTenQuyen = p.getTenQuyen() != null ? p.getTenQuyen().replaceAll("^\\d+\\.\\s*", "") : "";
                         %>
                         <div class="perm-item">
                             <input type="checkbox" name="permissions" value="<%= p.getMaQuyen() %>"
                                    id="perm_<%= p.getMaQuyen() %>"
                                    <%= checked ? "checked" : "" %>>
                             <label for="perm_<%= p.getMaQuyen() %>">
-                                <strong><%= p.getTenQuyen() %></strong>
+                                <strong><%= cleanTenQuyen %></strong>
                                 <br><span class="perm-desc"><%= p.getMoTa() != null ? p.getMoTa() : "" %></span>
                             </label>
                         </div>
