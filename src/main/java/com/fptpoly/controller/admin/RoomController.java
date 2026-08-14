@@ -38,10 +38,29 @@ public class RoomController extends HttpServlet {
             String maRap = request.getParameter("maRap");
             int soHang = Integer.parseInt(request.getParameter("soHang"));
             int soCot = Integer.parseInt(request.getParameter("soCot"));
-            String loaiGhe = request.getParameter("loaiGhe");
+
+            String[] hangGhes = request.getParameterValues("hangGhes[]");
+            String[] soGhes = request.getParameterValues("soGhes[]");
+            String[] loaiGhes = request.getParameterValues("loaiGhes[]");
+
+            List<com.fptpoly.model.Seat> seats = new java.util.ArrayList<>();
+            
+            if (hangGhes != null && soGhes != null && loaiGhes != null) {
+                for (int i = 0; i < hangGhes.length; i++) {
+                    com.fptpoly.model.Seat seat = new com.fptpoly.model.Seat();
+                    seat.setMaPhong(maPhong);
+                    seat.setHangGhe(hangGhes[i]);
+                    seat.setSoGhe(Integer.parseInt(soGhes[i]));
+                    seat.setLoaiGhe(loaiGhes[i]);
+                    seat.setMaGhe(maPhong + "_" + hangGhes[i] + soGhes[i]);
+                    seats.add(seat);
+                }
+            }
+
+            Room room = new Room(maPhong, tenPhong, seats.size(), maRap, soHang, soCot);
 
             // Gọi tầng Service xử lý tạo phòng & ma trận ghế
-            boolean isSuccess = roomService.createRoomWithMatrix(maPhong, tenPhong, maRap, soHang, soCot, loaiGhe);
+            boolean isSuccess = roomService.createRoomWithMatrix(room, seats);
 
             if (isSuccess) {
                 response.sendRedirect(request.getContextPath() + "/admin/room?status=success");
