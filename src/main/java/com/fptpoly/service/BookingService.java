@@ -68,4 +68,18 @@ public class BookingService {
     public boolean confirmBooking(String maDatVe) {
         return bookingRepository.confirmBooking(maDatVe);
     }
+
+    /**
+     * Đếm số vé đặt hôm nay
+     */
+    public int countTodayBookings() {
+        return bookingRepository.countTodayBookings();
+    }
+
+    /**
+     * Tính doanh thu tháng này (chỉ tính vé đã thanh toán)
+     */
+    public double getMonthlyRevenue() {
+        return bookingRepository.getMonthlyRevenue();
+    }
 }

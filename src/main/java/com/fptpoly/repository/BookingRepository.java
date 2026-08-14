@@ -213,6 +213,40 @@ public class BookingRepository {
         return 0.0;
     }
 
+    // ===================== ĐẾM SỐ VÉ ĐẶT HÔM NAY =====================
+    public int countTodayBookings() {
+        String sql = "SELECT COUNT(*) FROM DAT_VE WHERE CAST(ThoiGianDat AS DATE) = CAST(GETDATE() AS DATE)";
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // ===================== TÍNH DOANH THU THÁNG NÀY =====================
+    public double getMonthlyRevenue() {
+        String sql = "SELECT COALESCE(SUM(TongTien), 0) FROM DAT_VE WHERE TrangThai = N'Đã thanh toán' AND MONTH(ThoiGianDat) = MONTH(GETDATE()) AND YEAR(ThoiGianDat) = YEAR(GETDATE())";
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
     // ===================== XÁC NHẬN KHÁCH ĐÃ SỬ DỤNG VÉ (SOÁT VÉ ONLINE) =====================
     public boolean confirmBooking(String maDatVe) {
         String sql = """

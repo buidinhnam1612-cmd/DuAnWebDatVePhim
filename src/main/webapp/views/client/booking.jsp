@@ -23,7 +23,7 @@
 
             <div class="col-lg-8">
 
-                <h1 class="booking-step-title mb-2" style="font-size: 32px; color: #ffffff !important;">
+                <h1 class="booking-step-title mb-2" style="font-size: 32px;">
                     <i class="bi bi-ticket-perforated text-warning me-2"></i>
                     <c:choose>
                         <c:when test="${not empty movie}">${movie.tenPhim}</c:when>
