@@ -17,18 +17,18 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
+    public Room getRoomById(String maPhong) {
+        return roomRepository.findById(maPhong);
+    }
+
     // Xử lý nghiệp vụ thêm phòng và cấu hình ghế tự động
-    public boolean createRoomWithMatrix(String maPhong, String tenPhong, String maRap, int soHang, int soCot, String loaiGhe) {
+    public boolean createRoomWithMatrix(Room room, List<com.fptpoly.model.Seat> seats) {
         // Kiểm tra dữ liệu đầu vào cơ bản
-        if (maPhong == null || maPhong.trim().isEmpty() || soHang <= 0 || soCot <= 0) {
+        if (room == null || room.getMaPhong() == null || room.getMaPhong().trim().isEmpty() || room.getSoHang() <= 0 || room.getSoCot() <= 0) {
             return false;
         }
 
-        // Logic nghiệp vụ: Tổng số ghế = Số hàng x Số cột
-        int tongSoGhe = soHang * soCot;
-
-        Room phong = new Room(maPhong, tenPhong, tongSoGhe, maRap);
-        return roomRepository.saveRoomAndSeats(phong, soHang, soCot, loaiGhe);
+        return roomRepository.saveRoomAndSeats(room, seats);
     }
 }
 

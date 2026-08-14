@@ -48,7 +48,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="${pageContext.request.contextPath}/booking?maSuatChieu=SC01">
+                       href="${pageContext.request.contextPath}/booking">
                         Đặt vé
                     </a>
                 </li>
@@ -69,17 +69,6 @@
 
             </ul>
 
-            <!-- Search -->
-            <form class="d-flex me-3"
-                  action="${pageContext.request.contextPath}/movies"
-                  method="get">
-
-                <input class="form-control search-box"
-                       type="search"
-                       name="keyword"
-                       placeholder="🔍 Tìm phim...">
-
-            </form>
 
             <c:choose>
                 <c:when test="${not empty sessionScope.user}">

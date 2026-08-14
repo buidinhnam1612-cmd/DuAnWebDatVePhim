@@ -5,8 +5,19 @@ public class Room {
     private String tenPhong;
     private int tongSoGhe;
     private String maRap;
+    private int soHang;
+    private int soCot;
 
     public Room() {
+    }
+
+    public Room(String maPhong, String tenPhong, int tongSoGhe, String maRap, int soHang, int soCot) {
+        this.maPhong = maPhong;
+        this.tenPhong = tenPhong;
+        this.tongSoGhe = tongSoGhe;
+        this.maRap = maRap;
+        this.soHang = soHang;
+        this.soCot = soCot;
     }
 
     public Room(String maPhong, String tenPhong, int tongSoGhe, String maRap) {
@@ -46,5 +57,21 @@ public class Room {
 
     public void setMaRap(String maRap) {
         this.maRap = maRap;
+    }
+
+    public int getSoHang() {
+        return soHang;
+    }
+
+    public void setSoHang(int soHang) {
+        this.soHang = soHang;
+    }
+
+    public int getSoCot() {
+        return soCot;
+    }
+
+    public void setSoCot(int soCot) {
+        this.soCot = soCot;
     }
 }

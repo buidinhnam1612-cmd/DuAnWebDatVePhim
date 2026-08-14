@@ -158,7 +158,7 @@
                 <span class="badge bg-danger fs-6 mb-3">HOT MOVIE</span>
                 <h1>THE REVENANT</h1>
                 <p>Blood Lost. Life Found. Trải nghiệm điện ảnh đỉnh cao tại FPT CINEMA.</p>
-                <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC01" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
+                <a href="${pageContext.request.contextPath}/booking?maPhim=M01" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
                 <a href="#" class="btn btn-outline-light btn-lg">Trailer</a>
             </div>
         </div>
@@ -168,7 +168,7 @@
                 <span class="badge bg-primary fs-6 mb-3">ANIME HIT</span>
                 <h1>DETECTIVE CONAN</h1>
                 <p>Hành trình phá án nghẹt thở của thám tử lừng danh Conan.</p>
-                <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC03" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
+                <a href="${pageContext.request.contextPath}/booking?maPhim=M02" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
             </div>
         </div>
         <div class="carousel-item">
@@ -177,7 +177,7 @@
                 <span class="badge bg-success fs-6 mb-3">NOW SHOWING</span>
                 <h1>AVATAR 3: FIRE & ASH</h1>
                 <p>Kháp phá bộ tộc tro tàn kỳ bí trên hành tinh Pandora xinh đẹp.</p>
-                <a href="${pageContext.request.contextPath}/booking?maSuatChieu=SC02" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
+                <a href="${pageContext.request.contextPath}/booking?maPhim=M03" class="btn btn-warning btn-lg me-2">Đặt vé ngay</a>
             </div>
         </div>
     </div>
@@ -186,42 +186,7 @@
 <!-- ==========================
      SEARCH BAR
 ========================== -->
-<section class="container" style="padding: 40px 0 20px;">
-    <div class="movie-search-box" style="margin-top: -80px;">
-        <div class="row g-3">
-            <div class="col-lg-3">
-                <label class="form-label">Thể loại</label>
-                <select class="form-select" name="maTheLoai">
-                    <option value="">Tất cả</option>
-                    <c:forEach var="tl" items="${listTheLoai}">
-                        <c:if test="${not tl.tenTheLoai.contains('(Đã khóa)')}">
-                            <option value="${tl.maTheLoai}">${tl.tenTheLoai}</option>
-                        </c:if>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">Rạp</label>
-                <select class="form-select" name="maRap">
-                    <option value="">Tất cả rạp</option>
-                    <c:forEach var="r" items="${listRap}">
-                        <option value="${r.maRap}">${r.tenRap}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">Ngày chiếu</label>
-                <input type="date" class="form-control">
-            </div>
-            <div class="col-lg-3 d-grid">
-                <label class="form-label">&nbsp;</label>
-                <button class="btn btn-danger">
-                    <i class="bi bi-search me-2"></i> TÌM KIẾM
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <!-- ==========================
      MOVIES LIST (MOCKUP CINEMA STYLE)
@@ -247,9 +212,9 @@
                          alt="${m.tenPhim}">
                         <div class="mockup-rating-badge">
                             <c:choose>
-                                <c:when test="${m.maPhim == 'M01'}">⭐ 9.2</c:when>
-                                <c:when test="${m.maPhim == 'M02'}">⭐ 8.8</c:when>
-                                <c:otherwise>⭐ 9.0</c:otherwise>
+                                <c:when test="${m.maPhim == 'M01'}">⭐ 5.0</c:when>
+                                <c:when test="${m.maPhim == 'M02'}">⭐ 3.9</c:when>
+                                <c:otherwise>⭐ 4.5</c:otherwise>
                             </c:choose>
                         </div>
                     </div>

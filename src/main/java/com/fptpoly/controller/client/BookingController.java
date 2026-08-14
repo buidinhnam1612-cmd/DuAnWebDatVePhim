@@ -34,6 +34,7 @@ public class BookingController extends HttpServlet {
     private final ShowtimeRepository showtimeRepository = new ShowtimeRepository();
     private final MovieService movieService = new MovieService();
     private final SeatService seatService = new SeatService();
+    private final com.fptpoly.service.RoomService roomService = new com.fptpoly.service.RoomService();
     private final BookingDetailRepository bookingDetailRepository = new BookingDetailRepository();
     private final BookingRepository bookingRepository = new BookingRepository();
     private final CustomerFoodService customerFoodService = new CustomerFoodService();
@@ -47,24 +48,35 @@ public class BookingController extends HttpServlet {
 
         String maSuatChieu = request.getParameter("maSuatChieu");
         if (maSuatChieu == null || maSuatChieu.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/home");
+            // Bước 1: Cho khách hàng chọn Phim & Suất Chiếu (Lotte Cinema style)
+            String maPhim = request.getParameter("maPhim");
+            List<Movie> listPhim = movieService.getAll();
+            List<Showtime> listSuatChieu = showtimeRepository.getAll();
+
+            request.setAttribute("listPhim", listPhim);
+            request.setAttribute("listSuatChieu", listSuatChieu);
+            request.setAttribute("selectedMovieId", maPhim);
+
+            request.getRequestDispatcher("/views/client/select-showtime.jsp").forward(request, response);
             return;
         }
 
         Showtime showtime = showtimeRepository.getById(maSuatChieu);
         if (showtime == null) {
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/booking");
             return;
         }
 
         Movie movie = movieService.getByID(showtime.getMaPhim());
         List<Seat> seatList = seatService.getSeatsByRoom(showtime.getMaPhong());
         List<String> bookedSeat = bookingDetailRepository.findSeatBookedByShowtime(maSuatChieu);
+        com.fptpoly.model.Room room = roomService.getRoomById(showtime.getMaPhong());
 
         request.setAttribute("showtime", showtime);
         request.setAttribute("movie", movie);
         request.setAttribute("seatList", seatList);
         request.setAttribute("bookedSeat", bookedSeat);
+        request.setAttribute("room", room);
         request.setAttribute("maPhong", showtime.getMaPhong());
         request.setAttribute("maSuatChieu", maSuatChieu);
         request.setAttribute("listFoods", customerFoodService.getActiveFoods());

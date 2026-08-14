@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -23,21 +25,15 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .seat-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            max-w-600px;
-            margin: 0 auto;
-        }
+        .seat-map-container { overflow-x: auto; padding: 20px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
+        .seat-row { display: flex; justify-content: center; margin-bottom: 10px; align-items: center; }
+        .row-label { width: 30px; font-weight: bold; color: #64748b; margin-right: 15px; }
 
-        .seat-box {
-            aspect-ratio: 1;
-            border-radius: 8px;
+        .seat-cell {
+            width: 35px; height: 35px; margin: 0 4px; border-radius: 8px 8px 4px 4px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700;
-            border: 1px solid rgba(0,0,0,0.1);
-            user-select: none;
+            font-size: 11px; font-weight: bold; color: white;
+            user-select: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .seat-empty { background-color: #e2e8f0; color: #334155; }
         .seat-booked { background-color: #ef4444; color: white; }
@@ -75,9 +71,11 @@
                     <form action="${pageContext.request.contextPath}/admin/seat" method="get" class="d-flex align-items-center gap-3">
                         <label class="fw-bold text-dark">Chọn phòng chiếu:</label>
                         <select name="maPhong" class="form-select w-auto" onchange="this.form.submit()">
-                            <option value="P01" ${selectedRoom == 'P01' ? 'selected' : ''}>Phòng 01 - IMAX</option>
-                            <option value="P02" ${selectedRoom == 'P02' ? 'selected' : ''}>Phòng 02 - 3D Cinema</option>
-                            <option value="P03" ${selectedRoom == 'P03' ? 'selected' : ''}>Phòng 03 - 2D Standard</option>
+                            <c:forEach var="r" items="${roomList}">
+                                <option value="${r.maPhong}" ${selectedRoom == r.maPhong ? 'selected' : ''}>
+                                    ${r.tenPhong} (${r.tongSoGhe} ghế)
+                                </option>
+                            </c:forEach>
                         </select>
                         <noscript><button type="submit" class="btn btn-primary">Xem</button></noscript>
                     </form>
@@ -87,45 +85,68 @@
             <!-- CHÚ THÍCH -->
             <div class="card content-card mb-4">
                 <div class="card-body d-flex justify-content-center gap-4 flex-wrap">
-                    <div><span class="legend-box seat-empty"></span> Ghế trống</div>
-                    <div><span class="legend-box seat-booked"></span> Đã đặt</div>
-                    <div><span class="legend-box seat-vip"></span> Ghế VIP</div>
-                    <div><span class="legend-box seat-holding"></span> Đang giữ ghế</div>
+                    <div><span class="legend-box seat-holding"></span> Thường</div>
+                    <div><span class="legend-box seat-booked"></span> VIP</div>
+                    <div><span class="legend-box" style="background:#ec4899"></span> Sweetbox</div>
+                    <div><span class="legend-box seat-empty" style="background:transparent; border:1px dashed #cbd5e1;"></span> Trống / Lối đi</div>
                 </div>
             </div>
 
             <!-- SƠ ĐỒ GHẾ -->
-            <div class="card content-card">
-                <div class="card-body p-4 text-center">
-                    <div class="screen-banner">MÀN HÌNH CHIẾU (SCREEN)</div>
+            <c:if test="${not empty room}">
+                <div class="card content-card">
+                    <div class="card-body p-4 text-center">
+                        <div class="screen-banner">MÀN HÌNH CHIẾU (SCREEN)</div>
 
-                    <div class="seat-grid mb-4">
-                        <%
-                        String[] rows = {"A", "B", "C", "D", "E", "F"};
-                        for (String r : rows) {
-                            for (int col = 1; col <= 10; col++) {
-                                String seatCode = r + col;
-                                String seatClass = "seat-empty";
-
-                                // Giả lập trạng thái ghế cho minh họa sơ đồ
-                                if ("A3".equals(seatCode) || "A4".equals(seatCode) || "C5".equals(seatCode) || "C6".equals(seatCode) || "D8".equals(seatCode)) {
-                                    seatClass = "seat-booked";
-                                } else if ("C".equals(r) || "D".equals(r)) {
-                                    seatClass = "seat-vip";
-                                } else if ("B2".equals(seatCode) || "B3".equals(seatCode)) {
-                                    seatClass = "seat-holding";
+                        <div class="seat-map-container mb-4">
+                            <%
+                                com.fptpoly.model.Room currentRoom = (com.fptpoly.model.Room) request.getAttribute("room");
+                                java.util.Map<String, com.fptpoly.model.Seat> seatMap = (java.util.Map<String, com.fptpoly.model.Seat>) request.getAttribute("seatMap");
+                                
+                                if (currentRoom != null && seatMap != null) {
+                                    for (int i = 0; i < currentRoom.getSoHang(); i++) {
+                                        String rowLabel = String.valueOf((char) ('A' + i));
+                            %>
+                            <div class="seat-row">
+                                <div class="row-label"><%= rowLabel %></div>
+                            <%
+                                        for (int j = 1; j <= currentRoom.getSoCot(); j++) {
+                                            String key = rowLabel + "_" + j;
+                                            com.fptpoly.model.Seat seat = seatMap.get(key);
+                                            
+                                            String seatClass = "seat-empty";
+                                            String style = "";
+                                            String content = "";
+                                            
+                                            if (seat != null) {
+                                                content = j + "";
+                                                if ("VIP".equals(seat.getLoaiGhe())) {
+                                                    seatClass = "seat-booked"; // VIP = Red
+                                                } else if ("Sweetbox".equals(seat.getLoaiGhe())) {
+                                                    seatClass = "";
+                                                    style = "background-color: #ec4899; color: white;"; // Pink
+                                                } else {
+                                                    seatClass = "seat-holding"; // Thường = Blue
+                                                }
+                                            } else {
+                                                style = "background-color: transparent; border: 1px dashed #cbd5e1;";
+                                            }
+                            %>
+                                <div class="seat-cell <%= seatClass %>" style="<%= style %>" title="<%= (seat != null) ? "Ghế " + rowLabel + j + " (" + seat.getLoaiGhe() + ")" : "Trống" %>">
+                                    <%= content %>
+                                </div>
+                            <%
+                                        }
+                            %>
+                            </div>
+                            <%
+                                    }
                                 }
-                        %>
-                        <div class="seat-box <%= seatClass %>" title="Ghế <%= seatCode %>">
-                            <%= seatCode %>
+                            %>
                         </div>
-                        <%
-                            }
-                        }
-                        %>
                     </div>
                 </div>
-            </div>
+            </c:if>
 
         </div>
     </div>
