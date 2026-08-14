@@ -58,6 +58,48 @@
             box-sizing: border-box;
             line-height: 1;
         }
+        .permission-form {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .permission-toggle {
+            position: relative;
+            width: 44px;
+            height: 22px;
+            padding: 0;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: 0.2s ease;
+        }
+
+        .permission-toggle-on {
+            background-color: #198754;
+        }
+
+        .permission-toggle-off {
+            background-color: #adb5bd;
+        }
+
+        .permission-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            transition: 0.2s ease;
+        }
+
+        .permission-toggle-on .permission-toggle-slider {
+            left: 25px;
+        }
     </style>
 </head>
 <body>
@@ -179,17 +221,29 @@
                                         <% } %>
                                     </td>
                                     <td class="text-center">
-                                        <form method="post" action="${pageContext.request.contextPath}/admin/employee/permission" class="m-0 d-flex align-items-center justify-content-center gap-2">
-                                            <input type="hidden" name="maNhanVien" value="<%= employee.getMaNhanVien() %>">
-                                            <input type="hidden" name="maQuyen" value="<%= ep.getMaQuyen() %>">
-                                            <input type="hidden" name="trangThai" value="<%= isEnabled ? "0" : "1" %>">
-                                            
-                                            <div class="form-check form-switch m-0 p-0 d-flex align-items-center justify-content-center" style="min-height: auto;">
-                                                <input class="form-check-input ms-0" type="checkbox" role="switch" id="switch_<%= ep.getMaQuyen() %>"
-                                                       <%= isEnabled ? "checked" : "" %>
-                                                       onchange="this.form.submit()"
-                                                       style="cursor: pointer; width: 44px; height: 22px;">
-                                            </div>
+                                        <form method="post"
+                                              action="${pageContext.request.contextPath}/admin/employee/permission"
+                                              class="permission-form">
+
+                                            <input type="hidden"
+                                                   name="maNhanVien"
+                                                   value="<%= employee.getMaNhanVien() %>">
+
+                                            <input type="hidden"
+                                                   name="maQuyen"
+                                                   value="<%= ep.getMaQuyen() %>">
+
+                                            <input type="hidden"
+                                                   name="trangThai"
+                                                   value="<%= isEnabled ? "0" : "1" %>">
+
+                                            <button type="submit"
+                                                    name="permissionToggle"
+                                                    value="<%= isEnabled ? "0" : "1" %>"
+                                                    class="permission-toggle <%= isEnabled ? "permission-toggle-on" : "permission-toggle-off" %>"
+                                                    aria-label="<%= isEnabled ? "Tắt quyền" : "Bật quyền" %>">
+                                                <span class="permission-toggle-slider"></span>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>

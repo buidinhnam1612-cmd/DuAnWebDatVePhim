@@ -47,7 +47,7 @@
         <div class="menu-header">Hạ tầng & Danh mục</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q08", "MANAGE_THEATER")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q02", "MANAGE_THEATER")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "theater".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/theater">
@@ -56,7 +56,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q06", "MANAGE_GENRE")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q03", "MANAGE_GENRE")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "genre".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/genre">
@@ -65,7 +65,7 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q09", "MANAGE_ROOM")) { %>
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_ROOM")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "room".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/room">
@@ -75,7 +75,7 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q05", "Q07", "MANAGE_MOVIE", "MANAGE_SHOWTIME", "VIEW_SHOWTIME")) { %>
+                "Q06", "VIEW_SHOWTIME", "MANAGE_SHOWTIME")) { %>
         <div class="menu-header">Phim & Lịch chiếu</div>
         <% } %>
 
@@ -88,8 +88,8 @@
         </li>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q07", "VIEW_SHOWTIME", "MANAGE_SHOWTIME")) { %>
+<% if (hasAnyPerm(sidebarRole, sidebarPermissions,
+        "Q06", "VIEW_SHOWTIME", "MANAGE_SHOWTIME")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "showtime".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/showtime">
@@ -99,16 +99,14 @@
         <% } %>
 
         <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q02", "Q03", "Q04", "Q10", "Q11", "Q12",
-                "VIEW_BOOKING", "CHECKIN_BOOKING", "CANCEL_BOOKING", "CHANGE_BOOKING",
-                "MANAGE_BOOKING", "MANAGE_USER", "VIEW_SEAT",
-                "VIEW_FOOD", "MANAGE_FOOD")) { %>
+                "Q07", "VIEW_BOOKING", "CHECKIN_BOOKING",
+                "CANCEL_BOOKING", "CHANGE_BOOKING", "MANAGE_BOOKING")) { %>
         <div class="menu-header">Kinh doanh & Thành viên</div>
         <% } %>
 
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
-                "Q02", "Q03", "VIEW_BOOKING", "CHECKIN_BOOKING", "CANCEL_BOOKING",
-                "CHANGE_BOOKING", "MANAGE_BOOKING")) { %>
+<% if (hasAnyPerm(sidebarRole, sidebarPermissions,
+        "Q07", "VIEW_BOOKING", "CHECKIN_BOOKING",
+        "CANCEL_BOOKING", "CHANGE_BOOKING", "MANAGE_BOOKING")) { %>
         <li class="nav-item">
             <a class="nav-link<%= "booking".equals(request.getAttribute("currentPage")) ? " active" : "" %>"
                href="${pageContext.request.contextPath}/admin/booking">
@@ -118,7 +116,8 @@
         <% } %>
 
         <%-- ===================== XÁC NHẬN TRẠNG THÁI VÉ ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q02", "Q03", "CHECKIN_BOOKING", "MANAGE_BOOKING")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions,
+                "Q08", "CHECKIN_BOOKING", "MANAGE_BOOKING")) {
             boolean isConfirmActive = "confirmBooking".equals(request.getAttribute("currentPage"))
                                    || request.getRequestURI().contains("confirm-booking");
         %>
@@ -133,7 +132,7 @@
         <% } %>
 
         <%-- ===================== SƠ ĐỒ GHẾ ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q10", "VIEW_SEAT")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q09", "VIEW_SEAT")) {
             boolean isSeatActive = "seat".equals(request.getAttribute("currentPage"));
         %>
         <li class="nav-item <%= isSeatActive ? "active" : "" %>" style="position: relative;">
@@ -147,7 +146,7 @@
         <% } %>
 
         <%-- ===================== QUẢN LÝ ĐỒ ĂN ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q11", "VIEW_FOOD", "MANAGE_FOOD")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q10", "VIEW_FOOD", "MANAGE_FOOD")) {
             boolean isFoodActive = "food".equals(request.getAttribute("currentPage"));
         %>
         <li class="nav-item <%= isFoodActive ? "active" : "" %>" style="position: relative;">
@@ -161,7 +160,7 @@
         <% } %>
 
         <%-- ===================== QUẢN LÝ NGƯỜI DÙNG ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q04", "MANAGE_USER")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q11", "MANAGE_USER")) {
             boolean isUserActive = "user".equals(request.getAttribute("currentPage"));
         %>
         <li class="nav-item <%= isUserActive ? "active" : "" %>" style="position: relative;">
@@ -182,7 +181,7 @@
         <% } %>
 
         <%-- ===================== NHÂN VIÊN & PHÂN QUYỀN ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "Q15", "MANAGE_EMPLOYEE")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q14", "MANAGE_EMPLOYEE")) {
             boolean isEmployeeActive = "employee".equals(request.getAttribute("currentPage"));
         %>
         <li class="nav-item <%= isEmployeeActive ? "active" : "" %>" style="position: relative;">
@@ -210,7 +209,7 @@
         <% } %>
 
         <%-- ===================== KIỂM DUYỆT BÌNH LUẬN (Đã sửa lỗi phân quyền ẩn menu) ===================== --%>
-        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q13", "Q14", "Q15", "VIEW_COMMENT", "MODERATE_COMMENT")) {
+        <% if (hasAnyPerm(sidebarRole, sidebarPermissions, "Q15", "VIEW_COMMENT", "MODERATE_COMMENT")) {
             boolean isCommentActive = "comment".equals(request.getAttribute("currentPage"))
                                    || request.getRequestURI().contains("comment");
         %>

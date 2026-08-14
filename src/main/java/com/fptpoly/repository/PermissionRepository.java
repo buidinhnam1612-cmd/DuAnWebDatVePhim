@@ -113,20 +113,20 @@ public class PermissionRepository {
 
         List<Permission> defaultPermissions = List.of(
                 new Permission("Q01", "Xem Dashboard", "Được phép xem trang tổng quan hệ thống"),
-                new Permission("Q02", "Quản lý đặt vé", "Xem và cập nhật danh sách đặt vé"),
-                new Permission("Q03", "Bán vé trực tiếp", "Bán vé và in vé trực tiếp tại rạp"),
-                new Permission("Q04", "Quản lý khách hàng", "Xem và quản lý thông tin khách hàng"),
+                new Permission("Q02", "Quản lý rạp phim", "Quản lý thông tin các cụm rạp"),
+                new Permission("Q03", "Quản lý thể loại phim", "Quản lý danh mục thể loại phim"),
+                new Permission("Q04", "Quản lý phòng phim", "Quản lý danh sách phòng chiếu"),
                 new Permission("Q05", "Quản lý phim", "Thêm, sửa, xóa danh sách phim"),
-                new Permission("Q06", "Quản lý thể loại", "Quản lý danh mục thể loại phim"),
-                new Permission("Q07", "Quản lý suất chiếu", "Tạo và cập nhật suất chiếu"),
-                new Permission("Q08", "Quản lý rạp", "Quản lý thông tin các cụm rạp"),
-                new Permission("Q09", "Quản lý phòng chiếu", "Quản lý danh sách phòng chiếu"),
-                new Permission("Q10", "Quản lý ghế", "Quản lý sơ đồ và trạng thái ghế"),
-                new Permission("Q11", "Quản lý đồ ăn", "Quản lý danh mục đồ ăn và đồ uống"),
-                new Permission("Q12", "Quản lý voucher", "Quản lý mã giảm giá và khuyến mãi"),
-                new Permission("Q13", "Xem báo cáo doanh thu", "Xem báo cáo doanh thu theo ngày, ca, rạp"),
-                new Permission("Q14", "Quản lý nhân viên", "Quản lý danh sách tài khoản nhân viên"),
-                new Permission("Q15", "Phân quyền nhân viên", "Bật/tắt quyền riêng cho từng nhân viên")
+                new Permission("Q06", "Quản lý suất chiếu", "Tạo và cập nhật suất chiếu"),
+                new Permission("Q07", "Quản lý đặt vé", "Xem và cập nhật danh sách đặt vé"),
+                new Permission("Q08", "Xác nhận trạng thái vé", "Xác nhận và cập nhật trạng thái vé"),
+                new Permission("Q09", "Sơ đồ ghế", "Xem và quản lý sơ đồ, trạng thái ghế"),
+                new Permission("Q10", "Quản lý đồ ăn", "Quản lý danh mục đồ ăn và đồ uống"),
+                new Permission("Q11", "Quản lý người dùng", "Xem và quản lý thông tin người dùng"),
+                new Permission("Q12", "Thống kê & Báo cáo", "Xem báo cáo thống kê và doanh thu"),
+                new Permission("Q13", "Quyền quản lý ca", "Quản lý thông tin ca làm việc"),
+                new Permission("Q14", "Nhân viên & Phân quyền", "Quản lý tài khoản và phân quyền nhân viên"),
+                new Permission("Q15", "Kiểm duyệt bình luận", "Kiểm duyệt và quản lý bình luận")
         );
 
         String sqlCheckPerm = "SELECT 1 FROM QUYEN WHERE MaQuyen = ?";
@@ -169,7 +169,7 @@ public class PermissionRepository {
             }
         }
 
-        String[] vt02Perms = {"Q01", "Q02", "Q03", "Q11", "Q13"};
+        String[] vt02Perms = {"Q01", "Q09"};
         for (String qCode : vt02Perms) {
             try (PreparedStatement ps = con.prepareStatement(sqlCheckVTQ)) {
                 ps.setString(1, "VT02");
@@ -417,31 +417,30 @@ public class PermissionRepository {
     }
 
     public boolean initializeEmployeePermissions(String maNhanVien, String maVaiTro) {
+
         String sql = """
         INSERT INTO NHAN_VIEN_QUYEN
-            (MaNhanVienQuyen, MaNhanVien, MaQuyen, TrangThai)
+            (MaNhanVien, MaQuyen, TrangThai)
         SELECT
-            ? + '_' + MaQuyen,
             ?,
-            MaQuyen,
+            vtq.MaQuyen,
             1
-        FROM VAI_TRO_QUYEN
-        WHERE MaVaiTro = ?
+        FROM VAI_TRO_QUYEN vtq
+        WHERE vtq.MaVaiTro = ?
           AND NOT EXISTS (
               SELECT 1
-              FROM NHAN_VIEN_QUYEN
-              WHERE MaNhanVien = ?
-                AND MaQuyen = VAI_TRO_QUYEN.MaQuyen
+              FROM NHAN_VIEN_QUYEN nvq
+              WHERE nvq.MaNhanVien = ?
+                AND nvq.MaQuyen = vtq.MaQuyen
           )
         """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, maNhanVien);
-            ps.setString(2, maNhanVien);
-            ps.setString(3, maVaiTro);
-            ps.setString(4, maNhanVien);
+            ps.setString(1, maNhanVien.trim());
+            ps.setString(2, maVaiTro.trim());
+            ps.setString(3, maNhanVien.trim());
 
             ps.executeUpdate();
             return true;
@@ -470,10 +469,13 @@ public class PermissionRepository {
                     "Q06", "Q07", "Q08", "Q09", "Q10",
                     "Q11", "Q12", "Q13", "Q14", "Q15"
             };
-        } else if ("VT02".equals(maVaiTro)) {
-            // ĐÃ ĐƯỢC VÁ LỖI: Thêm mã quyền Q07 vào danh sách mặc định khởi tạo của Nhân viên bán vé
+        } else if ("VT04".equals(maVaiTro)) {
             defaultPermissions = new String[]{
-                    "Q01", "Q02", "Q03", "Q07", "Q11", "Q13"
+                    "Q01", "Q09", "Q10", "Q15"
+            };
+        } else if ("VT02".equals(maVaiTro)) {
+            defaultPermissions = new String[]{
+                    "Q01", "Q09"
             };
         } else {
             return true;

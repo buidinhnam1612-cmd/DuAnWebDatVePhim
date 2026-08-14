@@ -62,7 +62,6 @@ public class AuthorizationFilter implements Filter {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }
-
             List<String> userPermissions = (List<String>) session.getAttribute("userPermissions");
 
             // Thực hiện gọi hàm kiểm tra quyền khớp nối giữa URL và mã Q
@@ -73,7 +72,6 @@ public class AuthorizationFilter implements Filter {
             } else {
                 // ĐỒNG BỘ DỮ LIỆU: Đẩy thông báo lỗi sang cả Request và Session để giao diện jsp đọc không bị sót
                 request.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
-                session.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
 
                 request.getRequestDispatcher("/views/admin/dashboard.jsp").forward(request, response);
             }
@@ -93,39 +91,51 @@ public class AuthorizationFilter implements Filter {
             return false;
         }
 
-        // Đã sửa lỗi: Thêm đường dẫn mục số 7 gán đồng bộ vào mã quyền Q07 soát vé
-        if ("/admin/confirm-booking".equals(path) || "/admin/showtime".equals(path)) {
-            return permissions.contains("Q07") || permissions.contains("VIEW_SHOWTIME")
+        if ("/admin/showtime".equals(path)) {
+            return permissions.contains("Q06")
+                    || permissions.contains("VIEW_SHOWTIME")
                     || permissions.contains("MANAGE_SHOWTIME");
         }
 
+        if ("/admin/confirm-booking".equals(path)) {
+            return permissions.contains("Q08")
+                    || permissions.contains("CHECKIN_BOOKING")
+                    || permissions.contains("MANAGE_BOOKING");
+        }
+
         if ("/admin/booking".equals(path)) {
-            return permissions.contains("Q02") || permissions.contains("Q03")
-                    // Giữ lại bộ quyền mở rộng an toàn của bạn nhóm bạn
-                    || permissions.contains("VIEW_BOOKING") || permissions.contains("CHECKIN_BOOKING")
-                    || permissions.contains("CANCEL_BOOKING") || permissions.contains("CHANGE_BOOKING");
+            return permissions.contains("Q07")
+                    || permissions.contains("VIEW_BOOKING")
+                    || permissions.contains("CANCEL_BOOKING")
+                    || permissions.contains("CHANGE_BOOKING")
+                    || permissions.contains("MANAGE_BOOKING");
         }
 
         if ("/admin/food".equals(path)) {
-            return permissions.contains("Q11") || permissions.contains("VIEW_FOOD")
+            return permissions.contains("Q10")
+                    || permissions.contains("VIEW_FOOD")
                     || permissions.contains("MANAGE_FOOD");
         }
 
         if ("/admin/seat".equals(path)) {
-            return permissions.contains("Q10") || permissions.contains("VIEW_SEAT");
+            return permissions.contains("Q09")
+                    || permissions.contains("VIEW_SEAT");
         }
-
         if ("/admin/report".equals(path) || "/admin/export-report".equals(path)) {
             return permissions.contains("Q13") || permissions.contains("VIEW_SHIFT_REPORT")
                     || permissions.contains("VIEW_REPORT") || permissions.contains("EXPORT_REPORT");
         }
 
-        if ("/admin/employee".equals(path) || "/admin/employee/permission".equals(path) || path.startsWith("/admin/employee")) {
-            return permissions.contains("Q14") || permissions.contains("Q15") || permissions.contains("MANAGE_EMPLOYEE");
-        }
+        if ("/admin/employee".equals(path)
+                || "/admin/employee/permission".equals(path)
+                || path.startsWith("/admin/employee")) {
 
+            return permissions.contains("Q14")
+                    || permissions.contains("MANAGE_EMPLOYEE");
+        }
         if ("/admin/user".equals(path)) {
-            return permissions.contains("Q04") || permissions.contains("MANAGE_USER");
+            return permissions.contains("Q11")
+                    || permissions.contains("MANAGE_USER");
         }
 
         if ("/admin/movie".equals(path)) {
@@ -133,26 +143,28 @@ public class AuthorizationFilter implements Filter {
         }
 
         if ("/admin/room".equals(path)) {
-            return permissions.contains("Q09") || permissions.contains("MANAGE_ROOM");
+            return permissions.contains("Q04")
+                    || permissions.contains("MANAGE_ROOM");
         }
 
         if ("/theater".equals(path)) {
-            return permissions.contains("Q08") || permissions.contains("MANAGE_THEATER");
+            return permissions.contains("Q02")
+                    || permissions.contains("MANAGE_THEATER");
         }
 
         if ("/genre".equals(path)) {
-            return permissions.contains("Q06") || permissions.contains("MANAGE_GENRE");
+            return permissions.contains("Q03")
+                    || permissions.contains("MANAGE_GENRE");
         }
         // ===================== CẤU HÌNH QUYỀN TRANG KIỂM DUYỆT BÌNH LUẬN =====================
         if ("/admin/comment".equals(path)) {
-            // Cho phép qua nếu tài khoản có mã quyền VIEW_COMMENT, MODERATE_COMMENT hoặc mã quyền tổng Q13, Q14, Q15
-            return permissions.contains("VIEW_COMMENT") || permissions.contains("MODERATE_COMMENT")
-                    || permissions.contains("Q13") || permissions.contains("Q14") || permissions.contains("Q15");
+            return permissions.contains("Q15")
+                    || permissions.contains("VIEW_COMMENT")
+                    || permissions.contains("MODERATE_COMMENT");
         }
 
         return false; // Dòng return false gốc ở cuối file của bạn
     }
-
 
     @Override
     public void destroy() {

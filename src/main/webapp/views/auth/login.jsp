@@ -92,7 +92,7 @@
 
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-envelope-fill me-2"></i>
-                                Email
+                                Email <span class="text-danger">*</span>
                             </label>
 
                         <input type="text"
@@ -109,7 +109,7 @@
 
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-lock-fill me-2"></i>
-                                Mật khẩu
+                                Mật khẩu <span class="text-danger">*</span>
                             </label>
 
                             <input type="password"

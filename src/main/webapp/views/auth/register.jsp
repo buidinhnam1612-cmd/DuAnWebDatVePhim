@@ -87,12 +87,10 @@
 
                         <div class="mb-3">
 
-                            <label class="form-label fw-semibold">
-
-                                <i class="bi bi-person-fill me-2"></i>
-                                Họ và tên
-
-                            </label>
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-fill me-2"></i>
+                                    Họ và tên <span class="text-danger">*</span>
+                                </label>
 
                             <input type="text"
                                    class="form-control"
@@ -107,12 +105,10 @@
 
                         <div class="mb-3">
 
-                            <label class="form-label fw-semibold">
-
-                                <i class="bi bi-envelope-fill me-2"></i>
-                                Email
-
-                            </label>
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-envelope-fill me-2"></i>
+                                    Email <span class="text-danger">*</span>
+                                </label>
 
                             <input type="email"
                                    class="form-control"
@@ -128,17 +124,19 @@
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold">
-
                                 <i class="bi bi-telephone-fill me-2"></i>
-                                Số điện thoại
-
+                                Số điện thoại <span class="text-danger">*</span>
                             </label>
 
-                            <input type="text"
+                            <input type="tel"
                                    class="form-control"
                                    name="phone"
                                    value="${param.phone}"
-                                   placeholder="Nhập số điện thoại"
+                                   placeholder="Nhập 10 số điện thoại"
+                                   pattern="[0-9]{10}"
+                                   minlength="10"
+                                   maxlength="10"
+                                   inputmode="numeric"
                                    required>
 
                         </div>
@@ -150,7 +148,7 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-lock-fill me-2"></i>
-                                Mật khẩu
+                                Mật khẩu  <span class="text-danger">*</span>
 
                             </label>
 
@@ -169,7 +167,7 @@
                             <label class="form-label fw-semibold">
 
                                 <i class="bi bi-shield-lock-fill me-2"></i>
-                                Xác nhận mật khẩu
+                                Xác nhận mật khẩu <span class="text-danger">*</span>
 
                             </label>
 
