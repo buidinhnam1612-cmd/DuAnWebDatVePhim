@@ -1,6 +1,7 @@
 package com.fptpoly.controller.admin;
 
 import com.fptpoly.model.Movie;
+import com.fptpoly.service.GenreService;
 import com.fptpoly.service.MovieService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import java.sql.Date;
 @WebServlet(name = "MovieController", urlPatterns = {"/admin/movie"})
 public class MovieController extends HttpServlet {
     private final MovieService service = new MovieService();
+    private final GenreService genreService = new GenreService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,6 +35,8 @@ public class MovieController extends HttpServlet {
         }
 
         req.setAttribute("listMovie", service.getAll());
+        // Đẩy danh sách thể loại để hiển thị dropdown trong form thêm/sửa phim
+        req.setAttribute("listGenre", genreService.getAll());
         req.getRequestDispatcher("/views/admin/movie.jsp").forward(req, resp);
     }
 
@@ -50,8 +54,9 @@ public class MovieController extends HttpServlet {
         Date ngayKhoiChieu = Date.valueOf(req.getParameter("ngayKhoiChieu"));
         String doTuoiGiaiTri = req.getParameter("doTuoiGiaiTri");
         String trangThai = req.getParameter("trangThai");
+        String maTheLoai = req.getParameter("maTheLoai");
 
-        Movie movie = new Movie(maPhim, tenPhim, moTa, thoiLuong, trailer, poster, ngayKhoiChieu, doTuoiGiaiTri, trangThai);
+        Movie movie = new Movie(maPhim, tenPhim, moTa, thoiLuong, trailer, poster, ngayKhoiChieu, doTuoiGiaiTri, trangThai, maTheLoai);
         boolean success = "update".equals(action) ? service.sua(movie) : service.them(movie);
 
         if (success) {
@@ -59,8 +64,8 @@ public class MovieController extends HttpServlet {
         } else {
             req.setAttribute("errorMessage", "Thao tác dữ liệu thất bại!");
             req.setAttribute("listMovie", service.getAll());
+            req.setAttribute("listGenre", genreService.getAll());
             req.getRequestDispatcher("/views/admin/movie.jsp").forward(req, resp);
         }
     }
 }
-
