@@ -9,7 +9,11 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebFilter("/admin/*") // Đảm bảo bộ lọc bao phủ toàn bộ phân hệ quản trị admin
+@WebFilter(urlPatterns = {
+        "/admin/*",
+        "/theater",
+        "/genre"
+})
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -25,145 +29,170 @@ public class AuthorizationFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
         HttpSession session = request.getSession(false);
 
-        // Đọc URL path thuần túy loại bỏ contextPath để so sánh chính xác
         String requestURI = request.getRequestURI();
         String contextPath = request.getContextPath();
+
         String path = requestURI;
-        if (contextPath != null && !contextPath.isEmpty()) {
+
+        if (contextPath != null && !contextPath.isEmpty()
+                && requestURI.startsWith(contextPath)) {
             path = requestURI.substring(contextPath.length());
         }
 
-        // Nếu là trang Login hoặc các file tĩnh (css, js, image) thì bỏ qua không chặn
-        if (path.startsWith("/login") || path.contains(".") || path.startsWith("/assets")) {
-            chain.doFilter(servletRequest, servletResponse);
-            return;
-        }
+        /*
+         * =========================================================
+         * 1. KIỂM TRA SESSION ĐĂNG NHẬP
+         * =========================================================
+         */
 
         if (session == null || session.getAttribute("role") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(contextPath + "/login");
             return;
         }
 
-        String role = (String) session.getAttribute("role");
+        String role = String.valueOf(session.getAttribute("role"));
 
-        // ADMIN hoặc VT01 sở hữu toàn quyền hệ thống -> Cho qua trực tiếp
+        /*
+         * =========================================================
+         * 2. ADMIN / VT01
+         *
+         * Admin có toàn quyền hệ thống.
+         * Không cần kiểm tra từng Q01 -> Q15.
+         * =========================================================
+         */
+
         if ("ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role)) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        // NHÂN VIÊN hoặc VT02 -> Tiến hành kiểm soát chặt chẽ danh sách mã Q
-        if ("EMPLOYEE".equalsIgnoreCase(role) || "VT02".equalsIgnoreCase(role)) {
+        /*
+         * =========================================================
+         * 3. KHÁCH HÀNG KHÔNG ĐƯỢC TRUY CẬP KHU VỰC ADMIN
+         * =========================================================
+         */
 
-            // Trang tổng quan Dashboard luôn mở cho mọi nhân viên
-            if ("/admin/dashboard".equals(path)) {
-                chain.doFilter(servletRequest, servletResponse);
-                return;
-            }
-            List<String> userPermissions = (List<String>) session.getAttribute("userPermissions");
-
-            // Thực hiện gọi hàm kiểm tra quyền khớp nối giữa URL và mã Q
-            boolean hasPermission = checkPermission(path, userPermissions);
-
-            if (hasPermission) {
-                chain.doFilter(servletRequest, servletResponse);
-            } else {
-                // ĐỒNG BỘ DỮ LIỆU: Đẩy thông báo lỗi sang cả Request và Session để giao diện jsp đọc không bị sót
-                request.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
-
-                request.getRequestDispatcher("/views/admin/dashboard.jsp").forward(request, response);
-            }
+        if ("CUSTOMER".equalsIgnoreCase(role)) {
+            response.sendRedirect(contextPath + "/home");
             return;
         }
 
-        // Vai trò không hợp lệ
-        response.sendRedirect(request.getContextPath() + "/login");
+        /*
+         * =========================================================
+         * 4. NHÂN VIÊN
+         *
+         * Lấy danh sách quyền đã bật trong Session.
+         * =========================================================
+         */
+
+        List<String> userPermissions = (List<String>) session.getAttribute("userPermissions");
+
+        if ("/admin/dashboard".equals(path)) {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        /*
+         * =========================================================
+         * 5. KIỂM TRA QUYỀN THEO URL VỚI MAPPING CHUẨN TỪ SQL DB
+         * =========================================================
+         */
+
+        boolean hasPermission = checkPermission(path, userPermissions);
+
+        if (hasPermission) {
+            chain.doFilter(servletRequest, servletResponse);
+        } else {
+            request.setAttribute("error", "Bạn không có quyền truy cập chức năng này!");
+            request.getRequestDispatcher("/views/admin/dashboard.jsp").forward(request, response);
+        }
     }
 
     /**
-     * Kiểm tra quyền dựa trên URL path và danh sách mã quyền (Q01 -> Q15)
+     * KIỂM TRA QUYỀN THEO MAPPING DATABASE GỐC SQL Q01 -> Q15:
+     * Q01 = Tổng quan Dashboard (/admin/dashboard)
+     * Q02 = Quản lý rạp phim (/theater)
+     * Q03 = Quản lý thể loại phim (/genre)
+     * Q04 = Quản lý phòng phim (/admin/room)
+     * Q05 = Quản lý phim (/admin/movie)
+     * Q06 = Quản lý suất chiếu (/admin/showtime)
+     * Q07 = Quản lý đặt vé (/admin/booking)
+     * Q08 = Xác nhận trạng thái vé (/admin/confirm-booking)
+     * Q09 = Sơ đồ ghế (/admin/seat)
+     * Q10 = Quản lý đồ ăn (/admin/food)
+     * Q11 = Quản lý người dùng (/admin/user)
+     * Q12 = Quản lý voucher (/admin/voucher)
+     * Q13 = Thống kê & Báo cáo (/admin/report, /admin/export-report)
+     * Q14 = Nhân viên & Phân quyền (/admin/employee, /admin/employee/*)
+     * Q15 = Kiểm duyệt bình luận (/admin/comment)
      */
     private boolean checkPermission(String path, List<String> permissions) {
-
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
 
-        if ("/admin/showtime".equals(path)) {
-            return permissions.contains("Q06")
-                    || permissions.contains("VIEW_SHOWTIME")
-                    || permissions.contains("MANAGE_SHOWTIME");
-        }
-
-        if ("/admin/confirm-booking".equals(path)) {
-            return permissions.contains("Q08")
-                    || permissions.contains("CHECKIN_BOOKING")
-                    || permissions.contains("MANAGE_BOOKING");
-        }
-
-        if ("/admin/booking".equals(path)) {
-            return permissions.contains("Q07")
-                    || permissions.contains("VIEW_BOOKING")
-                    || permissions.contains("CANCEL_BOOKING")
-                    || permissions.contains("CHANGE_BOOKING")
-                    || permissions.contains("MANAGE_BOOKING");
-        }
-
-        if ("/admin/food".equals(path)) {
-            return permissions.contains("Q10")
-                    || permissions.contains("VIEW_FOOD")
-                    || permissions.contains("MANAGE_FOOD");
-        }
-
-        if ("/admin/seat".equals(path)) {
-            return permissions.contains("Q09")
-                    || permissions.contains("VIEW_SEAT");
-        }
-        if ("/admin/report".equals(path) || "/admin/export-report".equals(path)) {
-            return permissions.contains("Q13") || permissions.contains("VIEW_SHIFT_REPORT")
-                    || permissions.contains("VIEW_REPORT") || permissions.contains("EXPORT_REPORT");
-        }
-
-        if ("/admin/employee".equals(path)
-                || "/admin/employee/permission".equals(path)
-                || path.startsWith("/admin/employee")) {
-
-            return permissions.contains("Q14")
-                    || permissions.contains("MANAGE_EMPLOYEE");
-        }
-        if ("/admin/user".equals(path)) {
-            return permissions.contains("Q11")
-                    || permissions.contains("MANAGE_USER");
-        }
-
-        if ("/admin/movie".equals(path)) {
-            return permissions.contains("Q05") || permissions.contains("MANAGE_MOVIE");
-        }
-
-        if ("/admin/room".equals(path)) {
-            return permissions.contains("Q04")
-                    || permissions.contains("MANAGE_ROOM");
-        }
-
         if ("/theater".equals(path)) {
-            return permissions.contains("Q02")
-                    || permissions.contains("MANAGE_THEATER");
+            return permissions.contains("Q02");
         }
 
         if ("/genre".equals(path)) {
-            return permissions.contains("Q03")
-                    || permissions.contains("MANAGE_GENRE");
-        }
-        // ===================== CẤU HÌNH QUYỀN TRANG KIỂM DUYỆT BÌNH LUẬN =====================
-        if ("/admin/comment".equals(path)) {
-            return permissions.contains("Q15")
-                    || permissions.contains("VIEW_COMMENT")
-                    || permissions.contains("MODERATE_COMMENT");
+            return permissions.contains("Q03");
         }
 
-        return false; // Dòng return false gốc ở cuối file của bạn
+        if ("/admin/room".equals(path)) {
+            return permissions.contains("Q04");
+        }
+
+        if ("/admin/movie".equals(path)) {
+            return permissions.contains("Q05");
+        }
+
+        if ("/admin/showtime".equals(path)) {
+            return permissions.contains("Q06");
+        }
+
+        if ("/admin/booking".equals(path)) {
+            return permissions.contains("Q07");
+        }
+
+        if ("/admin/confirm-booking".equals(path)) {
+            return permissions.contains("Q08");
+        }
+
+        if ("/admin/seat".equals(path)) {
+            return permissions.contains("Q09");
+        }
+
+        if ("/admin/food".equals(path)) {
+            return permissions.contains("Q10");
+        }
+
+        if ("/admin/user".equals(path)) {
+            return permissions.contains("Q11");
+        }
+
+        if ("/admin/voucher".equals(path)) {
+            return permissions.contains("Q12");
+        }
+
+        if ("/admin/report".equals(path) || "/admin/export-report".equals(path)) {
+            return permissions.contains("Q13");
+        }
+
+        if (path.equals("/admin/employee")
+                || path.equals("/admin/employee/permission")
+                || path.startsWith("/admin/employee/")) {
+            return permissions.contains("Q14");
+        }
+
+        if ("/admin/comment".equals(path)) {
+            return permissions.contains("Q15");
+        }
+
+        return false;
     }
 
     @Override

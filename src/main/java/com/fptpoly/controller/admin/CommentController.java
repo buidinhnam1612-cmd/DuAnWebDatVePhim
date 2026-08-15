@@ -24,12 +24,16 @@ public class CommentController extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 🌟 BẢO MẬT: Kiểm tra quyền xem và kiểm duyệt bình luận (Q06)
+        // Kiểm tra quyền xem và kiểm duyệt bình luận (Q15)
         HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
         List<String> permissions = (List<String>) session.getAttribute("userPermissions");
 
-        if (permissions == null || !permissions.contains("Q06")) {
-            session.setAttribute("error", "Hành động bị từ chối! Chức năng kiểm duyệt bình luận chỉ dành cho Quản trị viên.");
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role);
+        boolean hasPermission = isAdmin || (permissions != null && permissions.contains("Q15"));
+
+        if (!hasPermission) {
+            session.setAttribute("error", "Hành động bị từ chối! Bạn không có quyền truy cập chức năng Kiểm duyệt bình luận.");
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
@@ -53,11 +57,14 @@ public class CommentController extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // 🌟 BẢO MẬT: Chặn đứng hành vi hack hoặc gửi dữ liệu POST ẩn/xóa bình luận bừa bãi từ tài khoản nhân viên
         HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
         List<String> permissions = (List<String>) session.getAttribute("userPermissions");
 
-        if (permissions == null || !permissions.contains("Q06")) {
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role);
+        boolean hasPermission = isAdmin || (permissions != null && permissions.contains("Q15"));
+
+        if (!hasPermission) {
             session.setAttribute("error", "Bảo mật hệ thống: Bạn không có quyền thao tác trên bình luận đánh giá!");
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;

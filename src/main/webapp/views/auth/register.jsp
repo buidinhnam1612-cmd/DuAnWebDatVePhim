@@ -47,6 +47,12 @@
     a.text-danger:hover {
         color: #be123c !important;
     }
+    .field-error {
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
 </style>
 
 <div class="container py-5">
@@ -82,22 +88,28 @@
 
                     <form method="post"
                           action="${pageContext.request.contextPath}/register"
-                          autocomplete="off">
+                          autocomplete="off" novalidate>
 
 
                         <div class="mb-3">
 
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-person-fill me-2"></i>
-                                    Họ và tên <span class="text-danger">*</span>
-                                </label>
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person-fill me-2"></i>
+                                Họ và tên <span class="text-danger">*</span>
+                            </label>
 
                             <input type="text"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("fullNameError") != null ? "is-invalid" : "" %>"
                                    name="fullName"
-                                   value="${param.fullName}"
-                                   placeholder="Nhập họ và tên"
-                                   required>
+                                   value="${fullName != null ? fullName : param.fullName}"
+                                   placeholder="Nhập họ và tên">
+
+                            <% if(request.getAttribute("fullNameError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("fullNameError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
@@ -105,17 +117,23 @@
 
                         <div class="mb-3">
 
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-envelope-fill me-2"></i>
-                                    Email <span class="text-danger">*</span>
-                                </label>
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-envelope-fill me-2"></i>
+                                Email <span class="text-danger">*</span>
+                            </label>
 
                             <input type="email"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("emailError") != null ? "is-invalid" : "" %>"
                                    name="email"
-                                   value="${param.email}"
-                                   placeholder="Nhập email"
-                                   required>
+                                   value="${email != null ? email : param.email}"
+                                   placeholder="Nhập email">
+
+                            <% if(request.getAttribute("emailError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("emailError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
@@ -129,15 +147,18 @@
                             </label>
 
                             <input type="tel"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("phoneError") != null ? "is-invalid" : "" %>"
                                    name="phone"
-                                   value="${param.phone}"
-                                   placeholder="Nhập 10 số điện thoại"
-                                   pattern="[0-9]{10}"
-                                   minlength="10"
-                                   maxlength="10"
-                                   inputmode="numeric"
-                                   required>
+                                   value="${phone != null ? phone : param.phone}"
+                                   placeholder="Nhập 10 số điện thoại (Ví dụ: 0912345678)"
+                                   inputmode="numeric">
+
+                            <% if(request.getAttribute("phoneError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("phoneError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
@@ -153,10 +174,16 @@
                             </label>
 
                             <input type="password"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("passwordError") != null ? "is-invalid" : "" %>"
                                    name="password"
-                                   placeholder="Nhập mật khẩu"
-                                   required>
+                                   placeholder="Nhập mật khẩu (Ít nhất 6 ký tự)">
+
+                            <% if(request.getAttribute("passwordError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("passwordError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
@@ -172,10 +199,16 @@
                             </label>
 
                             <input type="password"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("confirmPasswordError") != null ? "is-invalid" : "" %>"
                                    name="confirmPassword"
-                                   placeholder="Nhập lại mật khẩu"
-                                   required>
+                                   placeholder="Nhập lại mật khẩu">
+
+                            <% if(request.getAttribute("confirmPasswordError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("confirmPasswordError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
