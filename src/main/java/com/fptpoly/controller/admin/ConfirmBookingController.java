@@ -34,12 +34,15 @@ public class ConfirmBookingController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        // 🌟 BẢO MẬT TẦNG HIỂN THỊ: Kiểm tra quyền Xác nhận trạng thái vé (Q03) từ Session
+        // Kiểm tra quyền Xác nhận trạng thái vé (Q08)
         HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
         List<String> permissions = (List<String>) session.getAttribute("userPermissions");
 
-        // Nếu chưa đăng nhập hoặc danh sách quyền hạn không chứa mã Q03, chặn đứng lập tức
-        if (permissions == null || !permissions.contains("Q03")) {
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role);
+        boolean hasPermission = isAdmin || (permissions != null && permissions.contains("Q08"));
+
+        if (!hasPermission) {
             session.setAttribute("error", "Bạn không có quyền truy cập chức năng Xác nhận trạng thái vé này!");
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
@@ -47,10 +50,6 @@ public class ConfirmBookingController extends HttpServlet {
 
         String maDatVe = request.getParameter("maDatVe");
 
-        /*
-         * 🌟 ĐỒNG BỘ: Sửa lại tên currentPage thành "confirmBooking"
-         * trùng khớp với hàm check hasAnyPerm trong file admin-sidebar.jsp của bạn
-         */
         request.setAttribute("currentPage", "confirmBooking");
 
         /*
@@ -92,11 +91,14 @@ public class ConfirmBookingController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        // 🌟 BẢO MẬT TẦNG THAO TÁC: Ngăn chặn nhân viên quầy đồ ăn can thiệp lén lút lệnh POST dữ liệu
         HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
         List<String> permissions = (List<String>) session.getAttribute("userPermissions");
 
-        if (permissions == null || !permissions.contains("Q03")) {
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role) || "VT01".equalsIgnoreCase(role);
+        boolean hasPermission = isAdmin || (permissions != null && permissions.contains("Q08"));
+
+        if (!hasPermission) {
             session.setAttribute("error", "Bảo mật hệ thống: Bạn không có quyền soát vé hay in vé!");
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;

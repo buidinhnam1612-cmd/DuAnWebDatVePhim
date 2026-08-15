@@ -113,7 +113,7 @@
     // 🌟 BẢO MẬT: Kiểm tra nếu không có quyền Q06 thì đá tài khoản nhân viên ra ngoài
     java.util.List<String> checkPerms = (java.util.List<String>) session.getAttribute("userPermissions");
 
-    if (checkPerms == null || !checkPerms.contains("Q06")) {
+    if (checkPerms == null || !checkPerms.contains("Q15")) {
         session.setAttribute("error", "Hành động bị từ chối! Chức năng này thuộc quyền quản trị tối cao.");
         response.sendRedirect(request.getContextPath() + "/admin/dashboard");
         return; // Dừng không cho load tiếp giao diện HTML bên dưới

@@ -158,13 +158,15 @@ public class EmployeeRepository {
                 if (rs.next()) {
                     int total = rs.getInt(1);
                     // Tạo định dạng mã: NV01, NV02, NV05, NV10...
-                    maTuDong = String.format("NV%02d", total + 1);
+                    maTuDong = e.getMaNhanVien().trim();
                 }
             }
 
             // Bước 2.2: Thực hiện chèn dữ liệu với mã tự động vừa tạo
             try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
                 psInsert.setString(1, maTuDong); // Truyền mã tự nhảy vào đây
+                // Keep the persisted ID consistent with the ID used to initialize permissions.
+                psInsert.setString(1, e.getMaNhanVien().trim());
                 psInsert.setString(2, e.getMaVaiTro());
                 psInsert.setString(3, e.getTenDangNhap());
                 psInsert.setString(4, e.getMatKhau());

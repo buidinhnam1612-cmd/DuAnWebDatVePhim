@@ -47,6 +47,12 @@
     a.text-danger:hover {
         color: #be123c !important;
     }
+    .field-error {
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
 </style>
 
 <div class="container py-5">
@@ -85,22 +91,28 @@
 
                     <form method="post"
                           action="${pageContext.request.contextPath}/login"
-                          autocomplete="off">
+                          autocomplete="off" novalidate>
 
 
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-envelope-fill me-2"></i>
-                                Email <span class="text-danger">*</span>
+                                Tên đăng nhập hoặc Email <span class="text-danger">*</span>
                             </label>
 
-                        <input type="text"
-                               class="form-control"
-                               name="loginInput"
-                               value="${param.loginInput}"
-                               placeholder="Nhập tên đăng nhập hoặc email"
-                               required>
+                            <input type="text"
+                                   class="form-control <%= request.getAttribute("loginInputError") != null ? "is-invalid" : "" %>"
+                                   name="loginInput"
+                                   value="${loginInput != null ? loginInput : param.loginInput}"
+                                   placeholder="Nhập tên đăng nhập hoặc email">
+
+                            <% if(request.getAttribute("loginInputError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("loginInputError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
@@ -113,10 +125,16 @@
                             </label>
 
                             <input type="password"
-                                   class="form-control"
+                                   class="form-control <%= request.getAttribute("passwordError") != null ? "is-invalid" : "" %>"
                                    name="password"
-                                   placeholder="Nhập mật khẩu"
-                                   required>
+                                   placeholder="Nhập mật khẩu">
+
+                            <% if(request.getAttribute("passwordError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("passwordError")%>
+                            </div>
+                            <% } %>
 
                         </div>
 
