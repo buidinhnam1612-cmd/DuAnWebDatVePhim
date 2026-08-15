@@ -48,7 +48,6 @@ public class BookingController extends HttpServlet {
 
         String maSuatChieu = request.getParameter("maSuatChieu");
         if (maSuatChieu == null || maSuatChieu.trim().isEmpty()) {
-            // Bước 1: Cho khách hàng chọn Phim & Suất Chiếu (Lotte Cinema style)
             String maPhim = request.getParameter("maPhim");
             List<Movie> listPhim = movieService.getAll();
             List<Showtime> listSuatChieu = showtimeRepository.getAll();
@@ -94,26 +93,57 @@ public class BookingController extends HttpServlet {
         String maKhachHang = request.getParameter("maKhachHang");
         String maSuatChieu = request.getParameter("maSuatChieu");
         String maPhong = request.getParameter("maPhong");
-        String seatIdsStr = request.getParameter("seatIds"); // ví dụ: "G01,G02"
-        String tongTienStr = request.getParameter("tongTien");
-        String maVoucher = request.getParameter("maVoucher");
+        String seatIdsStr = request.getParameter("seatIds"); // Ví dụ: "E08,E09,E10"
 
-        if (maSuatChieu == null || seatIdsStr == null || seatIdsStr.trim().isEmpty() || tongTienStr == null) {
+        // Đọc mã Voucher đúng parameter từ JSP
+        String maVoucher = request.getParameter("maVoucherSubmit");
+        if (maVoucher == null || maVoucher.trim().isEmpty()) {
+            maVoucher = request.getParameter("maVoucher");
+        }
+
+        if (maSuatChieu == null || seatIdsStr == null || seatIdsStr.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/home");
             return;
         }
 
-        double tongTien = 0;
-        try {
-            tongTien = Double.parseDouble(tongTienStr);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        String[] seatIds = seatIdsStr.split(",");
+
+        // 1. Kiểm tra ghế đã bị người khác đặt chưa
+        for (String seatId : seatIds) {
+            if (bookingDetailRepository.checkSeatBooked(maSuatChieu, seatId.trim())) {
+                request.setAttribute("error", "Một hoặc nhiều ghế bạn chọn đã có người đặt trước.");
+                doGet(request, response);
+                return;
+            }
         }
 
-        // Lấy thông tin đồ ăn thức uống được chọn từ form
+        // 2. Tính TỔNG TIỀN GHẾ chuẩn ở Backend
+        List<Seat> seats = seatService.getSeatsByRoom(maPhong);
+        double tongTienGhe = 0;
+        Map<String, Double> mapGiaGhe = new HashMap<>();
+
+        for (String seatId : seatIds) {
+            String cleanSeatId = seatId.trim();
+            double giaGhe = 75000; // Giá tiêu chuẩn mặc định
+            for (Seat s : seats) {
+                if (s.getMaGhe().equalsIgnoreCase(cleanSeatId)) {
+                    if ("VIP".equalsIgnoreCase(s.getLoaiGhe())) {
+                        giaGhe = 90000; // Giá ghế VIP
+                    } else if ("SWEETBOX".equalsIgnoreCase(s.getLoaiGhe())) {
+                        giaGhe = 120000; // Giá ghế Sweetbox nếu có
+                    }
+                    break;
+                }
+            }
+            mapGiaGhe.put(cleanSeatId, giaGhe);
+            tongTienGhe += giaGhe;
+        }
+
+        // 3. Tính TỔNG TIỀN ĐỒ ĂN chuẩn ở Backend
         List<Food> activeFoods = customerFoodService.getActiveFoods();
         Map<Food, Integer> selectedFoods = new HashMap<>();
         double tongTienDoAn = 0;
+
         for (Food food : activeFoods) {
             String qtyStr = request.getParameter("food_" + food.getMaDoAn());
             if (qtyStr != null && !qtyStr.trim().isEmpty()) {
@@ -128,37 +158,37 @@ public class BookingController extends HttpServlet {
                 }
             }
         }
-        tongTien += tongTienDoAn;
 
-        // Tạo đối tượng Booking
+        // 4. Kiểm tra và áp dụng VOUCHER GIẢM GIÁ (CHỈ GIẢM TRÊN TIỀN GHẾ)
+        double tienGiamGia = 0;
+        if (maVoucher != null && !maVoucher.trim().isEmpty()) {
+            // Trường hợp voucher VVC01 giảm 10% TIỀN GHẾ
+            if ("VVC01".equalsIgnoreCase(maVoucher.trim())) {
+                tienGiamGia = tongTienGhe * 0.10; // FIX LỖI: Chỉ tính 10% trên tongTienGhe
+            }
+        }
+
+        // 5. TỔNG TIỀN CUỐI CÙNG LƯU DATABASE: (Tiền ghế - Giảm giá ghế) + Tiền đồ ăn
+        double tongTienThucTe = Math.max(0, (tongTienGhe - tienGiamGia) + tongTienDoAn);
+
+        // Khởi tạo đối tượng Booking
         Booking booking = new Booking();
         String maDatVe = bookingRepository.generateBookingId();
         booking.setMaDatVe(maDatVe);
         booking.setThoiGianDat(LocalDateTime.now());
-        booking.setTongTien(tongTien);
-        booking.setTrangThai("Chờ thanh toán"); // Đã xóa chữ N lỗi ở đây
+        booking.setTongTien(tongTienThucTe); // Giờ sẽ lưu chính xác 492,500đ
+        booking.setTrangThai("Chờ thanh toán");
         booking.setMaKhachHang(maKhachHang != null && !maKhachHang.trim().isEmpty() ? maKhachHang : "KH01");
         booking.setMaNhanVien(null);
         booking.setMaVoucher(maVoucher != null && !maVoucher.trim().isEmpty() ? maVoucher : null);
 
-        String[] seatIds = seatIdsStr.split(",");
-
-        // 1. Kiểm tra xem các ghế đã bị đặt chưa (Tránh đặt trùng)
-        for (String seatId : seatIds) {
-            if (bookingDetailRepository.checkSeatBooked(maSuatChieu, seatId.trim())) {
-                request.setAttribute("error", "Một hoặc nhiều ghế bạn chọn đã có người đặt trước.");
-                doGet(request, response);
-                return;
-            }
-        }
-
-        // 2. Chạy Transaction luồng dữ liệu an toàn kết nối SQL
+        // 6. Chạy Transaction lưu vào Database
         boolean transactionSuccess = false;
         try (Connection con = com.fptpoly.config.DBConnection.getConnection()) {
             con.setAutoCommit(false);
 
             try {
-                // Thêm hóa đơn Booking tổng
+                // Thêm hóa đơn tổng (DAT_VE)
                 String sqlBooking = "INSERT INTO DAT_VE (MaDatVe, ThoiGianDat, TongTien, TrangThai, MaKhachHang, MaNhanVien, MaVoucher) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement ps = con.prepareStatement(sqlBooking)) {
                     ps.setString(1, booking.getMaDatVe());
@@ -175,33 +205,27 @@ public class BookingController extends HttpServlet {
                     ps.executeUpdate();
                 }
 
-                // Thêm chi tiết từng ghế ngồi xem phim
+                // Thêm chi tiết ghế xem phim (CHI_TIET_DAT_VE)
                 String sqlDetail = "INSERT INTO CHI_TIET_DAT_VE (MaChiTietDatVe, MaDatVe, MaGhe, MaSuatChieu, TrangThai, ThoiGianGiuGhe, GiaVe) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 int detailIndex = 1;
-                List<Seat> seats = seatService.getSeatsByRoom(maPhong);
 
                 for (String seatId : seatIds) {
-                    double giaVe = 75000; // Giá vé mặc định
-                    for (Seat s : seats) {
-                        if (s.getMaGhe().equals(seatId.trim()) && "VIP".equalsIgnoreCase(s.getLoaiGhe())) {
-                            giaVe = 110000; // Tăng giá nếu là ghế VIP
-                            break;
-                        }
-                    }
+                    String cleanSeatId = seatId.trim();
+                    double giaVe = mapGiaGhe.getOrDefault(cleanSeatId, 75000.0);
 
                     try (PreparedStatement ps = con.prepareStatement(sqlDetail)) {
                         ps.setString(1, "CT" + maDatVe + "_" + detailIndex++);
                         ps.setString(2, maDatVe);
-                        ps.setString(3, seatId.trim());
+                        ps.setString(3, cleanSeatId);
                         ps.setString(4, maSuatChieu);
-                        ps.setString(5, "Giữ ghế"); // Đã xóa chữ N lỗi ở đây
+                        ps.setString(5, "Giữ ghế");
                         ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)));
                         ps.setDouble(7, giaVe);
                         ps.executeUpdate();
                     }
                 }
 
-                // Thêm chi tiết đồ ăn nước uống (Bảng CHI_TIET_DAT_DO_AN)
+                // Thêm chi tiết đồ ăn (CHI_TIET_DAT_DO_AN)
                 String sqlFood = "INSERT INTO CHI_TIET_DAT_DO_AN (MaChiTietDatDoAn, MaDatVe, MaDoAnUong, SoLuong, GiaBanLucDat) VALUES (?, ?, ?, ?, ?)";
                 int foodIndex = 1;
                 for (Map.Entry<Food, Integer> entry : selectedFoods.entrySet()) {
@@ -215,10 +239,10 @@ public class BookingController extends HttpServlet {
                     }
                 }
 
-                con.commit(); // Thành công thực tế lưu toàn bộ dữ liệu
+                con.commit();
                 transactionSuccess = true;
             } catch (Exception ex) {
-                con.rollback(); // Gặp lỗi ở bất cứ đâu thì hủy toàn bộ đơn hàng
+                con.rollback();
                 ex.printStackTrace();
             }
         } catch (Exception e) {
@@ -226,10 +250,10 @@ public class BookingController extends HttpServlet {
         }
 
         if (transactionSuccess) {
-            // Điều hướng sang trang hiển thị hóa đơn thành công
             response.sendRedirect(request.getContextPath() + "/invoice?maDatVe=" + maDatVe);
         } else {
             request.setAttribute("error", "Hệ thống bận, đặt vé thất bại. Vui lòng thử lại.");
-            doGet(request, response);}
+            doGet(request, response);
+        }
     }
 }

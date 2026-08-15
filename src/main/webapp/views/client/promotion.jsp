@@ -286,7 +286,7 @@
     .promo-section-heading {
         font-size: 28px;
         font-weight: 800;
-        color: #0f172a;
+        color: #ffffff !important;
         margin-bottom: 10px;
         display: flex;
         align-items: center;
@@ -449,7 +449,7 @@
                                                             -
                                                             <fmt:formatDate value="${v.ngayKetThuc}" pattern="dd/MM/yyyy"/>
                                                         </c:when>
-                                                        <c:otherwise>Không giới hạn</c:otherwise>
+                                                        <c:otherwise>17/8/2026</c:otherwise>
                                                     </c:choose>
                                                 </div>
                                             </div>
