@@ -15,7 +15,7 @@
                     <i class="bi bi-person-fill text-warning fs-1" style="font-size: 50px;"></i>
                 </div>
                 <div class="fw-semibold text-secondary mb-3" style="font-size: 14px;">
-                    <c:out value="${sessionScope.email}" default="truongyuu2k77@gmail.com"/>
+                    <c:out value="${sessionScope.email}" default="${sessionScope.user.email}"/>
                 </div>
             </div>
 
@@ -41,6 +41,21 @@
                 </span>
             </div>
 
+            <!-- Thống báo Thành công / Thất bại -->
+            <c:if test="${not empty message}">
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </c:if>
+
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>${error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </c:if>
+
             <c:choose>
                 <c:when test="${empty bookings}">
                     <div class="text-center py-5">
@@ -60,11 +75,11 @@
                             <thead>
                                 <tr class="border-bottom border-2 border-secondary" style="font-size: 14px;">
                                     <th scope="col" style="width: 10%;">Mã vé</th>
-                                    <th scope="col" style="width: 35%;">Thông tin phim & Suất chiếu</th>
+                                    <th scope="col" style="width: 32%;">Thông tin phim & Suất chiếu</th>
                                     <th scope="col" class="text-center" style="width: 10%;">Ghế đặt</th>
                                     <th scope="col" class="text-end" style="width: 13%;">Tổng tiền</th>
                                     <th scope="col" class="text-center" style="width: 15%;">Trạng thái</th>
-                                    <th scope="col" class="text-center" style="width: 17%;">Hành động / Lưu ý</th>
+                                    <th scope="col" class="text-center" style="width: 20%;">Hành động / Lưu ý</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,17 +143,33 @@
                                         <td class="text-center">
                                             <c:choose>
                                                 <c:when test="${b.trangThai eq 'Chờ thanh toán'}">
-                                                    <div class="py-2 px-2 text-start" style="font-size: 11px; border-radius: 8px; background-color: #fef2f2; border: 1px solid #fee2e2; color: #dc3545; line-height: 1.4;">
-                                                        ⚠️ Cần đến quầy trước giờ chiếu <strong>60 phút</strong> để nhận vé cứng!
+                                                    <form action="${pageContext.request.contextPath}/history" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt vé này?');">
+                                                        <input type="hidden" name="action" value="cancel">
+                                                        <input type="hidden" name="maDatVe" value="${b.maDatVe}">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 mb-1" style="border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                                            <i class="bi bi-x-circle me-1"></i>Hủy vé
+                                                        </button>
+                                                    </form>
+                                                    <div style="font-size: 10px; color: #dc3545; line-height: 1.2;">
+                                                        ⚠️ Nhận vé trước giờ chiếu 60 phút!
                                                     </div>
                                                 </c:when>
+
                                                 <c:when test="${b.trangThai eq 'Đã thanh toán'}">
-                                                    <span class="fw-bold" style="color: #198754; font-size: 12px;">
-                                                        Hãy xuất trình mã vé tại quầy soát vé!
-                                                    </span>
+                                                    <form action="${pageContext.request.contextPath}/history" method="POST" onsubmit="return confirm('Hủy vé đã thanh toán cần đáp ứng điều kiện trước suất chiếu 60 phút. Bạn vẫn muốn hủy?');">
+                                                        <input type="hidden" name="action" value="cancel">
+                                                        <input type="hidden" name="maDatVe" value="${b.maDatVe}">
+                                                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100 mb-1" style="border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                                            <i class="bi bi-x-circle me-1"></i>Hủy vé
+                                                        </button>
+                                                    </form>
+                                                    <div style="font-size: 11px; color: #198754;" class="fw-semibold">
+                                                        Xuất trình mã vé tại quầy!
+                                                    </div>
                                                 </c:when>
+
                                                 <c:otherwise>
-                                                    <span class="text-muted small">Vé đã hết hiệu lực</span>
+                                                    <span class="text-muted small">Vé đã bị hủy</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>

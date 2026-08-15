@@ -412,4 +412,49 @@ public class BookingRepository {
 
         return booking;
     }
+    // ===================== HỦY VÉ & GIẢI PHÓNG GHẾ =====================
+    public boolean cancelBooking(String maDatVe) {
+        String updateBookingSql = "UPDATE DAT_VE SET TrangThai = N'Đã hủy' WHERE MaDatVe = ?";
+        String deleteDetailsSql = "DELETE FROM CHI_TIET_DAT_VE WHERE MaDatVe = ?";
+
+        Connection con = null;
+        try {
+            con = DBConnection.getConnection();
+            con.setAutoCommit(false); // Bắt đầu Transaction
+
+            // 1. Cập nhật trạng thái vé thành 'Đã hủy'
+            try (PreparedStatement ps1 = con.prepareStatement(updateBookingSql)) {
+                ps1.setString(1, maDatVe);
+                ps1.executeUpdate();
+            }
+
+            // 2. Xóa dữ liệu ghế đã giữ trong CHI_TIET_DAT_VE để người khác có thể đặt
+            try (PreparedStatement ps2 = con.prepareStatement(deleteDetailsSql)) {
+                ps2.setString(1, maDatVe);
+                ps2.executeUpdate();
+            }
+
+            con.commit(); // Xác nhận giao dịch thành công
+            return true;
+        } catch (Exception e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback nếu xảy ra lỗi
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
 }
