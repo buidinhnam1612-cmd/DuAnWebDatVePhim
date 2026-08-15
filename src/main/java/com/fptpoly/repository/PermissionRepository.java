@@ -171,8 +171,8 @@ public class PermissionRepository {
             }
         }
 
-        // VT04 (Nhân viên quầy): Q01, Q09, Q10, Q15
-        String[] vt04Permissions = {"Q01", "Q09", "Q10", "Q15"};
+        // VT04 (Nhân viên quầy): Q01, Q08, Q09, Q10, Q15
+        String[] vt04Permissions = {"Q01", "Q08", "Q09", "Q10", "Q15"};
         for (String maQuyen : vt04Permissions) {
             try (PreparedStatement ps = con.prepareStatement(sqlCheckRolePermission)) {
                 ps.setString(1, "VT04");
@@ -213,7 +213,7 @@ public class PermissionRepository {
     }
 
     public List<Permission> getAllPermissions() {
-        List<Permission> list = new ArrayList<>();
+        List<Permission> list = new ArrayList<Permission>();
         String sql = "SELECT MaQuyen, TenQuyen, MoTa FROM QUYEN ORDER BY MaQuyen";
 
         try (Connection con = DBConnection.getConnection();
@@ -221,8 +221,12 @@ public class PermissionRepository {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
+                // 🔥 SỬA TẠI ĐÂY: Khử sạch khoảng trắng thừa của kiểu dữ liệu CHAR dưới SQL Server
+                String rawMaQuyen = rs.getString("MaQuyen");
+                String cleanMaQuyen = rawMaQuyen != null ? rawMaQuyen.trim() : "";
+
                 list.add(new Permission(
-                        rs.getString("MaQuyen"),
+                        cleanMaQuyen,
                         rs.getString("TenQuyen"),
                         rs.getString("MoTa")
                 ));
@@ -233,8 +237,9 @@ public class PermissionRepository {
         return list;
     }
 
+
     public List<EmployeePermission> getEmployeePermissions(String maNhanVien) {
-        List<EmployeePermission> list = new ArrayList<>();
+        List<EmployeePermission> list = new ArrayList<EmployeePermission>();
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             return list;
         }
@@ -270,10 +275,17 @@ public class PermissionRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    // 🔥 SỬA TẠI ĐÂY: .trim() sạch sẽ toàn bộ các mã chuỗi bốc lên từ Database
+                    String rawMaNV = rs.getString("MaNhanVien");
+                    String rawMaQuyen = rs.getString("MaQuyen");
+
+                    String cleanMaNV = rawMaNV != null ? rawMaNV.trim() : "";
+                    String cleanMaQuyen = rawMaQuyen != null ? rawMaQuyen.trim() : "";
+
                     list.add(new EmployeePermission(
-                            rs.getString("MaNhanVien"),
+                            cleanMaNV,
                             rs.getString("HoTen"),
-                            rs.getString("MaQuyen"),
+                            cleanMaQuyen,
                             rs.getString("TenQuyen"),
                             rs.getString("MoTa"),
                             rs.getInt("TrangThai")
@@ -286,17 +298,23 @@ public class PermissionRepository {
         return list;
     }
 
+
     public List<String> getPermissionsByEmployee(String maNhanVien) {
-        List<String> enabledPermissions = new ArrayList<>();
+        List<String> enabledPermissions = new ArrayList<String>();
         List<EmployeePermission> employeePermissions = getEmployeePermissions(maNhanVien);
 
         for (EmployeePermission permission : employeePermissions) {
             if (permission.getTrangThai() == 1) {
-                enabledPermissions.add(permission.getMaQuyen());
+                // 🔥 SỬA TẠI ĐÂY: Chắc chắn mã quyền đẩy vào Session không bị dính khoảng trắng
+                String rawMaQuyen = permission.getMaQuyen();
+                if (rawMaQuyen != null) {
+                    enabledPermissions.add(rawMaQuyen.trim());
+                }
             }
         }
         return enabledPermissions;
     }
+
 
     public boolean togglePermission(String maNhanVien, String maQuyen, int trangThai) {
         if (maNhanVien == null || maNhanVien.trim().isEmpty()
@@ -373,7 +391,7 @@ public class PermissionRepository {
         List<String> defaults = switch (maVaiTro.trim()) {
             case "VT01" -> List.of("Q01", "Q02", "Q03", "Q04", "Q05", "Q06", "Q07", "Q08",
                     "Q09", "Q10", "Q11", "Q12", "Q13", "Q14", "Q15");
-            case "VT04" -> List.of("Q01", "Q09", "Q10", "Q15");
+            case "VT04" -> List.of("Q01", "Q08", "Q09", "Q10", "Q15");
             case "VT02" -> List.of("Q01", "Q09");
             default -> List.of();
         };

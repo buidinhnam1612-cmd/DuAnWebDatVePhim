@@ -339,7 +339,7 @@ if(employeeList!=null && !employeeList.isEmpty()){
                                 if (empPermissions == null || empPermissions.isEmpty()) {
                                     String maVT = editEmployee.getMaVaiTro();
                                     String maQ = p.getMaQuyen();
-                                    if ("VT04".equals(maVT) && ("Q01".equals(maQ) || "Q09".equals(maQ) || "Q10".equals(maQ) || "Q15".equals(maQ))) {
+                                    if ("VT04".equals(maVT) && ("Q01".equals(maQ) || "Q08".equals(maQ) || "Q09".equals(maQ) || "Q10".equals(maQ) || "Q15".equals(maQ))) {
                                         checked = true;
                                     } else if ("VT02".equals(maVT) && ("Q01".equals(maQ) || "Q09".equals(maQ))) {
                                         checked = true;
