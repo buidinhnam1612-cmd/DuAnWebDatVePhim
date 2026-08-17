@@ -96,6 +96,15 @@
                                     <option value="C18" ${movieEdit.doTuoiGiaiTri == 'C18' ? 'selected' : ''}>C18 - Trên 18 tuổi</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <label for="maTheLoai" class="form-label fw-semibold">Thể Loại</label>
+                                <select class="form-select" id="maTheLoai" name="maTheLoai">
+                                    <option value="">-- Chọn thể loại --</option>
+                                    <c:forEach var="g" items="${listGenre}">
+                                        <option value="${g.maTheLoai}" ${movieEdit.maTheLoai == g.maTheLoai ? 'selected' : ''}>${g.tenTheLoai}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
                             <div class="col-md-12">
                                 <label for="moTa" class="form-label fw-semibold">Mô Tả</label>
                                 <textarea class="form-control" id="moTa" name="moTa" rows="3"
@@ -164,6 +173,7 @@
                                     <th>Thời Lượng</th>
                                     <th>Ngày Khởi Chiếu</th>
                                     <th>Độ Tuổi</th>
+                                    <th>Thể Loại</th>
                                     <th>Trạng Thái</th>
                                     <th class="text-center">Thao Tác</th>
                                 </tr>
@@ -194,6 +204,20 @@
                                             </span>
                                         </td>
                                         <td>
+                                            <c:choose>
+                                                <c:when test="${not empty m.maTheLoai}">
+                                                    <c:forEach var="g" items="${listGenre}">
+                                                        <c:if test="${g.maTheLoai == m.maTheLoai}">
+                                                            <span class="badge bg-info text-dark">${g.tenTheLoai}</span>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-muted">-</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
                                             <span class="badge ${m.trangThai == 'Đang chiếu' ? 'bg-success' : m.trangThai == 'Sắp chiếu' ? 'bg-info' : 'bg-secondary'}">
                                                 ${m.trangThai}
                                             </span>
@@ -213,7 +237,7 @@
                                 </c:forEach>
                                 <c:if test="${empty listMovie}">
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted py-4">
+                                        <td colspan="10" class="text-center text-muted py-4">
                                             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                             Chưa có phim nào trong hệ thống
                                         </td>

@@ -21,7 +21,8 @@ public class MovieRepository {
                 list.add(new Movie(
                         rs.getString("MaPhim"), rs.getString("TenPhim"), rs.getString("MoTa"),
                         rs.getInt("ThoiLuong"), rs.getString("Trailer"), rs.getString("Poster"),
-                        rs.getDate("NgayKhoiChieu"), rs.getString("DoTuoiGiaiTri"), rs.getString("TrangThai")
+                        rs.getDate("NgayKhoiChieu"), rs.getString("DoTuoiGiaiTri"), rs.getString("TrangThai"),
+                        rs.getString("MaTheLoai")
                 ));
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -29,7 +30,7 @@ public class MovieRepository {
     }
 
     public boolean add(Movie movie) {
-        String sql = "INSERT INTO PHIM (MaPhim, TenPhim, MoTa, ThoiLuong, Trailer, Poster, NgayKhoiChieu, DoTuoiGiaiTri, TrangThai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PHIM (MaPhim, TenPhim, MoTa, ThoiLuong, Trailer, Poster, NgayKhoiChieu, DoTuoiGiaiTri, TrangThai, MaTheLoai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, movie.getMaPhim());
@@ -41,13 +42,14 @@ public class MovieRepository {
             ps.setDate(7, movie.getNgayKhoiChieu());
             ps.setString(8, movie.getDoTuoiGiaiTri());
             ps.setString(9, movie.getTrangThai());
+            ps.setString(10, movie.getMaTheLoai());
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
     public boolean update(Movie movie) {
-        String sql = "UPDATE PHIM SET TenPhim=?, MoTa=?, ThoiLuong=?, Trailer=?, Poster=?, NgayKhoiChieu=?, DoTuoiGiaiTri=?, TrangThai=? WHERE MaPhim=?";
+        String sql = "UPDATE PHIM SET TenPhim=?, MoTa=?, ThoiLuong=?, Trailer=?, Poster=?, NgayKhoiChieu=?, DoTuoiGiaiTri=?, TrangThai=?, MaTheLoai=? WHERE MaPhim=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, movie.getTenPhim());
@@ -58,7 +60,8 @@ public class MovieRepository {
             ps.setDate(6, movie.getNgayKhoiChieu());
             ps.setString(7, movie.getDoTuoiGiaiTri());
             ps.setString(8, movie.getTrangThai());
-            ps.setString(9, movie.getMaPhim());
+            ps.setString(9, movie.getMaTheLoai());
+            ps.setString(10, movie.getMaPhim());
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); }
         return false;
@@ -74,12 +77,33 @@ public class MovieRepository {
                     return new Movie(
                             rs.getString("MaPhim"), rs.getString("TenPhim"), rs.getString("MoTa"),
                             rs.getInt("ThoiLuong"), rs.getString("Trailer"), rs.getString("Poster"),
-                            rs.getDate("NgayKhoiChieu"), rs.getString("DoTuoiGiaiTri"), rs.getString("TrangThai")
+                            rs.getDate("NgayKhoiChieu"), rs.getString("DoTuoiGiaiTri"), rs.getString("TrangThai"),
+                            rs.getString("MaTheLoai")
                     );
                 }
             }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
-}
 
+    // Lọc phim theo thể loại
+    public List<Movie> getByGenre(String maTheLoai) {
+        List<Movie> list = new ArrayList<>();
+        String sql = "SELECT * FROM PHIM WHERE MaTheLoai = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, maTheLoai);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Movie(
+                            rs.getString("MaPhim"), rs.getString("TenPhim"), rs.getString("MoTa"),
+                            rs.getInt("ThoiLuong"), rs.getString("Trailer"), rs.getString("Poster"),
+                            rs.getDate("NgayKhoiChieu"), rs.getString("DoTuoiGiaiTri"), rs.getString("TrangThai"),
+                            rs.getString("MaTheLoai")
+                    ));
+                }
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+}

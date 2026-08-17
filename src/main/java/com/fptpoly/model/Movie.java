@@ -13,6 +13,7 @@ public class Movie {
     private Date ngayKhoiChieu;
     private String doTuoiGiaiTri;
     private String trangThai;
+    private String maTheLoai;
 
     public Movie() {
     }
@@ -27,6 +28,19 @@ public class Movie {
         this.ngayKhoiChieu = ngayKhoiChieu;
         this.doTuoiGiaiTri = doTuoiGiaiTri;
         this.trangThai = trangThai;
+    }
+
+    public Movie(String maPhim, String tenPhim, String moTa, int thoiLuong, String trailer, String poster, Date ngayKhoiChieu, String doTuoiGiaiTri, String trangThai, String maTheLoai) {
+        this.maPhim = maPhim;
+        this.tenPhim = tenPhim;
+        this.moTa = moTa;
+        this.thoiLuong = thoiLuong;
+        this.trailer = trailer;
+        this.poster = poster;
+        this.ngayKhoiChieu = ngayKhoiChieu;
+        this.doTuoiGiaiTri = doTuoiGiaiTri;
+        this.trangThai = trangThai;
+        this.maTheLoai = maTheLoai;
     }
 
     public String getMaPhim() {
@@ -99,5 +113,13 @@ public class Movie {
 
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public String getMaTheLoai() {
+        return maTheLoai;
+    }
+
+    public void setMaTheLoai(String maTheLoai) {
+        this.maTheLoai = maTheLoai;
     }
 }

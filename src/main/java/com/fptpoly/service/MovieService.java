@@ -11,6 +11,7 @@ public class MovieService {
     public boolean them(Movie movie) { return repo.add(movie); }
     public boolean sua(Movie movie) { return repo.update(movie); }
     public Movie getByID(String id) { return repo.getByID(id); }
+    public List<Movie> getByGenre(String maTheLoai) { return repo.getByGenre(maTheLoai); }
 
     public boolean toggleHide(String id) {
         Movie movie = repo.getByID(id);
