@@ -212,8 +212,37 @@ public class CommentRepository {
      * Lấy danh sách bình luận theo mã phim hiển thị ra trang chi tiết phim
      */
     public List<Comment> getByMovie(String maPhim) {
+        return getByMovie(maPhim, null);
+    }
+
+    /**
+     * Lấy danh sách bình luận theo mã phim và mã khách hàng để lấy thêm bình luận chờ duyệt của chính khách hàng đó
+     */
+    public List<Comment> getByMovie(String maPhim, String maKhachHang) {
         List<Comment> list = new ArrayList<>();
-        String sql = """
+        String sql;
+        boolean hasUser = (maKhachHang != null && !maKhachHang.isBlank());
+
+        if (hasUser) {
+            sql = """
+                SELECT
+                    bl.MaBinhLuan,
+                    bl.SoSao,
+                    bl.NoiDung,
+                    bl.NgayTao,
+                    bl.TrangThai,
+                    bl.MaKhachHang,
+                    bl.MaPhim,
+                    kh.HoTen AS TenKhachHang
+                FROM BINH_LUAN bl
+                INNER JOIN KHACH_HANG kh
+                    ON bl.MaKhachHang = kh.MaKhachHang
+                WHERE bl.MaPhim = ?
+                    AND (bl.TrangThai = N'Đã duyệt' OR bl.MaKhachHang = ?)
+                ORDER BY bl.NgayTao DESC
+                """;
+        } else {
+            sql = """
                 SELECT
                     bl.MaBinhLuan,
                     bl.SoSao,
@@ -230,11 +259,15 @@ public class CommentRepository {
                     AND bl.TrangThai = N'Đã duyệt'
                 ORDER BY bl.NgayTao DESC
                 """;
+        }
         try (
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
             ps.setString(1, maPhim);
+            if (hasUser) {
+                ps.setString(2, maKhachHang);
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Comment c = new Comment();
@@ -258,6 +291,33 @@ public class CommentRepository {
         }
         return list;
     }
+
+    /**
+     * Kiểm tra xem khách hàng đã đánh giá bộ phim này hay chưa
+     */
+    public boolean hasReviewed(String maKhachHang, String maPhim) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM BINH_LUAN
+                WHERE MaKhachHang = ? AND MaPhim = ?
+                """;
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setString(1, maKhachHang);
+            ps.setString(2, maPhim);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     /**
      * Thêm mới bình luận từ khách hàng

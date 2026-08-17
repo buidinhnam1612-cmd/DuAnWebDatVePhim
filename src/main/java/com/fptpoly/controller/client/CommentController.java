@@ -2,7 +2,7 @@ package com.fptpoly.controller.client;
 
 import com.fptpoly.model.Comment;
 import com.fptpoly.model.User;
-import com.fptpoly.repository.CommentRepository;
+import com.fptpoly.service.CommentService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @WebServlet(name = "CommentController", urlPatterns = "/comment")
 public class CommentController extends HttpServlet {
 
-    private final CommentRepository commentRepository = new CommentRepository();
+    private final CommentService commentService = new CommentService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -26,21 +26,36 @@ public class CommentController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
+        String maPhim = request.getParameter("maPhim");
+        if (maPhim == null || maPhim.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/movies");
+            return;
+        }
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
+            if (session != null) {
+                session.setAttribute("errorMsg", "Vui lòng đăng nhập trước khi đánh giá!");
+            }
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
         User user = (User) session.getAttribute("user");
-        String maPhim = request.getParameter("maPhim");
         String soSaoStr = request.getParameter("soSao");
         String noiDung = request.getParameter("noiDung");
 
-        if (maPhim == null || maPhim.isBlank()
-                || soSaoStr == null || soSaoStr.isBlank()
-                || noiDung == null || noiDung.isBlank()) {
-            response.sendRedirect(request.getContextPath() + "/movies");
+        // Validate cơ bản ở mức Controller trước khi chuyển đổi
+        if (soSaoStr == null || soSaoStr.isBlank()) {
+            session.setAttribute("errorMsg", "Vui lòng chọn số sao đánh giá!");
+            session.setAttribute("tempNoiDung", noiDung);
+            response.sendRedirect(request.getContextPath() + "/movies?action=detail&id=" + maPhim);
+            return;
+        }
+        if (noiDung == null || noiDung.trim().isEmpty()) {
+            session.setAttribute("errorMsg", "Vui lòng nhập nội dung đánh giá!");
+            session.setAttribute("tempSoSao", soSaoStr);
+            response.sendRedirect(request.getContextPath() + "/movies?action=detail&id=" + maPhim);
             return;
         }
 
@@ -48,7 +63,10 @@ public class CommentController extends HttpServlet {
         try {
             soSao = Integer.parseInt(soSaoStr);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            session.setAttribute("errorMsg", "Số sao đánh giá phải là số nguyên hợp lệ!");
+            session.setAttribute("tempNoiDung", noiDung);
+            response.sendRedirect(request.getContextPath() + "/movies?action=detail&id=" + maPhim);
+            return;
         }
 
         Comment comment = new Comment();
@@ -58,7 +76,14 @@ public class CommentController extends HttpServlet {
         comment.setMaKhachHang(user.getMaKhachHang());
         comment.setNgayTao(new Timestamp(System.currentTimeMillis()));
 
-        commentRepository.insert(comment);
+        try {
+            commentService.addComment(comment);
+            session.setAttribute("successMsg", "Đánh giá của bạn đã được gửi thành công và đang chờ duyệt!");
+        } catch (IllegalArgumentException e) {
+            session.setAttribute("errorMsg", e.getMessage());
+            session.setAttribute("tempNoiDung", noiDung);
+            session.setAttribute("tempSoSao", soSao);
+        }
 
         response.sendRedirect(request.getContextPath() + "/movies?action=detail&id=" + maPhim);
     }
