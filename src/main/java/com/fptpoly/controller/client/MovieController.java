@@ -1,15 +1,12 @@
 package com.fptpoly.controller.client;
 
 import com.fptpoly.model.Comment;
-import com.fptpoly.model.Genre;
 import com.fptpoly.model.Movie;
 import com.fptpoly.model.Showtime;
-import com.fptpoly.model.Theater;
-import com.fptpoly.repository.CommentRepository;
+import com.fptpoly.model.User;
 import com.fptpoly.repository.MovieRepository;
 import com.fptpoly.repository.ShowtimeRepository;
-import com.fptpoly.service.GenreService;
-import com.fptpoly.service.TheaterService;
+import com.fptpoly.service.CommentService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,9 +21,7 @@ public class MovieController extends HttpServlet {
 
     private final MovieRepository movieRepository = new MovieRepository();
     private final ShowtimeRepository showtimeRepository = new ShowtimeRepository();
-    private final CommentRepository commentRepository = new CommentRepository();
-    private final GenreService genreService = new GenreService();
-    private final TheaterService theaterService = new TheaterService();
+    private final CommentService commentService = new CommentService();
 
     @Override
     protected void doGet(
@@ -52,29 +47,61 @@ public class MovieController extends HttpServlet {
                 return;
             }
 
+            HttpSession session = request.getSession(false);
+            User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
+            String userMaKH = (loggedInUser != null) ? loggedInUser.getMaKhachHang() : null;
+
             List<Showtime> listShowtimes = showtimeRepository.getByMovie(maPhim);
-            List<Comment> listComments = commentRepository.getByMovie(maPhim);
+            List<Comment> listComments = commentService.getCommentsByMovie(maPhim, userMaKH);
+
+            // Tính toán điểm trung bình đánh giá và tổng lượt đánh giá
+            double avgRating = 0.0;
+            int totalBinhLuan = listComments.size();
+            if (totalBinhLuan > 0) {
+                int sum = 0;
+                for (Comment c : listComments) {
+                    sum += c.getSoSao();
+                }
+                avgRating = (double) sum / totalBinhLuan;
+            }
+
+            // Đồng bộ flash messages từ Session sang Request và xóa để tránh hiển thị lặp lại
+            if (session != null) {
+                String successMsg = (String) session.getAttribute("successMsg");
+                String errorMsg = (String) session.getAttribute("errorMsg");
+                Object tempNoiDung = session.getAttribute("tempNoiDung");
+                Object tempSoSao = session.getAttribute("tempSoSao");
+
+                if (successMsg != null) {
+                    request.setAttribute("successMsg", successMsg);
+                    session.removeAttribute("successMsg");
+                }
+                if (errorMsg != null) {
+                    request.setAttribute("errorMsg", errorMsg);
+                    session.removeAttribute("errorMsg");
+                }
+                if (tempNoiDung != null) {
+                    request.setAttribute("tempNoiDung", tempNoiDung);
+                    session.removeAttribute("tempNoiDung");
+                }
+                if (tempSoSao != null) {
+                    request.setAttribute("tempSoSao", tempSoSao);
+                    session.removeAttribute("tempSoSao");
+                }
+            }
 
             request.setAttribute("movie", movie);
             request.setAttribute("listSuatChieu", listShowtimes);
             request.setAttribute("listBinhLuan", listComments);
+            request.setAttribute("avgRating", avgRating);
+            request.setAttribute("totalBinhLuan", totalBinhLuan);
 
             request.getRequestDispatcher("/views/client/movieDetail.jsp").forward(request, response);
         } else {
-            // Lấy các tham số lọc
             String keyword = request.getParameter("keyword");
-            String selectedGenre = request.getParameter("genre");
-
-            // Lấy danh sách phim theo bộ lọc thể loại
-            List<Movie> allMovies;
-            if (selectedGenre != null && !selectedGenre.isBlank()) {
-                allMovies = movieRepository.getByGenre(selectedGenre.trim());
-            } else {
-                allMovies = movieRepository.getAll();
-            }
-
-            // Lọc thêm theo keyword (tìm kiếm tên phim)
+            List<Movie> allMovies = movieRepository.getAll();
             List<Movie> filteredMovies = new ArrayList<>();
+
             if (keyword != null && !keyword.isBlank()) {
                 String keyLower = keyword.trim().toLowerCase();
                 for (Movie m : allMovies) {
@@ -87,18 +114,8 @@ public class MovieController extends HttpServlet {
                 filteredMovies = allMovies;
             }
 
-            // Lấy danh sách thể loại phim từ DB (liên kết với admin/genre)
-            List<Genre> listGenre = genreService.getAll();
-            request.setAttribute("listTheLoai", listGenre);
-
-            // Lấy danh sách rạp chiếu từ DB (liên kết với admin/theater)
-            List<Theater> listTheater = theaterService.getall();
-            request.setAttribute("listRap", listTheater);
-
-            // Đẩy dữ liệu phim và các tham số lọc đã chọn
             request.setAttribute("listPhim", filteredMovies);
             request.setAttribute("keyword", keyword);
-            request.setAttribute("selectedGenre", selectedGenre);
 
             request.getRequestDispatcher("/views/client/movie.jsp").forward(request, response);
         }

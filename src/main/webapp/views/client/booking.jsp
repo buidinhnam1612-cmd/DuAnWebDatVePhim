@@ -207,7 +207,7 @@
 <!-- ==========================
      BOTTOM BAR (Fixed)
 ========================== -->
-<form id="bookingForm" action="${pageContext.request.contextPath}/booking" method="POST" class="booking-bottom-bar">
+<form id="bookingForm" action="${pageContext.request.contextPath}/booking" method="POST" class="booking-bottom-bar" onsubmit="return validateBookingSubmit(event)">
     <input type="hidden" name="maKhachHang" value="${not empty sessionScope.user ? sessionScope.user.maKhachHang : 'KH01'}"/>
     <input type="hidden" name="maSuatChieu" value="${maSuatChieu}"/>
     <input type="hidden" name="maPhong" value="${maPhong}"/>
@@ -256,10 +256,10 @@
                     </button>
                 </c:when>
                 <c:otherwise>
-                    <button type="button" id="btnSubmit" class="btn btn-danger btn-lg" disabled onclick="window.location.href='${pageContext.request.contextPath}/login'" style="padding: 12px 40px; font-size: 18px; font-weight: 700; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để Mua vé
-                    </button>
-                </c:otherwise>
+                        <a href="${pageContext.request.contextPath}/login" id="btnLoginToBook" class="btn btn-danger btn-lg" style="padding: 12px 40px; font-size: 18px; font-weight: 700; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để Mua vé
+                        </a>
+                    </c:otherwise>
             </c:choose>
         </div>
     </div>
@@ -404,6 +404,7 @@
         updatePanel();
     }
 
+    // CẬP NHẬT UI CHỌN CỤM GHẾ DỰA TRÊN SỐ VÉ DỰ ĐỊNH MUA
     function updateSlotUI() {
         const totalTickets = getTotalTicketsTarget();
         const slotRowContainer = document.getElementById('slotSelectionRow');
@@ -418,26 +419,41 @@
 
         slotLabels.forEach(label => {
             const slotValue = parseInt(label.getAttribute('data-slot'));
-            if (slotValue > totalTickets) {
-                label.style.setProperty('display', 'none', 'important');
+
+            // LOGIC TỰ ĐỘNG KHÓA / MỞ SLOT THEO YÊU CẦU:
+            if (totalTickets === 1) {
+                // Nếu chọn 1 người: BẮT BUỘC chọn 1 ghế đơn
+                if (slotValue === 1) {
+                    label.style.setProperty('display', 'inline-flex', 'important');
+                } else {
+                    label.style.setProperty('display', 'none', 'important');
+                }
             } else {
-                label.style.setProperty('display', 'inline-flex', 'important');
+                // Nếu chọn >= 2 người: KHÔNG CHO CHỌN GHẾ ĐƠN (Khóa slot 1), bắt buộc chọn từ 2 trở lên
+                if (slotValue === 1 || slotValue > totalTickets) {
+                    label.style.setProperty('display', 'none', 'important');
+                } else {
+                    label.style.setProperty('display', 'inline-flex', 'important');
+                }
             }
         });
 
-        if (currentQtyToSelect > totalTickets) {
+        // Thiết lập giá trị radio mặc định phù hợp
+        if (totalTickets === 1) {
             currentQtyToSelect = 1;
-            const defaultRadio = document.getElementById('radioSlot1');
-            if (defaultRadio) defaultRadio.checked = true;
+            const r1 = document.getElementById('radioSlot1');
+            if (r1) r1.checked = true;
+        } else {
+            // Khi chọn >= 2 người, chuyển mặc định sang chọn cụm 2 ghế
+            currentQtyToSelect = 2;
+            const r2 = document.getElementById('radioSlot2');
+            if (r2) r2.checked = true;
         }
     }
 
     function onTicketCountChange() {
+        resetAllSelectedSeats();
         updateSlotUI();
-        const target = getTotalTicketsTarget();
-        if (getCurrentlySelectedCount() > target) {
-            resetAllSelectedSeats();
-        }
     }
 
     function resetAllSelectedSeats() {
@@ -543,7 +559,7 @@
         }
 
         if (isOccupied) {
-            return '<div class="seat occupied"><span>X</span></div>';
+            return '<div class="seat occupied" data-id="' + seat.maGhe + '" data-row="' + seat.hangGhe + '" data-col="' + seat.soGhe + '"><span>X</span></div>';
         }
 
         return '<div ' +
@@ -559,6 +575,32 @@
 
     renderSeats();
 
+    // HAM KIEM TRA QUY TAC SO LE CHO 1 NGUOI
+    function checkSoLe(row, col) {
+        // Kiểm tra ghế liền trái (col - 1) và liền phải (col + 1)
+        const leftKey = row + '_' + (col - 1);
+        const rightKey = row + '_' + (col + 1);
+
+        const leftSeat = seatMapData[leftKey];
+        const rightSeat = seatMapData[rightKey];
+
+        if (leftSeat) {
+            const leftEl = document.querySelector('.seat[data-id="' + leftSeat.maGhe + '"]');
+            if (leftEl && (leftEl.classList.contains('occupied') || leftEl.classList.contains('selecting'))) {
+                return false;
+            }
+        }
+
+        if (rightSeat) {
+            const rightEl = document.querySelector('.seat[data-id="' + rightSeat.maGhe + '"]');
+            if (rightEl && (rightEl.classList.contains('occupied') || rightEl.classList.contains('selecting'))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     document.querySelectorAll('.seat:not(.occupied)').forEach(seatEl => {
         seatEl.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
@@ -569,6 +611,7 @@
                 return;
             }
 
+            // Bỏ chọn nếu nhấp lại vào ghế đang chọn
             if (this.classList.contains('selecting')) {
                 const groupIndex = selectedGroups.findIndex(group => group.some(s => s.id === id));
                 if (groupIndex !== -1) {
@@ -595,6 +638,14 @@
 
             const row = this.getAttribute('data-row');
             const startCol = parseInt(this.getAttribute('data-col'));
+
+            // LOGIC KIỂM TRA SO LE DÀNH CHO 1 NGUỜI
+            if (targetTotal === 1) {
+                if (!checkSoLe(row, startCol)) {
+                    alert("Quy định đặt 1 vé: Phải chọn ghế SO LE (không ngồi sát cạnh ghế đã được chọn hoặc đã mua)!");
+                    return;
+                }
+            }
 
             let newGroup = [];
             let isValidGroup = true;
@@ -640,6 +691,26 @@
             updatePanel();
         });
     });
+
+    // CHECK KHI ẤN ĐẶT VÉ NẾU CHƯA CHỌN ĐỦ SỐ LƯỢNG GHẾ
+    function validateBookingSubmit(event) {
+        const targetTotal = getTotalTicketsTarget();
+        const selectedCount = getCurrentlySelectedCount();
+
+        if (targetTotal <= 0) {
+            alert("Vui lòng chọn số lượng vé muốn mua trước khi tiếp tục!");
+            event.preventDefault();
+            return false;
+        }
+
+        if (selectedCount < targetTotal) {
+            alert("Bạn đã đăng ký " + targetTotal + " vé nhưng mới chỉ chọn " + selectedCount + " ghế.\nVui lòng chọn tiếp " + (targetTotal - selectedCount) + " ghế nữa để hoàn tất đặt vé!");
+            event.preventDefault();
+            return false;
+        }
+
+        return true;
+    }
 
     // CẬP NHẬT TỔNG TIỀN (VOUCHER CHỈ GIẢM TRÊN TIỀN GHẾ)
     function updatePanel() {
@@ -690,23 +761,19 @@
             inputIds.value = ids;
             inputTotal.value = grandTotal;
 
-            // Kích hoạt nút bấm đặt vé nếu đủ số lượng vé yêu cầu
-            const targetTotal = getTotalTicketsTarget();
-            if (allSelectedSeats.length === targetTotal) {
-                btnSubmit.disabled = false;
-            } else {
-                btnSubmit.disabled = true;
-            }
+            if (btnSubmit) btnSubmit.disabled = false;
         } else {
             seatsListEl.textContent = '--';
             totalDisplay.innerHTML =
                 '<div style="color: #ffc107 !important; font-size: 26px; font-weight: 800; line-height: 1.2;">0đ</div>';
 
             inputIds.value = '';
-            inputTotal.value = '0';
-            btnSubmit.disabled = true;
+            inputTotal.value = 0;
+
+            if (btnSubmit) btnSubmit.disabled = true;
         }
     }
 </script>
 
 <jsp:include page="/views/common/footer.jsp"/>
+<jsp:include page="/views/common/script.jsp"/>
