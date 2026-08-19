@@ -110,7 +110,7 @@
 <body>
 
 <%
-    // 🌟 BẢO MẬT: Kiểm tra nếu không có quyền Q06 thì đá tài khoản nhân viên ra ngoài
+    // BẢO MẬT: Kiểm tra nếu không có quyền Q06 thì đá tài khoản nhân viên ra ngoài
     java.util.List<String> checkPerms = (java.util.List<String>) session.getAttribute("userPermissions");
 
     if (checkPerms == null || !checkPerms.contains("Q15")) {
