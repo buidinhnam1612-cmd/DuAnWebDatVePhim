@@ -541,7 +541,7 @@
                    href="${pageContext.request.contextPath}/admin/comment">
 
                     <i class="bi bi-chat-dots me-2"></i>
-                    Kiểm duyệt bình luận
+                    Đánh giá phim
 
                 </a>
 
