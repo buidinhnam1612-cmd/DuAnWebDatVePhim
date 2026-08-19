@@ -375,7 +375,7 @@
     <!-- HERO BANNER -->
     <section class="promo-hero">
         <div class="container">
-            <h1>🎁 Ưu Đãi <span>Đặc Biệt</span></h1>
+            <h1>Ưu Đãi <span>Đặc Biệt</span></h1>
             <p>Khám phá các chương trình khuyến mãi hấp dẫn từ FPT Cinema. Nhập mã voucher khi đặt vé để nhận ngay ưu đãi!</p>
 
             <div class="promo-stats-bar">
@@ -408,7 +408,7 @@
 
         <div style="margin-bottom: 50px;">
             <div class="promo-section-heading">
-                <div class="heading-icon">🔥</div>
+                <div class="heading-icon"></div>
                 Voucher đang hoạt động
             </div>
             <p class="promo-section-sub">Sao chép mã và sử dụng khi thanh toán để nhận ưu đãi giảm giá.</p>
@@ -583,7 +583,7 @@
     <section class="container" style="padding: 60px 0;">
         <div style="background: linear-gradient(135deg, #fff1f2, #fce7f3, #fef2f2); border: 1px solid #fecdd3; border-radius: 20px; padding: 50px 40px;">
             <h3 class="text-center fw-bold mb-2" style="color: #0f172a; font-size: 26px;">
-                📋 Hướng dẫn sử dụng Voucher
+                Hướng dẫn sử dụng Voucher
             </h3>
             <p class="text-center text-muted mb-5" style="max-width: 500px; margin: 0 auto 40px;">
                 Chỉ với 3 bước đơn giản để nhận ưu đãi giảm giá khi đặt vé xem phim tại FPT Cinema.

@@ -12,7 +12,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Quản lý bình luận - FPT CINEMA</title>
+    <title>Quản lý đánh giá - FPT CINEMA</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -110,7 +110,7 @@
 <body>
 
 <%
-    // 🌟 BẢO MẬT: Kiểm tra nếu không có quyền Q06 thì đá tài khoản nhân viên ra ngoài
+    // BẢO MẬT: Kiểm tra nếu không có quyền Q06 thì đá tài khoản nhân viên ra ngoài
     java.util.List<String> checkPerms = (java.util.List<String>) session.getAttribute("userPermissions");
 
     if (checkPerms == null || !checkPerms.contains("Q15")) {
@@ -151,13 +151,13 @@
 
                         <i class="bi bi-chat-left-text me-2 text-danger"></i>
 
-                        Quản Lý Bình Luận
+                        Quản Lý Đánh Giá
 
                     </h1>
 
                     <p class="text-muted mb-0">
 
-                        Kiểm duyệt và quản lý bình luận, đánh giá của khách hàng
+                        Kiểm duyệt và quản lý đánh giá của khách hàng
 
                     </p>
 
@@ -417,7 +417,7 @@
 
                         <i class="bi bi-list-ul me-2"></i>
 
-                        Danh Sách Bình Luận
+                        Danh Sách Đánh Giá
 
                     </h5>
 

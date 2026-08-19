@@ -154,7 +154,7 @@
 
     <!-- BOOKING AREA (LỊCH CHIẾU VÀ SUẤT CHIẾU) -->
     <section class="container py-5">
-        <h2 class="section-detail-title">📅 Chọn suất chiếu để đặt vé</h2>
+        <h2 class="section-detail-title">Chọn suất chiếu để đặt vé</h2>
         <c:choose>
             <c:when test="${empty listSuatChieu}">
                 <div class="text-center py-4" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;">
@@ -181,7 +181,7 @@
         <div class="row g-5">
             <!-- LIST COMMENTS -->
             <div class="col-lg-7">
-                <h2 class="section-detail-title">💬 Đánh giá từ khách hàng</h2>
+                <h2 class="section-detail-title">Đánh giá từ khách hàng</h2>
                 <c:choose>
                     <c:when test="${empty listBinhLuan}">
                         <p class="text-muted">Chưa có bình luận nào cho phim này. Hãy là người đầu tiên đánh giá!</p>
@@ -212,7 +212,7 @@
 
             <!-- FORM WRITE COMMENT -->
             <div class="col-lg-5">
-                <h2 class="section-detail-title">✏️ Viết đánh giá của bạn</h2>
+                <h2 class="section-detail-title">Viết đánh giá của bạn</h2>
                 
                 <c:if test="${not empty successMsg}">
                     <div class="alert alert-success alert-dismissible fade show shadow-sm mb-3" role="alert" style="border-radius: 8px;">
