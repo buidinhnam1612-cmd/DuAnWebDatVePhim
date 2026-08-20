@@ -191,6 +191,9 @@ public class AuthorizationFilter implements Filter {
         if ("/admin/comment".equals(path)) {
             return permissions.contains("Q15");
         }
+        if ("/admin/cancel-booking".equals(path)) {
+            return permissions.contains("Q02");
+        }
 
         return false;
     }

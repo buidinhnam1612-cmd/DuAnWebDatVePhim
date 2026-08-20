@@ -26,7 +26,13 @@ public class BookingService {
     public Booking getBookingById(String maDatVe) {
         return bookingRepository.getById(maDatVe);
     }
-
+    /**
+     * Tìm đặt vé theo mã.
+     * Dùng cho chức năng tra cứu / hỗ trợ hủy vé.
+     */
+    public Booking findByMaDatVe(String maDatVe) {
+        return bookingRepository.getById(maDatVe);
+    }
     /**
      * Tìm kiếm theo mã vé, khách hàng, phim, rạp hoặc trạng thái
      */
@@ -82,4 +88,11 @@ public class BookingService {
     public double getMonthlyRevenue() {
         return bookingRepository.getMonthlyRevenue();
     }
+    /**
+     * Nhân viên hỗ trợ hủy vé
+     */
+    public boolean supportCancelBooking(String maDatVe) {
+        return bookingRepository.supportCancelBooking(maDatVe);
+    }
+
 }
