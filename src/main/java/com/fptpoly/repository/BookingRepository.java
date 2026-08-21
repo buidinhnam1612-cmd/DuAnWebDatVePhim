@@ -457,4 +457,88 @@ public class BookingRepository {
         }
         return false;
     }
+    // ===================== HỦY VÉ & GIẢI PHÓNG GHẾ =====================
+    /**
+     * Nhân viên hỗ trợ hủy vé.
+     *
+     * Điều kiện:
+     * - Vé phải tồn tại.
+     * - Vé chưa bị hủy.
+     * - Chưa đến mốc 15 phút trước giờ chiếu.
+     *
+     * Khi hủy:
+     * - DAT_VE.TrangThai = "Đã hủy"
+     * - CHI_TIET_DAT_VE.TrangThai = "Đã hủy"
+     */
+    public boolean supportCancelBooking(String maDatVe) {
+
+        String sqlBooking = """
+        UPDATE DAT_VE
+        SET TrangThai = N'Đã hủy'
+        WHERE MaDatVe = ?
+          AND TrangThai = N'Chờ thanh toán'
+        """;
+
+        String sqlDetail = """
+        UPDATE CHI_TIET_DAT_VE
+        SET TrangThai = N'Đã hủy'
+        WHERE MaDatVe = ?
+        """;
+
+        Connection conn = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            int updated;
+
+            try (PreparedStatement ps =
+                         conn.prepareStatement(sqlBooking)) {
+
+                ps.setString(1, maDatVe);
+                updated = ps.executeUpdate();
+            }
+
+            if (updated == 0) {
+                conn.rollback();
+                return false;
+            }
+
+            try (PreparedStatement ps =
+                         conn.prepareStatement(sqlDetail)) {
+
+                ps.setString(1, maDatVe);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
+
+            return true;
+
+        } catch (Exception e) {
+
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            e.printStackTrace();
+            return false;
+
+        } finally {
+
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

@@ -413,7 +413,45 @@
             </li>
 
         <% } %>
+        <!-- =====================================================
+             HỖ TRỢ HỦY VÉ
+             Sử dụng Q02 - Quản lý đặt vé
+        ====================================================== -->
 
+        <% if (hasPerm(sidebarRole, sidebarPermissions, "Q02")) {
+
+            boolean isCancelBookingActive =
+                    "cancelBooking".equals(request.getAttribute("currentPage"))
+                    || request.getRequestURI().contains("cancel-booking");
+
+        %>
+
+            <li class="nav-item <%= isCancelBookingActive ? "active" : "" %>"
+                style="position: relative;">
+
+                <% if (isCancelBookingActive) { %>
+
+                    <div style="position: absolute;
+                                left: 0;
+                                top: 0;
+                                bottom: 0;
+                                width: 4px;
+                                background-color: #ff4d4d;">
+                    </div>
+
+                <% } %>
+
+                <a class="nav-link<%= isCancelBookingActive ? " active" : "" %>"
+                   href="${pageContext.request.contextPath}/admin/cancel-booking">
+
+                    <i class="bi bi-ticket-perforated me-2"></i>
+                    Hỗ trợ hủy vé
+
+                </a>
+
+            </li>
+
+        <% } %>
 
 
         <!-- =====================================================
