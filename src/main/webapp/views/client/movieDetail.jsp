@@ -113,22 +113,37 @@
                     <p class="movie-detail-description">${movie.moTa}</p>
                     
                     <div class="row">
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-3 col-sm-6">
                             <div class="movie-info-item">
                                 <div class="movie-info-label">Thời lượng</div>
                                 <div class="movie-info-value">${movie.thoiLuong} phút</div>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-3 col-sm-6">
                             <div class="movie-info-item">
                                 <div class="movie-info-label">Độ tuổi</div>
                                 <div class="movie-info-value">${movie.doTuoiGiaiTri}</div>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-3 col-sm-6">
                             <div class="movie-info-item">
                                 <div class="movie-info-label">Trạng thái</div>
                                 <div class="movie-info-value">${movie.trangThai}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="movie-info-item">
+                                <div class="movie-info-label">Đánh giá</div>
+                                <div class="movie-info-value" style="color: #e11d48;">
+                                    <c:choose>
+                                        <c:when test="${totalBinhLuan > 0}">
+                                            <fmt:formatNumber value="${avgRating}" pattern="#.0"/> ⭐ (${totalBinhLuan} lượt)
+                                        </c:when>
+                                        <c:otherwise>
+                                            Chưa có ⭐
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -139,7 +154,7 @@
 
     <!-- BOOKING AREA (LỊCH CHIẾU VÀ SUẤT CHIẾU) -->
     <section class="container py-5">
-        <h2 class="section-detail-title">📅 Chọn suất chiếu để đặt vé</h2>
+        <h2 class="section-detail-title">Chọn suất chiếu để đặt vé</h2>
         <c:choose>
             <c:when test="${empty listSuatChieu}">
                 <div class="text-center py-4" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;">
@@ -166,7 +181,7 @@
         <div class="row g-5">
             <!-- LIST COMMENTS -->
             <div class="col-lg-7">
-                <h2 class="section-detail-title">💬 Đánh giá từ khách hàng</h2>
+                <h2 class="section-detail-title">Đánh giá từ khách hàng</h2>
                 <c:choose>
                     <c:when test="${empty listBinhLuan}">
                         <p class="text-muted">Chưa có bình luận nào cho phim này. Hãy là người đầu tiên đánh giá!</p>
@@ -177,6 +192,9 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <strong style="color: #0f172a; font-size: 16px;">
                                         <i class="bi bi-person-fill text-muted me-2"></i>${bl.tenKhachHang}
+                                        <c:if test="${bl.trangThai == 'Chờ duyệt'}">
+                                            <span class="badge bg-warning text-dark ms-2" style="font-size: 10px; font-weight: 500;">Chờ duyệt</span>
+                                        </c:if>
                                     </strong>
                                     <span style="color: #ffc107; font-size: 14px;">
                                         <c:forEach begin="1" end="${bl.soSao}">⭐</c:forEach>
@@ -194,7 +212,21 @@
 
             <!-- FORM WRITE COMMENT -->
             <div class="col-lg-5">
-                <h2 class="section-detail-title">✏️ Viết bình luận của bạn</h2>
+                <h2 class="section-detail-title">Viết đánh giá của bạn</h2>
+                
+                <c:if test="${not empty successMsg}">
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-3" role="alert" style="border-radius: 8px;">
+                        <i class="bi bi-check-circle-fill me-2"></i>${successMsg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </c:if>
+                <c:if test="${not empty errorMsg}">
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-3" role="alert" style="border-radius: 8px;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>${errorMsg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </c:if>
+
                 <c:choose>
                     <c:when test="${not empty sessionScope.user}">
                         <form action="${pageContext.request.contextPath}/comment" method="post" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px;">
@@ -202,16 +234,16 @@
                             <div class="mb-3">
                                 <label class="form-label" style="color: #64748b; font-weight: 600;">Đánh giá phim (Số sao):</label>
                                 <select name="soSao" class="form-select" style="background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; width: 100%; border-radius: 8px; height: 45px;">
-                                    <option value="5">⭐⭐⭐⭐⭐ (5 sao) - Cực phẩm</option>
-                                    <option value="4">⭐⭐⭐⭐ (4 sao) - Rất hay</option>
-                                    <option value="3">⭐⭐⭐ (3 sao) - Bình thường</option>
-                                    <option value="2">⭐⭐ (2 sao) - Tệ</option>
-                                    <option value="1">⭐ (1 sao) - Quá tệ</option>
+                                    <option value="5" ${tempSoSao == 5 ? 'selected' : ''}>⭐⭐⭐⭐⭐ (5 sao) - Cực phẩm</option>
+                                    <option value="4" ${tempSoSao == 4 ? 'selected' : ''}>⭐⭐⭐⭐ (4 sao) - Rất hay</option>
+                                    <option value="3" ${tempSoSao == 3 ? 'selected' : ''}>⭐⭐⭐ (3 sao) - Bình thường</option>
+                                    <option value="2" ${tempSoSao == 2 ? 'selected' : ''}>⭐⭐ (2 sao) - Tệ</option>
+                                    <option value="1" ${tempSoSao == 1 ? 'selected' : ''}>⭐ (1 sao) - Quá tệ</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" style="color: #64748b; font-weight: 600;">Ý kiến đóng góp:</label>
-                                <textarea name="noiDung" rows="4" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn về bộ phim..." required style="background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 8px;"></textarea>
+                                <textarea name="noiDung" rows="4" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn về bộ phim..." required style="background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 8px;">${not empty tempNoiDung ? tempNoiDung : ''}</textarea>
                             </div>
                             <button type="submit" class="btn btn-danger w-100" style="background: #e11d48; border: none; font-weight: 600; padding: 12px; border-radius: 8px; transition: background-color 0.2s ease;">
                                 <i class="bi bi-send-fill me-2"></i>Gửi đánh giá

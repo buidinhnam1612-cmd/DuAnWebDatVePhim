@@ -244,16 +244,16 @@
                 <h1 class="search-result-title m-0">
                     <c:choose>
                         <c:when test="${not empty keyword && not empty selectedGenre}">
-                            🔍 Kết quả: "${keyword}" trong thể loại đã chọn
+                            Kết quả: "${keyword}" trong thể loại đã chọn
                         </c:when>
                         <c:when test="${not empty keyword}">
-                            🔍 Kết quả tìm kiếm cho: "${keyword}"
+                            Kết quả tìm kiếm cho: "${keyword}"
                         </c:when>
                         <c:when test="${not empty selectedGenre}">
-                            🎬 Phim theo thể loại đã chọn
+                            Phim theo thể loại đã chọn
                         </c:when>
                         <c:otherwise>
-                            🎬 Danh sách phim đang chiếu
+                            Danh sách phim đang chiếu
                         </c:otherwise>
                     </c:choose>
                 </h1>
@@ -262,7 +262,7 @@
 
         <%-- ==================== BỘ LỌC THỂ LOẠI PHIM ==================== --%>
         <div class="filter-section">
-            <div class="filter-section-title">🎭 Bộ lọc phim</div>
+            <div class="filter-section-title">Bộ lọc phim</div>
             <form action="${pageContext.request.contextPath}/movies" method="get">
                 <div class="filter-form-row">
                     <div class="filter-group">
@@ -297,7 +297,7 @@
         <%-- ==================== HIỂN THỊ DANH SÁCH RẠP CHIẾU ==================== --%>
         <c:if test="${not empty listRap}">
             <div class="theater-list-section">
-                <div class="theater-list-title">🏢 Hệ thống rạp chiếu phim</div>
+                <div class="theater-list-title">Hệ thống rạp chiếu phim</div>
                 <div class="theater-list-grid">
                     <c:forEach var="rap" items="${listRap}">
                         <div class="theater-item">

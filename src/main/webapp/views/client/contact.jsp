@@ -7,7 +7,7 @@
 <section class="container py-5">
 
     <div class="text-center">
-        <h1 class="fw-bold">📞 Liên hệ FPT CINEMA</h1>
+        <h1 class="fw-bold">Liên hệ FPT CINEMA</h1>
         <p class="text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
     </div>
 
@@ -17,9 +17,9 @@
             <div class="card shadow">
                 <div class="card-body">
                     <h4>Thông tin liên hệ</h4>
-                    <p>📍 Hà Nội</p>
-                    <p>☎ Hotline: 1900 9999</p>
-                    <p>✉ Email: support@fptcinema.com</p>
+                    <p>Hà Nội</p>
+                    <p>Hotline: 1900 9999</p>
+                    <p>Email: support@fptcinema.com</p>
                 </div>
             </div>
         </div>
