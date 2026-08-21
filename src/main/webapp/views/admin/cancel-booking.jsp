@@ -288,44 +288,21 @@
 
 
             <c:if test="${not empty sessionScope.success}">
-
-                <div class="alert alert-success alert-dismissible fade show"
-                     role="alert">
-
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
-
                     ${sessionScope.success}
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="alert">
-                    </button>
-
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-
                 <c:remove var="success" scope="session"/>
-
             </c:if>
 
-
             <c:if test="${not empty sessionScope.error}">
-
-                <div class="alert alert-danger alert-dismissible fade show"
-                     role="alert">
-
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
                     ${sessionScope.error}
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="alert">
-                    </button>
-
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-
                 <c:remove var="error" scope="session"/>
-
             </c:if>
 
 
@@ -610,117 +587,62 @@
 
 
                         <c:choose>
-
-                            <c:when test="${booking.trangThai == 'Đã thanh toán'}">
-
-                                <div class="status-box warning">
-
-                                    <div class="mb-3">
-
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-                                        Vé đang ở trạng thái có thể hủy.
-
-                                    </div>
-
-                                    <div class="mb-3">
-
-                                        <strong>Lưu ý:</strong>
-
-                                        Hệ thống chỉ cho phép hủy vé trong thời gian quy định.
-
-                                    </div>
-
-                                    <form method="post"
-                                          action="${pageContext.request.contextPath}/admin/cancel-booking">
-
-                                        <input type="hidden"
-                                               name="maDatVe"
-                                               value="${booking.maDatVe}">
-
-                                        <button type="submit"
-                                                class="btn btn-danger btn-cancel w-100">
-
-                                            <i class="bi bi-x-circle me-2"></i>
-
-                                            Hủy vé
-
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </c:when>
-
-
+                            <%-- TRƯỜNG HỢP 1: CHỜ THANH TOÁN -> ĐƯỢC PHÉP HỦY --%>
                             <c:when test="${booking.trangThai == 'Chờ thanh toán'}">
-
                                 <div class="status-box warning">
-
-                                    <i class="bi bi-clock-fill me-2"></i>
-
-                                    Vé này đang chờ thanh toán.
-
-                                    <br>
-
-                                    Không thể hủy vé ở trạng thái này.
-
+                                    <div class="mb-3">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        Vé đang ở trạng thái chờ thanh toán và có thể hủy.
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Lưu ý:</strong> Hệ thống chỉ cho phép hủy vé trước giờ chiếu 15 phút.
+                                    </div>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/cancel-booking">
+                                        <input type="hidden" name="maDatVe" value="${booking.maDatVe}">
+                                        <button type="submit" class="btn btn-danger btn-cancel w-100">
+                                            <i class="bi bi-x-circle me-2"></i>
+                                            Hủy vé
+                                        </button>
+                                    </form>
                                 </div>
-
                             </c:when>
 
+                            <%-- TRƯỜNG HỢP 2: ĐÃ THANH TOÁN -> KHÔNG CHO HỦY --%>
+                            <c:when test="${booking.trangThai == 'Đã thanh toán'}">
+                                <div class="status-box danger">
+                                    <i class="bi bi-shield-lock-fill me-2"></i>
+                                    Vé này đã được thanh toán.
+                                    <br>
+                                    Không thể hủy vé ở trạng thái đã thanh toán.
+                                </div>
+                            </c:when>
 
                             <c:when test="${booking.trangThai == 'Đã sử dụng'}">
-
                                 <div class="status-box danger">
-
                                     <i class="bi bi-check2-all me-2"></i>
-
                                     Vé này đã được sử dụng.
-
                                     <br>
-
                                     Không thể hủy vé đã sử dụng.
-
                                 </div>
-
                             </c:when>
-
 
                             <c:when test="${booking.trangThai == 'Đã hủy'}">
-
                                 <div class="status-box danger">
-
                                     <i class="bi bi-x-circle-fill me-2"></i>
-
                                     Vé này đã được hủy.
-
                                     <br>
-
                                     Không thể hủy lại vé này.
-
                                 </div>
-
                             </c:when>
 
-
                             <c:otherwise>
-
                                 <div class="status-box danger">
-
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
                                     Trạng thái vé không hợp lệ.
-
                                     <br>
-
                                     Không thể thực hiện hủy vé này.
-
                                 </div>
-
                             </c:otherwise>
-
                         </c:choose>
 
                     </div>

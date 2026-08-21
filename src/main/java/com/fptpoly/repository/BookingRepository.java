@@ -472,21 +472,14 @@ public class BookingRepository {
      */
     public boolean supportCancelBooking(String maDatVe) {
 
-        String sqlCheck = """
-        SELECT dv.TrangThai, dv.ThoiGianDat
-        FROM DAT_VE dv
-        WHERE dv.MaDatVe = ?
-        """;
-
-        String sqlUpdateBooking = """
+        String sqlBooking = """
         UPDATE DAT_VE
         SET TrangThai = N'Đã hủy'
         WHERE MaDatVe = ?
           AND TrangThai = N'Chờ thanh toán'
-          AND ThoiGianDat >= DATEADD(MINUTE, -30, GETDATE())
         """;
 
-        String sqlUpdateDetail = """
+        String sqlDetail = """
         UPDATE CHI_TIET_DAT_VE
         SET TrangThai = N'Đã hủy'
         WHERE MaDatVe = ?
@@ -495,60 +488,30 @@ public class BookingRepository {
         Connection conn = null;
 
         try {
-
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
 
-            // 1. Kiểm tra vé tồn tại và trạng thái
-            try (PreparedStatement ps = conn.prepareStatement(sqlCheck)) {
-
-                ps.setString(1, maDatVe);
-
-                try (ResultSet rs = ps.executeQuery()) {
-
-                    if (!rs.next()) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    String trangThai = rs.getString("TrangThai");
-
-                    // Chỉ cho phép hủy vé đang chờ thanh toán
-                    if (!"Chờ thanh toán".equals(trangThai)) {
-                        conn.rollback();
-                        return false;
-                    }
-                }
-            }
-
-            // 2. Hủy vé nếu vẫn còn trong 30 phút
-            int bookingUpdated;
+            int updated;
 
             try (PreparedStatement ps =
-                         conn.prepareStatement(sqlUpdateBooking)) {
+                         conn.prepareStatement(sqlBooking)) {
 
                 ps.setString(1, maDatVe);
-
-                bookingUpdated = ps.executeUpdate();
+                updated = ps.executeUpdate();
             }
 
-            // Không cập nhật được nghĩa là:
-            // - Đã quá 30 phút
-            // - Hoặc trạng thái đã thay đổi
-            if (bookingUpdated == 0) {
+            if (updated == 0) {
                 conn.rollback();
                 return false;
             }
 
-            // 3. Cập nhật chi tiết vé
             try (PreparedStatement ps =
-                         conn.prepareStatement(sqlUpdateDetail)) {
+                         conn.prepareStatement(sqlDetail)) {
 
                 ps.setString(1, maDatVe);
                 ps.executeUpdate();
             }
 
-            // 4. Commit
             conn.commit();
 
             return true;
