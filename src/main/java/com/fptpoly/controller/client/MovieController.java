@@ -41,7 +41,36 @@ public class MovieController extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("detail".equalsIgnoreCase(action)) {
-            // ... (Giữ nguyên logic chi tiết phim hiện tại)
+            String maPhim = request.getParameter("id");
+            if (maPhim != null && !maPhim.trim().isEmpty()) {
+                Movie movie = movieRepository.getByID(maPhim.trim());
+                if (movie != null) {
+                    List<Showtime> listSuatChieu = showtimeRepository.getByMovie(maPhim.trim());
+
+                    HttpSession session = request.getSession(false);
+                    User currentUser = (session != null) ? (User) session.getAttribute("user") : null;
+                    String currentUserId = (currentUser != null) ? currentUser.getMaKhachHang() : null;
+
+                    List<Comment> listBinhLuan = commentService.getCommentsByMovie(maPhim.trim(), currentUserId);
+
+                    double totalStars = 0;
+                    int totalCount = listBinhLuan.size();
+                    for (Comment c : listBinhLuan) {
+                        if (c.getSoSao() != null) totalStars += c.getSoSao();
+                    }
+                    double avgRating = totalCount > 0 ? (totalStars / totalCount) : 0;
+
+                    request.setAttribute("movie", movie);
+                    request.setAttribute("listSuatChieu", listSuatChieu);
+                    request.setAttribute("listBinhLuan", listBinhLuan);
+                    request.setAttribute("avgRating", avgRating);
+                    request.setAttribute("totalBinhLuan", totalCount);
+
+                    request.getRequestDispatcher("/views/client/movieDetail.jsp").forward(request, response);
+                    return;
+                }
+            }
+            response.sendRedirect(request.getContextPath() + "/movies");
         } else {
             String keyword = request.getParameter("keyword");
             String genre = request.getParameter("genre"); // 3. Lấy mã thể loại từ request

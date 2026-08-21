@@ -7,13 +7,22 @@ import java.util.Map;
 
 public class UserValidator {
 
-    public static Map<String, String> validateRegister(String fullName, String email, String phone, String password, String confirmPassword) {
+    public static Map<String, String> validateRegister(String fullName, String username, String email, String phone, String password, String confirmPassword) {
         Map<String, String> errors = new HashMap<>();
 
         if (fullName == null || fullName.trim().isEmpty()) {
             errors.put("fullNameError", "Vui lòng nhập họ và tên!");
         } else if (!ValidateUtil.isValidMinLength(fullName, 2)) {
             errors.put("fullNameError", "Họ và tên phải chứa ít nhất 2 ký tự!");
+        }
+
+        if (username == null || username.trim().isEmpty()) {
+            errors.put("usernameError", "Tên đăng nhập không được để trống!");
+        } else {
+            String trimmed = username.trim();
+            if (trimmed.length() < 3 || trimmed.length() > 50 || !trimmed.matches("^[a-zA-Z0-9_]+$")) {
+                errors.put("usernameError", "Tên đăng nhập không hợp lệ!");
+            }
         }
 
         if (email == null || email.trim().isEmpty()) {

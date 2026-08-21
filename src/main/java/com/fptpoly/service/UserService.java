@@ -109,4 +109,13 @@ public class UserService {
         }
         return userRepository.findByEmail(email.trim());
     }
+    /**
+     * Tìm khách hàng theo tên đăng nhập
+     */
+    public User getUserByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+        return userRepository.getUserByUsername(username.trim());
+    }
 }

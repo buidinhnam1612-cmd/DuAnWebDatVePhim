@@ -339,5 +339,22 @@ public class UserRepository {
         }
         return null;
     }
+    public User getUserByUsername(String username) {
+        String sql = "SELECT * FROM KHACH_HANG WHERE TenDangNhap = ?";
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+            ps.setString(1, username.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

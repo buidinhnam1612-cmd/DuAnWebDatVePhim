@@ -36,13 +36,19 @@ public class RegisterController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String fullName = request.getParameter("fullName");
+        String username = request.getParameter("username");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
 
         // Execute validation via UserValidator
-        Map<String, String> errors = UserValidator.validateRegister(fullName, email, phone, password, confirmPassword);
+        Map<String, String> errors = UserValidator.validateRegister(fullName, username, email, phone, password, confirmPassword);
+
+        // Check if username already exists in system database
+        if (!errors.containsKey("usernameError") && username != null && userService.getUserByUsername(username.trim()) != null) {
+            errors.put("usernameError", "Tên đăng nhập này đã tồn tại trong hệ thống!");
+        }
 
         // Check if email already exists in system database
         if (!errors.containsKey("emailError") && email != null && userService.getUserByEmail(email.trim()) != null) {
@@ -54,6 +60,7 @@ public class RegisterController extends HttpServlet {
                 request.setAttribute(entry.getKey(), entry.getValue());
             }
             request.setAttribute("fullName", fullName);
+            request.setAttribute("username", username);
             request.setAttribute("email", email);
             request.setAttribute("phone", phone);
 
@@ -63,6 +70,7 @@ public class RegisterController extends HttpServlet {
 
         User user = new User();
         user.setHoTen(fullName.trim());
+        user.setTenDangNhap(username.trim());
         user.setEmail(email.trim());
         user.setSoDienThoai(phone.trim());
         user.setMatKhau(password);

@@ -101,7 +101,7 @@
                             <input type="text"
                                    class="form-control <%= request.getAttribute("fullNameError") != null ? "is-invalid" : "" %>"
                                    name="fullName"
-                                   value="${fullName != null ? fullName : param.fullName}"
+value="${fullName != null ? fullName : param.fullName}"
                                    placeholder="Nhập họ và tên">
 
                             <% if(request.getAttribute("fullNameError") != null){ %>
@@ -113,7 +113,23 @@
 
                         </div>
 
-
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person-badge-fill me-2"></i>
+                                Tên đăng nhập <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control <%= request.getAttribute("usernameError") != null ? "is-invalid" : "" %>"
+                                   name="username"
+                                   value="${username != null ? username : param.username}"
+                                   placeholder="Nhập tên đăng nhập">
+                            <% if(request.getAttribute("usernameError") != null){ %>
+                            <div class="field-error">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <%=request.getAttribute("usernameError")%>
+                            </div>
+                            <% } %>
+                        </div>
 
                         <div class="mb-3">
 
@@ -145,8 +161,7 @@
                                 <i class="bi bi-telephone-fill me-2"></i>
                                 Số điện thoại <span class="text-danger">*</span>
                             </label>
-
-                            <input type="tel"
+<input type="tel"
                                    class="form-control <%= request.getAttribute("phoneError") != null ? "is-invalid" : "" %>"
                                    name="phone"
                                    value="${phone != null ? phone : param.phone}"
@@ -215,7 +230,7 @@
 
 
                         <button type="submit"
-                                class="btn btn-danger w-100">
+class="btn btn-danger w-100">
 
                             <i class="bi bi-check-circle-fill me-2"></i>
 
